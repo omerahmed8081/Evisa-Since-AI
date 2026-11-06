@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert provides a troubleshooting rule for CRC errors occurring after cable work on aggregation routers.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On aggregation routers, CRC errors starting immediately after cable work are usually caused by a faulty patch cable; replace the patch cable before replacing the line card.",
+   "device_mentions": [
+    "AGG-012"
+   ],
+   "node_type": "aggregation_router",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "PATCH_CABLE_CHANGE"
+   ],
+   "symptoms": [
+    "CRC_ERRORS"
+   ],
+   "actions": [
+    "REPLACE_PATCH_CABLE"
+   ],
+   "avoid": [
+    "REPLACE_LINE_CARD"
+   ],
+   "outcome": "worked",
+   "author": "Antti Aalto",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": null
+  }
+ ]
+}

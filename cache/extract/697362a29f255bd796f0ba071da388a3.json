@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Documenting advice that was tried and failed: rebooting the transmission unit does not fix zero traffic counters after an SFP replacement.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Rebooting the transmission unit does not resolve zero traffic counters following an SFP replacement.",
+   "device_mentions": [
+    "TRN-015"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "SFP_REPLACEMENT"
+   ],
+   "symptoms": [
+    "TRAFFIC_COUNTERS_ZERO"
+   ],
+   "actions": [
+    "REBOOT_UNIT"
+   ],
+   "avoid": [],
+   "outcome": "failed",
+   "author": "Mikko Mäkelä",
+   "source_message_seqs": [
+    2,
+    4,
+    6
+   ],
+   "confirmed_at_seq": 6,
+   "details": "Traffic counters remained zero after a 20-minute unit reboot following an SFP replacement."
+  }
+ ]
+}

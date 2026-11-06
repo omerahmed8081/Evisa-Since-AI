@@ -1,0 +1,37 @@
+{
+ "useful": true,
+ "reason": "Expert gives a confirmed troubleshooting rule to clean optical connectors instead of replacing SFP when RX levels drop after maintenance.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "When optical RX levels are low after maintenance that involved unplugging fibers, clean the fiber connectors on both ends first before replacing the SFP transceiver.",
+   "device_mentions": [
+    "TRN-112"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "MAINTENANCE"
+   ],
+   "symptoms": [
+    "OPTICAL_LEVELS_LOW"
+   ],
+   "actions": [
+    "CLEAN_CONNECTOR"
+   ],
+   "avoid": [
+    "REPLACE_SFP"
+   ],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    4,
+    5
+   ],
+   "confirmed_at_seq": 5,
+   "details": "Used click-cleaner on both ends."
+  }
+ ]
+}

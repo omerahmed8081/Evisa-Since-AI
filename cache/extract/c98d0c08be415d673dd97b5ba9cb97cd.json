@@ -1,0 +1,39 @@
+{
+ "useful": true,
+ "reason": "Expert shares a troubleshooting rule that on older transmission units, traffic counters zero with normal optical levels can be fixed by bouncing the interface instead of replacing hardware.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On older transmission equipment, when interface is up and optical levels are normal but traffic counters are zero, bounce the interface to restore traffic before attempting hardware replacement.",
+   "device_mentions": [
+    "TRN-031",
+    "TRN-042",
+    "TRN-077"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "TRAFFIC_COUNTERS_ZERO",
+    "OPTICAL_LEVELS_NORMAL",
+    "INTERFACE_UP"
+   ],
+   "actions": [
+    "BOUNCE_INTERFACE"
+   ],
+   "avoid": [
+    "REPLACE_SFP",
+    "REBOOT_UNIT"
+   ],
+   "outcome": "worked",
+   "author": "Erkki",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Check traffic counters and bounce the port before replacing hardware."
+  }
+ ]
+}

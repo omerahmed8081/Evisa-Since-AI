@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides gate code and physical trick to open a stuck padlock at a base station site.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "Gate code is 4471 and if the padlock jams, lift the gate slightly to open it.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Pekka Pylväs",
+   "source_message_seqs": [
+    2,
+    3
+   ],
+   "confirmed_at_seq": 4,
+   "details": "Fence gate code is 4471, lift gate slightly if padlock jams."
+  }
+ ]
+}

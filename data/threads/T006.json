@@ -1,0 +1,75 @@
+{
+  "thread_id": "T006",
+  "channel": "teams",
+  "date": "2025-01-09",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "07:20",
+      "timestamp": "2025-01-09T07:20:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Moi Sanna, BTS-250 Tampereella antaa akkuhälytystä. Pitäiskö lähettää joku paikalle?"
+    },
+    {
+      "seq": 2,
+      "time": "07:22",
+      "timestamp": "2025-01-09T07:22:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Oliko siellä yöllä kova pakkanen?"
+    },
+    {
+      "seq": 3,
+      "time": "07:22",
+      "timestamp": "2025-01-09T07:22:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "-28 astetta aamulla"
+    },
+    {
+      "seq": 4,
+      "time": "07:24",
+      "timestamp": "2025-01-09T07:24:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Se on todennäköisesti väärä hälytys. Katso tasasuuntaajan lämpötila-anturin lukema ennen kuin lähetät ketään"
+    },
+    {
+      "seq": 5,
+      "time": "07:29",
+      "timestamp": "2025-01-09T07:29:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Anturi näyttää -40, ihan mahdoton arvo. Akkujännite normaali"
+    },
+    {
+      "seq": 6,
+      "time": "07:30",
+      "timestamp": "2025-01-09T07:30:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Joo, anturi sekoaa kovalla pakkasella. Ei tarvii käydä, hälytys poistuu kun lämpenee"
+    },
+    {
+      "seq": 7,
+      "time": "07:31",
+      "timestamp": "2025-01-09T07:31:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Hyvä, säästettiin yks reissu 👍"
+    }
+  ]
+}

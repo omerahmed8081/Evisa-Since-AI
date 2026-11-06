@@ -1,0 +1,75 @@
+{
+  "thread_id": "T018",
+  "channel": "teams",
+  "date": "2025-08-11",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:20",
+      "timestamp": "2025-08-11T09:20:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Antti, AGG-012 Kajaani, LACP bundle to the core is down. Both member links are up"
+    },
+    {
+      "seq": 2,
+      "time": "09:22",
+      "timestamp": "2025-08-11T09:22:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Remove the member ports from the port-channel and add them back. Fixed the same thing on AGG-007"
+    },
+    {
+      "seq": 3,
+      "time": "09:31",
+      "timestamp": "2025-08-11T09:31:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Done that twice. Still down"
+    },
+    {
+      "seq": 4,
+      "time": "09:33",
+      "timestamp": "2025-08-11T09:33:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "What software is it on?"
+    },
+    {
+      "seq": 5,
+      "time": "09:34",
+      "timestamp": "2025-08-11T09:34:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "7.2.0"
+    },
+    {
+      "seq": 6,
+      "time": "09:35",
+      "timestamp": "2025-08-11T09:35:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Ah sorry, that's only for the new ones after the 7.4 upgrade. Different problem then. Can you send me the logs"
+    },
+    {
+      "seq": 7,
+      "time": "09:36",
+      "timestamp": "2025-08-11T09:36:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Sending 👍"
+    }
+  ]
+}

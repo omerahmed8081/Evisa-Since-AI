@@ -1,0 +1,674 @@
+[
+  {
+    "event_id": "EV-0001",
+    "timestamp": "2023-08-22T14:10:00+03:00",
+    "node_id": "TRN-056",
+    "event_type": "alarm_raised",
+    "detail": "High temperature",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0002",
+    "timestamp": "2023-08-22T15:30:00+03:00",
+    "node_id": "TRN-056",
+    "event_type": "alarm_cleared",
+    "detail": "High temperature cleared",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0003",
+    "timestamp": "2023-10-17T10:00:00+03:00",
+    "node_id": "MW-401",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "1.3.0",
+    "to_firmware": "1.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0004",
+    "timestamp": "2023-10-18T10:00:00+03:00",
+    "node_id": "MW-405",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "1.3.2",
+    "to_firmware": "1.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0005",
+    "timestamp": "2023-10-19T10:30:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "1.3.4",
+    "to_firmware": "1.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0006",
+    "timestamp": "2023-10-20T09:30:00+03:00",
+    "node_id": "MW-418",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "1.3.4",
+    "to_firmware": "1.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0007",
+    "timestamp": "2023-10-27T16:20:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "alarm_raised",
+    "detail": "Link degradation: RSL below threshold during rain",
+    "related_thread": "E003"
+  },
+  {
+    "event_id": "EV-0008",
+    "timestamp": "2023-10-27T17:05:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "alarm_cleared",
+    "detail": "Link degradation cleared",
+    "related_thread": "E003"
+  },
+  {
+    "event_id": "EV-0009",
+    "timestamp": "2024-01-18T06:30:00+02:00",
+    "node_id": "MW-405",
+    "event_type": "alarm_raised",
+    "detail": "Radio link unstable: repeated link down/up",
+    "related_thread": "T003"
+  },
+  {
+    "event_id": "EV-0010",
+    "timestamp": "2024-01-18T07:15:00+02:00",
+    "node_id": "MW-405",
+    "event_type": "dispatch",
+    "detail": "Field engineer dispatched to Kittilä mast",
+    "related_thread": "T003"
+  },
+  {
+    "event_id": "EV-0011",
+    "timestamp": "2024-01-18T10:38:00+02:00",
+    "node_id": "MW-405",
+    "event_type": "alarm_cleared",
+    "detail": "Radio link stable",
+    "related_thread": "T003"
+  },
+  {
+    "event_id": "EV-0012",
+    "timestamp": "2024-01-25T19:50:00+02:00",
+    "node_id": "MW-405",
+    "event_type": "alarm_raised",
+    "detail": "Radio link down",
+    "related_thread": "T017"
+  },
+  {
+    "event_id": "EV-0013",
+    "timestamp": "2024-03-19T02:00:00+02:00",
+    "node_id": "AGG-003",
+    "event_type": "alarm_raised",
+    "detail": "CPU utilisation 88%",
+    "related_thread": "T010"
+  },
+  {
+    "event_id": "EV-0014",
+    "timestamp": "2024-03-19T02:14:00+02:00",
+    "node_id": "AGG-003",
+    "event_type": "alarm_cleared",
+    "detail": "CPU utilisation normal",
+    "related_thread": "T010"
+  },
+  {
+    "event_id": "EV-0015",
+    "timestamp": "2024-04-11T09:20:00+03:00",
+    "node_id": "TRN-118",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/4",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0016",
+    "timestamp": "2024-04-11T12:45:00+03:00",
+    "node_id": "TRN-118",
+    "event_type": "alarm_cleared",
+    "detail": "LOS on port 1/1/4 cleared",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0017",
+    "timestamp": "2024-05-02T11:40:00+03:00",
+    "node_id": "TRN-056",
+    "event_type": "alarm_raised",
+    "detail": "Port 1/1/2: unsupported transceiver, port down",
+    "related_thread": "E005"
+  },
+  {
+    "event_id": "EV-0018",
+    "timestamp": "2024-05-03T13:10:00+03:00",
+    "node_id": "TRN-023",
+    "event_type": "alarm_raised",
+    "detail": "Port 1/1/4: unsupported transceiver, port down",
+    "related_thread": "E005"
+  },
+  {
+    "event_id": "EV-0019",
+    "timestamp": "2024-06-03T05:40:00+03:00",
+    "node_id": "BTS-233",
+    "event_type": "alarm_raised",
+    "detail": "Mains power failure",
+    "related_thread": "T004"
+  },
+  {
+    "event_id": "EV-0020",
+    "timestamp": "2024-06-03T05:41:00+03:00",
+    "node_id": "BTS-233",
+    "event_type": "alarm_raised",
+    "detail": "Cell out of service",
+    "related_thread": "T004"
+  },
+  {
+    "event_id": "EV-0021",
+    "timestamp": "2024-06-03T07:00:00+03:00",
+    "node_id": "BTS-233",
+    "event_type": "dispatch",
+    "detail": "Field engineer dispatched, cell down after power outage",
+    "related_thread": "T004"
+  },
+  {
+    "event_id": "EV-0022",
+    "timestamp": "2024-06-03T08:44:00+03:00",
+    "node_id": "BTS-233",
+    "event_type": "alarm_cleared",
+    "detail": "Cell in service",
+    "related_thread": "T004"
+  },
+  {
+    "event_id": "EV-0023",
+    "timestamp": "2024-08-14T11:02:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "alarm_raised",
+    "detail": "Fan failure",
+    "related_thread": "T007"
+  },
+  {
+    "event_id": "EV-0024",
+    "timestamp": "2024-09-09T08:00:00+03:00",
+    "node_id": "BTS-272",
+    "event_type": "work_order",
+    "detail": "WO-46551: Antenna tilt adjustment",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0025",
+    "timestamp": "2024-10-01T22:10:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "alarm_raised",
+    "detail": "Radio link down, RSL -78 dBm",
+    "related_thread": "T008"
+  },
+  {
+    "event_id": "EV-0026",
+    "timestamp": "2024-10-02T07:00:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "dispatch",
+    "detail": "Field engineer dispatched after storm",
+    "related_thread": "T008"
+  },
+  {
+    "event_id": "EV-0027",
+    "timestamp": "2024-10-02T10:25:00+03:00",
+    "node_id": "MW-412",
+    "event_type": "alarm_cleared",
+    "detail": "Radio link up, RSL normal",
+    "related_thread": "T008"
+  },
+  {
+    "event_id": "EV-0028",
+    "timestamp": "2024-11-19T09:00:00+02:00",
+    "node_id": "TRN-042",
+    "event_type": "dispatch",
+    "detail": "Dispatch delayed 2 h: locked barrier on private access road",
+    "related_thread": "E008"
+  },
+  {
+    "event_id": "EV-0029",
+    "timestamp": "2024-11-19T14:30:00+02:00",
+    "node_id": "AGG-012",
+    "event_type": "work_order",
+    "detail": "WO-48817: Re-cable uplink patch panel, rack 2",
+    "related_thread": "E002"
+  },
+  {
+    "event_id": "EV-0030",
+    "timestamp": "2024-11-19T16:05:00+02:00",
+    "node_id": "AGG-012",
+    "event_type": "alarm_raised",
+    "detail": "CRC errors on uplink port",
+    "related_thread": "E002"
+  },
+  {
+    "event_id": "EV-0031",
+    "timestamp": "2024-11-20T10:40:00+02:00",
+    "node_id": "AGG-012",
+    "event_type": "alarm_cleared",
+    "detail": "CRC errors on uplink port cleared",
+    "related_thread": "E002"
+  },
+  {
+    "event_id": "EV-0032",
+    "timestamp": "2025-01-09T06:10:00+02:00",
+    "node_id": "BTS-250",
+    "event_type": "alarm_raised",
+    "detail": "Battery alarm",
+    "related_thread": "T006"
+  },
+  {
+    "event_id": "EV-0033",
+    "timestamp": "2025-01-27T13:00:00+02:00",
+    "node_id": "AGG-003",
+    "event_type": "work_order",
+    "detail": "WO-52031: Rack maintenance, re-patching",
+    "related_thread": "T012"
+  },
+  {
+    "event_id": "EV-0034",
+    "timestamp": "2025-01-28T08:10:00+02:00",
+    "node_id": "AGG-003",
+    "event_type": "alarm_raised",
+    "detail": "CRC errors on uplink port",
+    "related_thread": "T012"
+  },
+  {
+    "event_id": "EV-0035",
+    "timestamp": "2025-01-28T08:41:00+02:00",
+    "node_id": "AGG-003",
+    "event_type": "alarm_cleared",
+    "detail": "CRC errors on uplink port cleared",
+    "related_thread": "T012"
+  },
+  {
+    "event_id": "EV-0036",
+    "timestamp": "2025-02-03T04:30:00+02:00",
+    "node_id": "BTS-261",
+    "event_type": "alarm_raised",
+    "detail": "GPS synchronisation lost",
+    "related_thread": "T011"
+  },
+  {
+    "event_id": "EV-0037",
+    "timestamp": "2025-02-03T07:30:00+02:00",
+    "node_id": "BTS-261",
+    "event_type": "dispatch",
+    "detail": "Field engineer dispatched, GPS sync lost",
+    "related_thread": "T011"
+  },
+  {
+    "event_id": "EV-0038",
+    "timestamp": "2025-02-03T10:51:00+02:00",
+    "node_id": "BTS-261",
+    "event_type": "alarm_cleared",
+    "detail": "GPS synchronisation restored",
+    "related_thread": "T011"
+  },
+  {
+    "event_id": "EV-0039",
+    "timestamp": "2025-02-27T09:00:00+02:00",
+    "node_id": "TRN-101",
+    "event_type": "work_order",
+    "detail": "WO-53390: Replace line module slot 3",
+    "related_thread": "E004"
+  },
+  {
+    "event_id": "EV-0040",
+    "timestamp": "2025-02-27T10:12:00+02:00",
+    "node_id": "TRN-101",
+    "event_type": "hw_replacement",
+    "detail": "Line module slot 3 hot-swapped",
+    "related_thread": "E004"
+  },
+  {
+    "event_id": "EV-0041",
+    "timestamp": "2025-02-27T10:13:00+02:00",
+    "node_id": "TRN-101",
+    "event_type": "alarm_raised",
+    "detail": "Unknown module in slot 3",
+    "related_thread": "E004"
+  },
+  {
+    "event_id": "EV-0042",
+    "timestamp": "2025-02-27T10:16:00+02:00",
+    "node_id": "TRN-101",
+    "event_type": "alarm_cleared",
+    "detail": "Unknown module in slot 3 cleared",
+    "related_thread": "E004"
+  },
+  {
+    "event_id": "EV-0043",
+    "timestamp": "2025-03-12T07:58:00+02:00",
+    "node_id": "TRN-042",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/3",
+    "related_thread": "T001"
+  },
+  {
+    "event_id": "EV-0044",
+    "timestamp": "2025-03-12T08:40:00+02:00",
+    "node_id": "TRN-042",
+    "event_type": "work_order",
+    "detail": "WO-55120: Replace SFP on port 1/1/3, reason: LOS alarm",
+    "related_thread": "T001"
+  },
+  {
+    "event_id": "EV-0045",
+    "timestamp": "2025-03-12T09:05:00+02:00",
+    "node_id": "TRN-042",
+    "event_type": "alarm_cleared",
+    "detail": "LOS on port 1/1/3 cleared",
+    "related_thread": "T001"
+  },
+  {
+    "event_id": "EV-0046",
+    "timestamp": "2025-04-16T08:00:00+03:00",
+    "node_id": "BTS-210",
+    "event_type": "work_order",
+    "detail": "WO-56102: Routine battery check",
+    "related_thread": "T021"
+  },
+  {
+    "event_id": "EV-0047",
+    "timestamp": "2025-05-21T23:30:00+03:00",
+    "node_id": "AGG-007",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "7.3.5",
+    "to_firmware": "7.4.0",
+    "detail": "Maintenance window firmware upgrade",
+    "related_thread": "T005"
+  },
+  {
+    "event_id": "EV-0048",
+    "timestamp": "2025-05-21T23:50:00+03:00",
+    "node_id": "AGG-007",
+    "event_type": "alarm_raised",
+    "detail": "LACP bundle to core down",
+    "related_thread": "T005"
+  },
+  {
+    "event_id": "EV-0049",
+    "timestamp": "2025-05-22T08:26:00+03:00",
+    "node_id": "AGG-007",
+    "event_type": "alarm_cleared",
+    "detail": "LACP bundle to core up",
+    "related_thread": "T005"
+  },
+  {
+    "event_id": "EV-0050",
+    "timestamp": "2025-06-12T13:40:00+03:00",
+    "node_id": "AGG-015",
+    "event_type": "alarm_raised",
+    "detail": "Power supply 2 failure",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0051",
+    "timestamp": "2025-06-13T10:10:00+03:00",
+    "node_id": "AGG-015",
+    "event_type": "hw_replacement",
+    "detail": "Power supply 2 replaced",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0052",
+    "timestamp": "2025-06-30T08:05:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/1",
+    "related_thread": "T014"
+  },
+  {
+    "event_id": "EV-0053",
+    "timestamp": "2025-06-30T09:30:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced on port 1/1/1",
+    "related_thread": "T014"
+  },
+  {
+    "event_id": "EV-0054",
+    "timestamp": "2025-06-30T09:46:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "alarm_raised",
+    "detail": "Node unreachable",
+    "related_thread": "T014"
+  },
+  {
+    "event_id": "EV-0055",
+    "timestamp": "2025-06-30T10:06:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "alarm_cleared",
+    "detail": "Node reachable",
+    "related_thread": "T014"
+  },
+  {
+    "event_id": "EV-0056",
+    "timestamp": "2025-07-15T07:40:00+03:00",
+    "node_id": "TRN-031",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/2",
+    "related_thread": "T015"
+  },
+  {
+    "event_id": "EV-0057",
+    "timestamp": "2025-07-15T11:05:00+03:00",
+    "node_id": "TRN-031",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced on port 1/1/2",
+    "related_thread": "T015"
+  },
+  {
+    "event_id": "EV-0058",
+    "timestamp": "2025-07-15T11:38:00+03:00",
+    "node_id": "TRN-031",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced again on port 1/1/2",
+    "related_thread": "T015"
+  },
+  {
+    "event_id": "EV-0059",
+    "timestamp": "2025-08-11T09:12:00+03:00",
+    "node_id": "AGG-012",
+    "event_type": "alarm_raised",
+    "detail": "LACP bundle to core down",
+    "related_thread": "T018"
+  },
+  {
+    "event_id": "EV-0060",
+    "timestamp": "2025-09-04T07:20:00+03:00",
+    "node_id": "TRN-077",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/2",
+    "related_thread": "T002"
+  },
+  {
+    "event_id": "EV-0061",
+    "timestamp": "2025-09-04T07:45:00+03:00",
+    "node_id": "TRN-077",
+    "event_type": "work_order",
+    "detail": "WO-58873: Replace SFP on port 1/1/2, reason: LOS alarm",
+    "related_thread": "T002"
+  },
+  {
+    "event_id": "EV-0062",
+    "timestamp": "2025-09-04T10:02:00+03:00",
+    "node_id": "TRN-077",
+    "event_type": "alarm_cleared",
+    "detail": "LOS on port 1/1/2 cleared",
+    "related_thread": "T002"
+  },
+  {
+    "event_id": "EV-0063",
+    "timestamp": "2025-09-20T17:30:00+03:00",
+    "node_id": "MW-401",
+    "event_type": "alarm_raised",
+    "detail": "Errored seconds above threshold",
+    "related_thread": "C002"
+  },
+  {
+    "event_id": "EV-0064",
+    "timestamp": "2025-10-07T07:55:00+03:00",
+    "node_id": "BTS-244",
+    "event_type": "alarm_raised",
+    "detail": "Door open alarm",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0065",
+    "timestamp": "2025-11-04T09:00:00+02:00",
+    "node_id": "TRN-112",
+    "event_type": "work_order",
+    "detail": "WO-60214: Planned maintenance, fibre re-patching",
+    "related_thread": "T009"
+  },
+  {
+    "event_id": "EV-0066",
+    "timestamp": "2025-11-05T08:30:00+02:00",
+    "node_id": "TRN-112",
+    "event_type": "alarm_raised",
+    "detail": "Low RX optical power on port 1/1/2",
+    "related_thread": "T009"
+  },
+  {
+    "event_id": "EV-0067",
+    "timestamp": "2025-11-05T10:04:00+02:00",
+    "node_id": "TRN-112",
+    "event_type": "alarm_cleared",
+    "detail": "Low RX optical power on port 1/1/2 cleared",
+    "related_thread": "T009"
+  },
+  {
+    "event_id": "EV-0068",
+    "timestamp": "2025-12-10T00:55:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "alarm_raised",
+    "detail": "Mains power failure",
+    "related_thread": "C001"
+  },
+  {
+    "event_id": "EV-0069",
+    "timestamp": "2025-12-10T01:00:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "alarm_raised",
+    "detail": "Cell out of service",
+    "related_thread": "C001"
+  },
+  {
+    "event_id": "EV-0070",
+    "timestamp": "2025-12-10T01:20:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "dispatch",
+    "detail": "On-call field engineer dispatched",
+    "related_thread": "C001"
+  },
+  {
+    "event_id": "EV-0071",
+    "timestamp": "2026-01-15T04:20:00+02:00",
+    "node_id": "BTS-205",
+    "event_type": "alarm_raised",
+    "detail": "Mains power failure",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0072",
+    "timestamp": "2026-01-15T06:05:00+02:00",
+    "node_id": "BTS-205",
+    "event_type": "alarm_cleared",
+    "detail": "Mains power restored",
+    "related_thread": null
+  },
+  {
+    "event_id": "EV-0073",
+    "timestamp": "2026-02-13T08:15:00+02:00",
+    "node_id": "TRN-031",
+    "event_type": "alarm_raised",
+    "detail": "LOS on port 1/1/2",
+    "related_thread": "E006"
+  },
+  {
+    "event_id": "EV-0074",
+    "timestamp": "2026-02-13T11:20:00+02:00",
+    "node_id": "TRN-031",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced on port 1/1/2",
+    "related_thread": "E006"
+  },
+  {
+    "event_id": "EV-0075",
+    "timestamp": "2026-02-18T10:00:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "2.4.0",
+    "to_firmware": "2.6.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": "T016"
+  },
+  {
+    "event_id": "EV-0076",
+    "timestamp": "2026-03-01T23:10:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "alarm_raised",
+    "detail": "Mains power failure",
+    "related_thread": "T016"
+  },
+  {
+    "event_id": "EV-0077",
+    "timestamp": "2026-03-01T23:24:00+02:00",
+    "node_id": "BTS-210",
+    "event_type": "alarm_cleared",
+    "detail": "Cell in service",
+    "related_thread": "T016"
+  },
+  {
+    "event_id": "EV-0078",
+    "timestamp": "2026-03-24T10:00:00+02:00",
+    "node_id": "TRN-077",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "3.2.1",
+    "to_firmware": "3.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": "E007"
+  },
+  {
+    "event_id": "EV-0079",
+    "timestamp": "2026-03-25T10:00:00+02:00",
+    "node_id": "TRN-015",
+    "event_type": "firmware_upgrade",
+    "from_firmware": "3.1.2",
+    "to_firmware": "3.4.0",
+    "detail": "Planned firmware upgrade",
+    "related_thread": "E007"
+  },
+  {
+    "event_id": "EV-0080",
+    "timestamp": "2026-03-31T10:40:00+03:00",
+    "node_id": "TRN-077",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced on port 1/1/1",
+    "related_thread": "E007"
+  },
+  {
+    "event_id": "EV-0081",
+    "timestamp": "2026-04-02T13:15:00+03:00",
+    "node_id": "TRN-015",
+    "event_type": "hw_replacement",
+    "detail": "SFP replaced on port 1/1/3",
+    "related_thread": "E007"
+  },
+  {
+    "event_id": "EV-0082",
+    "timestamp": "2026-05-19T09:30:00+03:00",
+    "node_id": "TRN-125",
+    "event_type": "work_order",
+    "detail": "WO-63380: Add 10G interface",
+    "related_thread": null
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "thread_id": "T008",
+  "channel": "teams",
+  "date": "2024-10-02",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:40",
+      "timestamp": "2024-10-02T09:40:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Jari, MW-412 lost alignment in last night's storm. Signal way down. Should I bring a new radio?"
+    },
+    {
+      "seq": 2,
+      "time": "09:42",
+      "timestamp": "2024-10-02T09:42:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "No. Check the mount bolts first. Storm usually just loosens the mount"
+    },
+    {
+      "seq": 3,
+      "time": "09:50",
+      "timestamp": "2024-10-02T09:50:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Two bolts loose on the pole mount, dish turned a bit"
+    },
+    {
+      "seq": 4,
+      "time": "09:51",
+      "timestamp": "2024-10-02T09:51:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Tighten them and re-align. Radio is fine"
+    },
+    {
+      "seq": 5,
+      "time": "10:25",
+      "timestamp": "2024-10-02T10:25:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Re-aligned, levels back to normal 👍"
+    },
+    {
+      "seq": 6,
+      "time": "10:26",
+      "timestamp": "2024-10-02T10:26:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Good. Never seen the radio die from wind on these"
+    }
+  ]
+}

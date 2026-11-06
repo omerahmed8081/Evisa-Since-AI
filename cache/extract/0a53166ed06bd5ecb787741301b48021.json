@@ -1,0 +1,39 @@
+{
+ "useful": true,
+ "reason": "Expert provides a troubleshooting rule and successful workaround for when traffic does not pass after an SFP replacement on older transmission units.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On older transmission equipment, traffic may not pass after replacing an SFP even though the link is up and alarms are cleared; bounce the interface to restore traffic rather than rebooting the entire unit.",
+   "device_mentions": [
+    "TRN-077"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "SFP_REPLACEMENT"
+   ],
+   "symptoms": [
+    "TRAFFIC_COUNTERS_ZERO"
+   ],
+   "actions": [
+    "BOUNCE_INTERFACE"
+   ],
+   "avoid": [
+    "REBOOT_UNIT"
+   ],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    4,
+    7,
+    8,
+    9
+   ],
+   "confirmed_at_seq": 8,
+   "details": "Forwarding gets stuck after optic replacement on older units installed around 2018."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+Thread-ID: E006
+Date: 2026-02-16T10:20:00+02:00
+From: Erkki Expert <Network Expert>
+To: Mikko Mäkelä <Field Engineer>
+Subject: RE: TRN-031 Sodankylä, liikenne ei palannut
+
+Moi Mikko,
+
+Kävin perjantaina TRN-031:llä Sodankylässä. Sama tilanne kuin aiemmin: SFP vaihdettu, portti ylhäällä, optiset tasot normaalit, mutta liikennelaskurit nollassa.
+
+Portin disablointi ja enablointi korjasi tilanteen heti. SFP:tä ei tarvinnut vaihtaa eikä laitetta buutata.
+
+Sama juttu on nähty nyt TRN-042:lla ja TRN-077:llä. Näissä vanhemmissa siirtolaitteissa kannattaa aina ensin katsoa laskurit ja kokeilla portin sammutusta ja käynnistystä ennen kuin vaihtaa rautaa.
+
+Terveisin,
+Erkki

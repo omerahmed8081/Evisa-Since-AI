@@ -1,0 +1,59 @@
+{
+  "thread_id": "T007",
+  "channel": "teams",
+  "date": "2024-08-14",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:15",
+      "timestamp": "2024-08-14T11:15:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Erkki, fan alarm on TRN-015 in Kittilä. Do I need to send someone?"
+    },
+    {
+      "seq": 2,
+      "time": "11:17",
+      "timestamp": "2024-08-14T11:17:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "What's the chassis temp?"
+    },
+    {
+      "seq": 3,
+      "time": "11:18",
+      "timestamp": "2024-08-14T11:18:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "38 C, normal range"
+    },
+    {
+      "seq": 4,
+      "time": "11:19",
+      "timestamp": "2024-08-14T11:19:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Then no. That's the fan sensor bug in the 3.1 software, false alarm. Only dispatch if the chassis temp goes up"
+    },
+    {
+      "seq": 5,
+      "time": "11:19",
+      "timestamp": "2024-08-14T11:19:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Ok, closing it 👍"
+    }
+  ]
+}

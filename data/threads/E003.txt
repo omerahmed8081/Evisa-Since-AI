@@ -1,0 +1,16 @@
+Thread-ID: E003
+Date: 2023-10-30T10:05:00+02:00
+From: Jari Jänne <Network Expert>
+To: Erkki Expert <Network Expert>
+Subject: ATPC off after the 1.4 upgrade
+
+Hi Erkki,
+
+Heads-up on the microwave links. The 1.4 firmware upgrade we did a couple of weeks ago on MW-401, MW-405 and MW-412 reset the ATPC setting to off on all of them.
+
+Nobody noticed in good weather, but with the rain on Friday MW-412 started fading badly. I turned ATPC back on and the link has been stable since. Checked the other two and switched it back on there as well.
+
+So: after every firmware upgrade on these links, check that ATPC is still enabled. It's not in the upgrade checklist yet.
+
+Cheers,
+Jari

@@ -1,0 +1,83 @@
+{
+  "thread_id": "T004",
+  "channel": "teams",
+  "date": "2024-06-03",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:30",
+      "timestamp": "2024-06-03T08:30:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Sanna, BTS-233 in Kolari. Power came back around 6 but the cell is still down. Rebooted it once already, no change"
+    },
+    {
+      "seq": 2,
+      "time": "08:32",
+      "timestamp": "2024-06-03T08:32:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Normal reboot from the menu?"
+    },
+    {
+      "seq": 3,
+      "time": "08:32",
+      "timestamp": "2024-06-03T08:32:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Yes"
+    },
+    {
+      "seq": 4,
+      "time": "08:33",
+      "timestamp": "2024-06-03T08:33:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "That doesn't help on these older base stations. The baseband doesn't come up properly after a power cut"
+    },
+    {
+      "seq": 5,
+      "time": "08:34",
+      "timestamp": "2024-06-03T08:34:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Do a cold restart of the baseband unit. Power it off completely, wait 30 sec, power on"
+    },
+    {
+      "seq": 6,
+      "time": "08:35",
+      "timestamp": "2024-06-03T08:35:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Ok trying"
+    },
+    {
+      "seq": 7,
+      "time": "08:44",
+      "timestamp": "2024-06-03T08:44:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Cell is up 👍"
+    },
+    {
+      "seq": 8,
+      "time": "08:45",
+      "timestamp": "2024-06-03T08:45:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Good. Always the cold restart on the old ones after an outage, the warm reboot is just wasted time"
+    }
+  ]
+}

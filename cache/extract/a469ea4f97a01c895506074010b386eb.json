@@ -1,0 +1,41 @@
+{
+ "useful": true,
+ "reason": "Expert provides a troubleshooting rule for transmission units where traffic does not recover after SFP replacement despite normal interface status and optical levels, resolved by bouncing the interface when counters are at zero.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On older transmission units, if traffic fails to recover after SFP replacement while interface status is up and alarms are cleared, check if traffic counters are zero. If so, bouncing the interface restores traffic.",
+   "device_mentions": [
+    "TRN-042"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "SFP_REPLACEMENT"
+   ],
+   "symptoms": [
+    "TRAFFIC_COUNTERS_ZERO",
+    "INTERFACE_UP",
+    "OPTICAL_LEVELS_NORMAL",
+    "ALARMS_CLEARED"
+   ],
+   "actions": [
+    "CHECK_TRAFFIC_COUNTERS",
+    "BOUNCE_INTERFACE"
+   ],
+   "avoid": [
+    "REPLACE_SFP",
+    "REBOOT_UNIT"
+   ],
+   "outcome": "unknown",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Applies when interface is UP, optical levels are OK, and alarms are cleared, but traffic counters remain at zero."
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T001-1",
+   "relation": "same_knowledge",
+   "firmware_below": null,
+   "reason": "The new tip repeats the exact same troubleshooting rule and resolution for the same device."
+  }
+ ]
+}

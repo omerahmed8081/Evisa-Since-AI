@@ -1,0 +1,30 @@
+{
+ "useful": true,
+ "reason": "Expert explains that nightly CPU spikes on aggregation routers are caused by the backup job and are normal.",
+ "knowledge": [
+  {
+   "knowledge_type": "known_false_alarm",
+   "summary": "Nightly CPU spikes lasting around 14 minutes on aggregation routers are caused by the scheduled backup job and can be ignored unless exceeding 95% for more than 10 minutes.",
+   "device_mentions": [
+    "AGG-003"
+   ],
+   "node_type": "aggregation_router",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "HIGH_CPU"
+   ],
+   "actions": [],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Antti Aalto",
+   "source_message_seqs": [
+    4
+   ],
+   "confirmed_at_seq": 5,
+   "details": "Threshold for concern is CPU over 95% for more than 10 minutes."
+  }
+ ]
+}

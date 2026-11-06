@@ -1,0 +1,75 @@
+{
+  "thread_id": "T014",
+  "channel": "teams",
+  "date": "2025-06-30",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:40",
+      "timestamp": "2025-06-30T09:40:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Mikko, TRN-015 Kittilä. Swapped the SFP, link is up, no alarms, but no traffic. Erkki is on holiday, any ideas?"
+    },
+    {
+      "seq": 2,
+      "time": "09:42",
+      "timestamp": "2025-06-30T09:42:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Just reboot the unit, that usually sorts it out"
+    },
+    {
+      "seq": 3,
+      "time": "09:43",
+      "timestamp": "2025-06-30T09:43:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "The whole node? That takes everything down"
+    },
+    {
+      "seq": 4,
+      "time": "09:43",
+      "timestamp": "2025-06-30T09:43:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Yeah takes maybe 20 min but it resets everything"
+    },
+    {
+      "seq": 5,
+      "time": "09:45",
+      "timestamp": "2025-06-30T09:45:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Ok rebooting"
+    },
+    {
+      "seq": 6,
+      "time": "10:08",
+      "timestamp": "2025-06-30T10:08:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Back up after 20 min. Counters still zero on that port 😩 and NOC is asking why the whole site dropped"
+    },
+    {
+      "seq": 7,
+      "time": "10:10",
+      "timestamp": "2025-06-30T10:10:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Hmm, so that didn't help. No idea then, sorry. Maybe wait for Erkki"
+    }
+  ]
+}

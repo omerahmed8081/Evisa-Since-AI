@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert explains that transmission nodes temporarily show an unknown module status after a hot swap until the inventory refresh completes.",
+ "knowledge": [
+  {
+   "knowledge_type": "known_false_alarm",
+   "summary": "On transmission nodes, a newly hot-swapped line module appears as an unknown module until the inventory refresh completes; wait about 3 minutes before taking action.",
+   "device_mentions": [
+    "TRN-101"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "MODULE_HOT_SWAP"
+   ],
+   "symptoms": [
+    "MODULE_UNKNOWN"
+   ],
+   "actions": [
+    "WAIT_INVENTORY_REFRESH"
+   ],
+   "avoid": [
+    "RESEAT_MODULE"
+   ],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Inventory refresh takes approximately 3 minutes. If still unknown after 5 minutes, reseat once."
+  }
+ ]
+}

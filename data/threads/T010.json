@@ -1,0 +1,59 @@
+{
+  "thread_id": "T010",
+  "channel": "teams",
+  "date": "2024-03-19",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:20",
+      "timestamp": "2024-03-19T08:20:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Antti, AGG-003 had a CPU spike at 02:00 again, 88%. Third night this week. Anything to worry about?"
+    },
+    {
+      "seq": 2,
+      "time": "08:23",
+      "timestamp": "2024-03-19T08:23:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "How long did it last?"
+    },
+    {
+      "seq": 3,
+      "time": "08:23",
+      "timestamp": "2024-03-19T08:23:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "About 14 min"
+    },
+    {
+      "seq": 4,
+      "time": "08:25",
+      "timestamp": "2024-03-19T08:25:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "That's the nightly config backup job. Normal on these. Ignore it unless it goes over 95% for more than 10 minutes"
+    },
+    {
+      "seq": 5,
+      "time": "08:25",
+      "timestamp": "2024-03-19T08:25:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Ok, I'll put that in the shift log 👍"
+    }
+  ]
+}

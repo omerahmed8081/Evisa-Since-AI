@@ -1,0 +1,67 @@
+{
+  "thread_id": "T011",
+  "channel": "teams",
+  "date": "2025-02-03",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "10:30",
+      "timestamp": "2025-02-03T10:30:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Moi Sanna, BTS-261 menetti GPS-synkan yöllä. Lunta tuli paljon. Antenni näyttää ehjältä"
+    },
+    {
+      "seq": 2,
+      "time": "10:32",
+      "timestamp": "2025-02-03T10:32:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Tarkista GPS-antennin lämmittimen sulake. Lumi ja jää kertyy kupuun jos lämmitin ei toimi"
+    },
+    {
+      "seq": 3,
+      "time": "10:38",
+      "timestamp": "2025-02-03T10:38:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Sulake palanut 🔥"
+    },
+    {
+      "seq": 4,
+      "time": "10:39",
+      "timestamp": "2025-02-03T10:39:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Vaihda se, synkka palaa yleensä parissa minuutissa"
+    },
+    {
+      "seq": 5,
+      "time": "10:51",
+      "timestamp": "2025-02-03T10:51:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Uus sulake, sync ok taas 👍"
+    },
+    {
+      "seq": 6,
+      "time": "10:52",
+      "timestamp": "2025-02-03T10:52:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Hyvä 👌"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+google-genai
+neo4j
+pydantic>=2
+python-dotenv

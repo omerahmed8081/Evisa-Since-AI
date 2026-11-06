@@ -1,0 +1,59 @@
+{
+  "thread_id": "T016",
+  "channel": "teams",
+  "date": "2026-03-02",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "13:10",
+      "timestamp": "2026-03-02T13:10:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Sanna, power cut in Muonio last night. BTS-210 came back by itself, didn't need the cold restart this time"
+    },
+    {
+      "seq": 2,
+      "time": "13:12",
+      "timestamp": "2026-03-02T13:12:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Yes! It was upgraded to 2.6 last month. 2.6 fixes the baseband not recovering after a power outage"
+    },
+    {
+      "seq": 3,
+      "time": "13:13",
+      "timestamp": "2026-03-02T13:13:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "So no more cold restarts?"
+    },
+    {
+      "seq": 4,
+      "time": "13:14",
+      "timestamp": "2026-03-02T13:14:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Only on the old ones still below 2.6. BTS-233 in Kolari is still on the old software, there you still need the cold restart"
+    },
+    {
+      "seq": 5,
+      "time": "13:15",
+      "timestamp": "2026-03-02T13:15:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Ok good to know 👍"
+    }
+  ]
+}

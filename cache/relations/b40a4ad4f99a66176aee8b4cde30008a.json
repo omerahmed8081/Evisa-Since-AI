@@ -1,0 +1,28 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E001-1",
+   "relation": "same_knowledge",
+   "firmware_below": null,
+   "reason": "The new tip repeats the same fix of bouncing the interface when traffic counters are zero."
+  },
+  {
+   "existing_id": "T001-1",
+   "relation": "same_knowledge",
+   "firmware_below": null,
+   "reason": "The new tip confirms the same interface bounce procedure for zero traffic counters."
+  },
+  {
+   "existing_id": "T002-1",
+   "relation": "same_knowledge",
+   "firmware_below": null,
+   "reason": "The new tip reinforces the same troubleshooting rule for older transmission equipment."
+  },
+  {
+   "existing_id": "T009-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The existing tip deals with cleaning dirty fiber connectors for low RX levels, whereas the new tip deals with zero traffic counters."
+  }
+ ]
+}

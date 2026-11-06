@@ -1,0 +1,83 @@
+{
+  "thread_id": "C001",
+  "channel": "call",
+  "date": "2025-12-10",
+  "language": "fi",
+  "note": "Synthetic phone call transcript (spoken turns), based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "02:40",
+      "timestamp": "2025-12-10T02:40:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo moi Sanna, sori että soitan tähän aikaan. Eli Muoniossa BTS-210, oli sähkökatko ja nyt solu ei nouse."
+    },
+    {
+      "seq": 2,
+      "time": "02:40",
+      "timestamp": "2025-12-10T02:40:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Joo joo, ei se mitään. Ootko jo buutannut sen?"
+    },
+    {
+      "seq": 3,
+      "time": "02:41",
+      "timestamp": "2025-12-10T02:41:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "En vielä, olin just tekemässä rebootin sieltä valikosta."
+    },
+    {
+      "seq": 4,
+      "time": "02:41",
+      "timestamp": "2025-12-10T02:41:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Älä tee sitä. Eli noissa vanhoissa tukiasemissa tavallinen reboot ei auta. Tee baseband-yksikölle kylmäkäynnistys, virrat kokonaan pois, odota puoli minuuttia ja takaisin päälle."
+    },
+    {
+      "seq": 5,
+      "time": "02:42",
+      "timestamp": "2025-12-10T02:42:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Okei, eli virrat pois siitä baseband-yksiköstä... joo, hetki."
+    },
+    {
+      "seq": 6,
+      "time": "02:47",
+      "timestamp": "2025-12-10T02:47:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Noni, nyt näyttää hyvältä. Joo, solu on ylhäällä."
+    },
+    {
+      "seq": 7,
+      "time": "02:47",
+      "timestamp": "2025-12-10T02:47:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Hyvä. Sama juttu oli Kolarissa viime kesänä, se toimii aina noissa vanhoissa."
+    },
+    {
+      "seq": 8,
+      "time": "02:48",
+      "timestamp": "2025-12-10T02:48:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Okei cool, kiitti. Hyvää yötä!"
+    }
+  ]
+}

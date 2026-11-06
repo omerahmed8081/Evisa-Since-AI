@@ -1,0 +1,63 @@
+{
+  "thread_id": "T020",
+  "channel": "teams",
+  "date": "2025-03-03",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:05",
+      "timestamp": "2025-03-03T14:05:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Moi, voisko joku vaihtaa päivystysvuoron 15.3? Mulla on häät"
+    },
+    {
+      "seq": 2,
+      "time": "14:08",
+      "timestamp": "2025-03-03T14:08:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Mä voin ottaa sen jos sä otat mun 22.3"
+    },
+    {
+      "seq": 3,
+      "time": "14:09",
+      "timestamp": "2025-03-03T14:09:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Diili 👍"
+    },
+    {
+      "seq": 4,
+      "time": "14:11",
+      "timestamp": "2025-03-03T14:11:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Päivitän päivystyslistan. Muistakaa merkata tunnit järjestelmään"
+    },
+    {
+      "seq": 5,
+      "time": "14:12",
+      "timestamp": "2025-03-03T14:12:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo joo 😄"
+    }
+  ]
+}

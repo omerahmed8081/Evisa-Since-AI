@@ -1,0 +1,1330 @@
+[
+  {
+    "thread_id": "T001",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older transmission nodes, after SFP replacement the interface can be UP with normal optics but zero traffic; this is a forwarding-state issue, fixed by disabling and re-enabling the interface.",
+      "observed_on": [
+        "TRN-042"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "OPTICAL_LEVELS_NORMAL",
+        "ALARMS_CLEARED",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "CHECK_TRAFFIC_COUNTERS",
+        "BOUNCE_INTERFACE"
+      ],
+      "avoid": [
+        "REPLACE_SFP",
+        "REBOOT_UNIT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        6,
+        8,
+        9,
+        10
+      ],
+      "valid_from": "2025-03-12T09:25:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Elisa's original example, copied word for word."
+  },
+  {
+    "thread_id": "E001",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older transmission nodes, after SFP replacement the interface can be UP with normal optics but zero traffic; this is a forwarding-state issue, fixed by disabling and re-enabling the interface.",
+      "observed_on": [
+        "TRN-042"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "OPTICAL_LEVELS_NORMAL",
+        "ALARMS_CLEARED",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "CHECK_TRAFFIC_COUNTERS",
+        "BOUNCE_INTERFACE"
+      ],
+      "avoid": [
+        "REPLACE_SFP",
+        "REBOOT_UNIT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2025-03-12T14:02:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "same_knowledge_as",
+        "target": "T001"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T001",
+        "action": "merge",
+        "add_source": "E001"
+      }
+    ],
+    "notes": "Elisa's original email, copied word for word. Same knowledge as T001, second source."
+  },
+  {
+    "thread_id": "T002",
+    "category": "reinforcing",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older transmission nodes, after SFP replacement the interface can be UP with normal optics but zero traffic; this is a forwarding-state issue, fixed by disabling and re-enabling the interface.",
+      "observed_on": [
+        "TRN-077"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "OPTICAL_LEVELS_NORMAL",
+        "ALARMS_CLEARED",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "CHECK_TRAFFIC_COUNTERS",
+        "BOUNCE_INTERFACE"
+      ],
+      "avoid": [
+        "REPLACE_SFP",
+        "REBOOT_UNIT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        4,
+        7,
+        8,
+        9
+      ],
+      "valid_from": "2025-09-04T10:14:00+03:00"
+    },
+    "relations": [
+      {
+        "type": "reinforces",
+        "target": "T001"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T001",
+        "action": "merge",
+        "add_source": "T002",
+        "add_observed_on": [
+          "TRN-077"
+        ]
+      }
+    ],
+    "notes": "Same fix on another older transmission node (TRN-077, then on 3.2.1). 'Kolarissa keväällä' refers to T001."
+  },
+  {
+    "thread_id": "E006",
+    "category": "reinforcing",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older transmission nodes, after SFP replacement the interface can be UP with normal optics but zero traffic; this is a forwarding-state issue, fixed by disabling and re-enabling the interface.",
+      "observed_on": [
+        "TRN-031"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "OPTICAL_LEVELS_NORMAL",
+        "ALARMS_CLEARED",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "CHECK_TRAFFIC_COUNTERS",
+        "BOUNCE_INTERFACE"
+      ],
+      "avoid": [
+        "REPLACE_SFP",
+        "REBOOT_UNIT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2026-02-16T10:20:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "reinforces",
+        "target": "T001"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T001",
+        "action": "merge",
+        "add_source": "E006",
+        "add_observed_on": [
+          "TRN-031"
+        ]
+      }
+    ],
+    "notes": "Finnish email. Mentions TRN-042 and TRN-077 as earlier cases; observed_on is the new device only."
+  },
+  {
+    "thread_id": "E002",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On aggregation routers, CRC errors on an uplink right after cable work are almost always caused by the patch cable; replace the patch cable before replacing the line card.",
+      "observed_on": [
+        "AGG-012"
+      ],
+      "scope": {
+        "node_type": "aggregation_router",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "PATCH_CABLE_CHANGE"
+      ],
+      "symptoms": [
+        "CRC_ERRORS"
+      ],
+      "actions": [
+        "REPLACE_PATCH_CABLE"
+      ],
+      "avoid": [
+        "REPLACE_LINE_CARD"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Antti Aalto",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2024-11-20T13:30:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "'old and new' -> no age limit, so AGG-003 (installed 2020) is in scope."
+  },
+  {
+    "thread_id": "T012",
+    "category": "reinforcing",
+    "useful": true,
+    "language": "mixed",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On aggregation routers, CRC errors on an uplink right after cable work are almost always caused by the patch cable; replace the patch cable before replacing the line card.",
+      "observed_on": [
+        "AGG-003"
+      ],
+      "scope": {
+        "node_type": "aggregation_router",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "MAINTENANCE",
+        "PATCH_CABLE_CHANGE"
+      ],
+      "symptoms": [
+        "CRC_ERRORS"
+      ],
+      "actions": [
+        "REPLACE_PATCH_CABLE"
+      ],
+      "avoid": [
+        "REPLACE_LINE_CARD"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Antti Aalto",
+      "source_message_seqs": [
+        4,
+        5,
+        6
+      ],
+      "valid_from": "2025-01-28T08:41:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "reinforces",
+        "target": "E002"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "E002",
+        "action": "merge",
+        "add_source": "T012",
+        "add_observed_on": [
+          "AGG-003"
+        ]
+      }
+    ],
+    "notes": "Mixed Finnish/English. 'Kajaani last autumn' refers to E002."
+  },
+  {
+    "thread_id": "T004",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older base stations the cell can stay down after a power outage; a normal (warm) reboot does not help, a cold restart of the baseband unit does.",
+      "observed_on": [
+        "BTS-233"
+      ],
+      "scope": {
+        "node_type": "base_station",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "POWER_OUTAGE"
+      ],
+      "symptoms": [
+        "CELL_DOWN"
+      ],
+      "actions": [
+        "COLD_RESTART_BASEBAND"
+      ],
+      "avoid": [
+        "WARM_REBOOT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Sanna Siirto",
+      "source_message_seqs": [
+        4,
+        5,
+        7,
+        8
+      ],
+      "valid_from": "2024-06-03T08:44:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "BTS-233 on firmware 2.4.1."
+  },
+  {
+    "thread_id": "C001",
+    "category": "reinforcing",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On older base stations the cell can stay down after a power outage; a normal (warm) reboot does not help, a cold restart of the baseband unit does.",
+      "observed_on": [
+        "BTS-210"
+      ],
+      "scope": {
+        "node_type": "base_station",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "POWER_OUTAGE"
+      ],
+      "symptoms": [
+        "CELL_DOWN"
+      ],
+      "actions": [
+        "COLD_RESTART_BASEBAND"
+      ],
+      "avoid": [
+        "WARM_REBOOT"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Sanna Siirto",
+      "source_message_seqs": [
+        4,
+        6,
+        7
+      ],
+      "valid_from": "2025-12-10T02:47:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "reinforces",
+        "target": "T004"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T004",
+        "action": "merge",
+        "add_source": "C001",
+        "add_observed_on": [
+          "BTS-210"
+        ]
+      }
+    ],
+    "notes": "Night-time phone call. BTS-210 then on 2.4.0. 'Kolarissa viime kesänä' refers to T004."
+  },
+  {
+    "thread_id": "T003",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "When a microwave link flaps during heavy snow or icing, check the radome for ice before touching the radio; clearing the ice restores the link.",
+      "observed_on": [
+        "MW-405"
+      ],
+      "scope": {
+        "node_type": "microwave_link",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "HEAVY_SNOW_ICE"
+      ],
+      "symptoms": [
+        "LINK_FLAPPING"
+      ],
+      "actions": [
+        "CLEAR_ICE_RADOME"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        4,
+        6,
+        7,
+        8
+      ],
+      "valid_from": "2024-01-18T10:38:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Later disputed by T017."
+  },
+  {
+    "thread_id": "T005",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "After the firmware 7.4 upgrade on an aggregation router the LACP bundle can stay down although member links are up; remove and re-add the port-channel member configuration.",
+      "observed_on": [
+        "AGG-007"
+      ],
+      "scope": {
+        "node_type": "aggregation_router",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "FIRMWARE_UPGRADE"
+      ],
+      "symptoms": [
+        "LACP_BUNDLE_DOWN",
+        "INTERFACE_UP"
+      ],
+      "actions": [
+        "READD_PORT_CHANNEL_MEMBER"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Occurs after upgrading to firmware 7.4; no reboot needed.",
+      "author": "Antti Aalto",
+      "source_message_seqs": [
+        4,
+        6,
+        7
+      ],
+      "valid_from": "2025-05-22T08:26:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Upgrade event 2025-05-21 23:30."
+  },
+  {
+    "thread_id": "E003",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "The firmware 1.4 upgrade on microwave links resets ATPC to off, so links fade in rain or snow; re-enable ATPC after every firmware upgrade.",
+      "observed_on": [
+        "MW-401",
+        "MW-405",
+        "MW-412"
+      ],
+      "scope": {
+        "node_type": "microwave_link",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "FIRMWARE_UPGRADE"
+      ],
+      "symptoms": [
+        "LINK_FADING"
+      ],
+      "actions": [
+        "ENABLE_ATPC"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Check ATPC after every firmware upgrade; not in the upgrade checklist.",
+      "author": "Jari Jänne",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2023-10-30T10:05:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Expert-to-expert email."
+  },
+  {
+    "thread_id": "T006",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "known_false_alarm",
+      "summary": "A battery alarm on a base station after a very cold night is usually false, caused by the rectifier temperature sensor; check the sensor reading before dispatching.",
+      "observed_on": [
+        "BTS-250"
+      ],
+      "scope": {
+        "node_type": "base_station",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "COLD_WEATHER"
+      ],
+      "symptoms": [
+        "BATTERY_ALARM"
+      ],
+      "actions": [
+        "CHECK_TEMP_SENSOR",
+        "NO_DISPATCH_NEEDED"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Sensor showed an impossible -40; battery voltage normal.",
+      "author": "Sanna Siirto",
+      "source_message_seqs": [
+        4,
+        5,
+        6
+      ],
+      "valid_from": "2025-01-09T07:30:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Saved a trip."
+  },
+  {
+    "thread_id": "T007",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "known_false_alarm",
+      "summary": "On transmission nodes with 3.1.x firmware the fan alarm is a known sensor bug; if chassis temperature is normal, no dispatch is needed.",
+      "observed_on": [
+        "TRN-015"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": null,
+        "firmware_below": "3.2",
+        "firmware_at_least": null
+      },
+      "events": [],
+      "symptoms": [
+        "FAN_ALARM"
+      ],
+      "actions": [
+        "CHECK_CHASSIS_TEMP",
+        "NO_DISPATCH_NEEDED"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        2,
+        4
+      ],
+      "valid_from": "2024-08-14T11:19:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "TRN-015 then on 3.1.2."
+  },
+  {
+    "thread_id": "E004",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "mixed",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On transmission nodes a hot-swapped line module shows as 'unknown module' until the inventory refresh (~3 minutes); wait before reseating or replacing it.",
+      "observed_on": [
+        "TRN-101"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "MODULE_HOT_SWAP"
+      ],
+      "symptoms": [
+        "MODULE_UNKNOWN"
+      ],
+      "actions": [
+        "WAIT_INVENTORY_REFRESH"
+      ],
+      "avoid": [
+        "RESEAT_MODULE"
+      ],
+      "outcome": "worked",
+      "details": "Wait ~3 minutes; reseat once only if still unknown after 5 minutes.",
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2025-02-27T15:20:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Mixed Finnish/English email."
+  },
+  {
+    "thread_id": "T008",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "When a microwave link loses alignment after a storm, check the mount bolts first and re-align; the radio does not need replacing.",
+      "observed_on": [
+        "MW-412"
+      ],
+      "scope": {
+        "node_type": "microwave_link",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "STORM"
+      ],
+      "symptoms": [
+        "ALIGNMENT_LOST"
+      ],
+      "actions": [
+        "CHECK_MOUNT_BOLTS",
+        "REALIGN_ANTENNA"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": null,
+      "author": "Jari Jänne",
+      "source_message_seqs": [
+        2,
+        4,
+        5
+      ],
+      "valid_from": "2024-10-02T10:25:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": null
+  },
+  {
+    "thread_id": "T009",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Low optical levels on a transmission node after maintenance are usually a dirty connector; clean both ends with a click-cleaner instead of replacing the SFP.",
+      "observed_on": [
+        "TRN-112"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "MAINTENANCE"
+      ],
+      "symptoms": [
+        "OPTICAL_LEVELS_LOW"
+      ],
+      "actions": [
+        "CLEAN_CONNECTOR"
+      ],
+      "avoid": [
+        "REPLACE_SFP"
+      ],
+      "outcome": "worked",
+      "details": null,
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        4,
+        5,
+        6
+      ],
+      "valid_from": "2025-11-05T10:04:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": null
+  },
+  {
+    "thread_id": "T010",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "known_false_alarm",
+      "summary": "Nightly CPU spikes at 02:00 on aggregation routers are the config-backup job, not a fault; ignore unless above 95% for more than 10 minutes.",
+      "observed_on": [
+        "AGG-003"
+      ],
+      "scope": {
+        "node_type": "aggregation_router",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [],
+      "symptoms": [
+        "HIGH_CPU"
+      ],
+      "actions": [
+        "NO_DISPATCH_NEEDED"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Threshold: >95% for >10 min. Spike at 02:00 = config backup.",
+      "author": "Antti Aalto",
+      "source_message_seqs": [
+        4
+      ],
+      "valid_from": "2024-03-19T08:25:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": null
+  },
+  {
+    "thread_id": "T011",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "When a base station loses GPS sync after snowfall, check the GPS antenna heater fuse; replacing a blown fuse restores sync.",
+      "observed_on": [
+        "BTS-261"
+      ],
+      "scope": {
+        "node_type": "base_station",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "HEAVY_SNOW_ICE"
+      ],
+      "symptoms": [
+        "GPS_SYNC_LOST"
+      ],
+      "actions": [
+        "REPLACE_FUSE"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": null,
+      "author": "Sanna Siirto",
+      "source_message_seqs": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "valid_from": "2025-02-03T10:51:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": null
+  },
+  {
+    "thread_id": "E005",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "hardware_compatibility",
+      "summary": "Older transmission nodes reject the third-party SFPs from the latest spare batch (port says not supported and stays down); use only the approved part SFP-10G-LR-02.",
+      "observed_on": [],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "SFP_NOT_RECOGNISED",
+        "INTERFACE_DOWN"
+      ],
+      "actions": [
+        "USE_APPROVED_PART"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Approved part number SFP-10G-LR-02. Newer transmission nodes accept both.",
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2024-05-07T09:40:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "No device id in the text; events show TRN-056 and TRN-023."
+  },
+  {
+    "thread_id": "T013",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "practical_tip",
+      "summary": "The console port on older transmission nodes runs at 9600 baud, not 115200 as on the newer ones.",
+      "observed_on": [],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [],
+      "symptoms": [],
+      "actions": [
+        "SET_CONSOLE_BAUD_9600"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Newer nodes: 115200.",
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        4,
+        5,
+        6
+      ],
+      "valid_from": "2023-06-12T08:33:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Vague device reference ('one of the old transmission boxes')."
+  },
+  {
+    "thread_id": "T014",
+    "category": "wrong_advice",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Rebooting the whole older transmission node does not fix zero traffic after SFP replacement and causes a ~20 minute site outage.",
+      "observed_on": [
+        "TRN-015"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "ALARMS_CLEARED",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "REBOOT_UNIT"
+      ],
+      "avoid": [],
+      "outcome": "failed",
+      "details": "Reboot took ~20 min and dropped the whole site.",
+      "author": "Mikko Mäkelä",
+      "source_message_seqs": [
+        2,
+        6,
+        7
+      ],
+      "valid_from": "2025-06-30T10:08:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Junior's wrong advice. Backs up T001's avoid list."
+  },
+  {
+    "thread_id": "T015",
+    "category": "wrong_advice",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Replacing the SFP again does not fix zero traffic on an older transmission node when the port is up with normal optics.",
+      "observed_on": [
+        "TRN-031"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "SFP_REPLACEMENT"
+      ],
+      "symptoms": [
+        "INTERFACE_UP",
+        "OPTICAL_LEVELS_NORMAL",
+        "TRAFFIC_COUNTERS_ZERO"
+      ],
+      "actions": [
+        "REPLACE_SFP"
+      ],
+      "avoid": [],
+      "outcome": "failed",
+      "details": null,
+      "author": "Tiina Tuominen",
+      "source_message_seqs": [
+        2,
+        4
+      ],
+      "valid_from": "2025-07-15T11:41:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Ends without a fix. Resolved months later in E006."
+  },
+  {
+    "thread_id": "T018",
+    "category": "wrong_advice",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Removing and re-adding port-channel members does not bring up a down LACP bundle on older aggregation routers (firmware 7.2); that fix only applies after the 7.4 upgrade.",
+      "observed_on": [
+        "AGG-012"
+      ],
+      "scope": {
+        "node_type": "aggregation_router",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [],
+      "symptoms": [
+        "LACP_BUNDLE_DOWN",
+        "INTERFACE_UP"
+      ],
+      "actions": [
+        "READD_PORT_CHANNEL_MEMBER"
+      ],
+      "avoid": [],
+      "outcome": "failed",
+      "details": "AGG-012 on 7.2.0.",
+      "author": "Antti Aalto",
+      "source_message_seqs": [
+        2,
+        3,
+        6
+      ],
+      "valid_from": "2025-08-11T09:31:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "v4 amendment 4: the wrong fix is the T005 fix."
+  },
+  {
+    "thread_id": "E007",
+    "category": "narrows_scope",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Firmware 3.4 fixes the forwarding-state problem after SFP replacement on older transmission nodes; the interface disable/enable workaround is only needed below 3.4.",
+      "observed_on": [
+        "TRN-077",
+        "TRN-015"
+      ],
+      "scope": {
+        "node_type": "transmission",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": "3.4"
+      },
+      "events": [
+        "SFP_REPLACEMENT",
+        "FIRMWARE_UPGRADE"
+      ],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Fixed in firmware 3.4; TRN-042 and TRN-031 still below 3.4.",
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2026-04-08T10:15:00+03:00"
+    },
+    "relations": [
+      {
+        "type": "narrows_scope",
+        "target": "T001"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T001",
+        "set": {
+          "scope.firmware_below": "3.4"
+        },
+        "valid_to": null
+      }
+    ],
+    "notes": "Bounce fix stays valid for TRN-042, TRN-031, TRN-023, TRN-056; no longer for TRN-077, TRN-015."
+  },
+  {
+    "thread_id": "T016",
+    "category": "narrows_scope",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Base station firmware 2.6 fixes the baseband not recovering after a power outage; the cold-restart workaround is only needed below 2.6.",
+      "observed_on": [
+        "BTS-210"
+      ],
+      "scope": {
+        "node_type": "base_station",
+        "installed_before": "2020-01-01",
+        "firmware_below": null,
+        "firmware_at_least": "2.6"
+      },
+      "events": [
+        "POWER_OUTAGE",
+        "FIRMWARE_UPGRADE"
+      ],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Fixed in firmware 2.6; BTS-233 still below 2.6.",
+      "author": "Sanna Siirto",
+      "source_message_seqs": [
+        1,
+        2,
+        4
+      ],
+      "valid_from": "2026-03-02T13:12:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "narrows_scope",
+        "target": "T004"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T004",
+        "set": {
+          "scope.firmware_below": "2.6"
+        },
+        "valid_to": null
+      }
+    ],
+    "notes": "Cold restart stays valid for BTS-233, BTS-205, BTS-244."
+  },
+  {
+    "thread_id": "T017",
+    "category": "conflicting",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "Jari claims microwave link drops in hard frost are caused by the outdoor unit power supply, not ice, and that the PSU should be replaced; not confirmed.",
+      "observed_on": [
+        "MW-405"
+      ],
+      "scope": {
+        "node_type": "microwave_link",
+        "installed_before": null,
+        "firmware_below": null,
+        "firmware_at_least": null
+      },
+      "events": [
+        "COLD_WEATHER"
+      ],
+      "symptoms": [
+        "LINK_DOWN"
+      ],
+      "actions": [
+        "REPLACE_PSU"
+      ],
+      "avoid": [],
+      "outcome": "unknown",
+      "details": "-32 C, no ice on radome.",
+      "author": "Jari Jänne",
+      "source_message_seqs": [
+        2,
+        4
+      ],
+      "valid_from": "2024-01-25T21:46:00+02:00"
+    },
+    "relations": [
+      {
+        "type": "conflicts_with",
+        "target": "T003"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T003",
+        "set": {
+          "status": "disputed"
+        }
+      }
+    ],
+    "notes": "Evening (21:40). T017's own assertion is also disputed."
+  },
+  {
+    "thread_id": "T019",
+    "category": "noise",
+    "useful": false,
+    "language": "mixed",
+    "knowledge": null,
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Christmas party planning; mentions AGG-007 jokingly."
+  },
+  {
+    "thread_id": "T020",
+    "category": "noise",
+    "useful": false,
+    "language": "fi",
+    "knowledge": null,
+    "relations": [],
+    "expected_effects": [],
+    "notes": "On-call shift swap."
+  },
+  {
+    "thread_id": "T021",
+    "category": "noise",
+    "useful": false,
+    "language": "en",
+    "knowledge": null,
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Status update only."
+  },
+  {
+    "thread_id": "C002",
+    "category": "noise",
+    "useful": false,
+    "language": "en",
+    "knowledge": null,
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Speculation only, no fix, no conclusion."
+  },
+  {
+    "thread_id": "E008",
+    "category": "access_info",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "access_info",
+      "summary": "The private road to the TRN-042 / BTS-233 site near Kolari has a locked barrier; the key is in a lockbox at the neighbouring farm (red house before the barrier), code 2580.",
+      "observed_on": [
+        "TRN-042",
+        "BTS-233"
+      ],
+      "scope": null,
+      "events": [],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "unknown",
+      "details": "Lockbox code 2580; red house right before the barrier; return the key.",
+      "author": "Tiina Tuominen",
+      "source_message_seqs": [
+        1
+      ],
+      "valid_from": "2024-11-20T16:05:00+02:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Elisa's locked-barrier example written as an email."
+  },
+  {
+    "thread_id": "T022",
+    "category": "access_info",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "knowledge_type": "access_info",
+      "summary": "BTS-210 in Muonio: fence gate code 4471; the padlock sticks, lift the gate slightly to open it.",
+      "observed_on": [
+        "BTS-210"
+      ],
+      "scope": null,
+      "events": [],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "unknown",
+      "details": "Gate code 4471. Padlock sticks: lift the gate slightly.",
+      "author": "Pekka Pylväs",
+      "source_message_seqs": [
+        2,
+        3
+      ],
+      "valid_from": "2024-06-03T15:22:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "notes": "Superseded by T023."
+  },
+  {
+    "thread_id": "T023",
+    "category": "superseding",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "knowledge_type": "access_info",
+      "summary": "BTS-210 in Muonio: the gate code changed to 9035 (old code no longer works); the padlock still sticks, lift the gate slightly.",
+      "observed_on": [
+        "BTS-210"
+      ],
+      "scope": null,
+      "events": [],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "unknown",
+      "details": "Gate code 9035 (replaces 4471). Padlock still sticks.",
+      "author": "Tiina Tuominen",
+      "source_message_seqs": [
+        1,
+        3
+      ],
+      "valid_from": "2025-10-20T09:05:00+03:00"
+    },
+    "relations": [
+      {
+        "type": "supersedes",
+        "target": "T022"
+      }
+    ],
+    "expected_effects": [
+      {
+        "target": "T022",
+        "valid_to": "2025-10-20T09:05:00+03:00"
+      }
+    ],
+    "notes": "v4 amendment 1: restates the padlock tip so superseding T022 loses nothing."
+  }
+]

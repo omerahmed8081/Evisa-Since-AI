@@ -1,0 +1,55 @@
+{
+  "thread_id": "T023",
+  "channel": "teams",
+  "date": "2025-10-20",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:05",
+      "timestamp": "2025-10-20T09:05:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Heads up: the gate code at BTS-210 in Muonio has changed. New code is 9035, the old one doesn't work anymore"
+    },
+    {
+      "seq": 2,
+      "time": "09:07",
+      "timestamp": "2025-10-20T09:07:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Ok thanks. Is the padlock still the sticky one?"
+    },
+    {
+      "seq": 3,
+      "time": "09:08",
+      "timestamp": "2025-10-20T09:08:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Yes, same padlock, you still need to lift the gate a bit 🙄"
+    },
+    {
+      "seq": 4,
+      "time": "09:08",
+      "timestamp": "2025-10-20T09:08:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Noted 👍"
+    }
+  ]
+}

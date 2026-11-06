@@ -1,0 +1,75 @@
+{
+  "thread_id": "C002",
+  "channel": "call",
+  "date": "2025-09-22",
+  "language": "en",
+  "note": "Synthetic phone call transcript (spoken turns), based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "13:05",
+      "timestamp": "2025-09-22T13:05:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Hey Jari, yeah, quick one. MW-401 in Sodankylä is showing some errors since the weekend, not down though."
+    },
+    {
+      "seq": 2,
+      "time": "13:05",
+      "timestamp": "2025-09-22T13:05:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Okay so... errors how, like constant or in bursts?"
+    },
+    {
+      "seq": 3,
+      "time": "13:06",
+      "timestamp": "2025-09-22T13:06:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Bursts I think. I haven't been out there yet."
+    },
+    {
+      "seq": 4,
+      "time": "13:06",
+      "timestamp": "2025-09-22T13:06:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Hmm. Could be the fibre to the indoor unit maybe? I don't know, never seen that on that link."
+    },
+    {
+      "seq": 5,
+      "time": "13:07",
+      "timestamp": "2025-09-22T13:07:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Yeah, or the weather? It rained a lot."
+    },
+    {
+      "seq": 6,
+      "time": "13:07",
+      "timestamp": "2025-09-22T13:07:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Maybe, maybe. Hard to say without looking. Let's see if it gets worse."
+    },
+    {
+      "seq": 7,
+      "time": "13:08",
+      "timestamp": "2025-09-22T13:08:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Okay, yeah. I'll keep an eye on it."
+    }
+  ]
+}

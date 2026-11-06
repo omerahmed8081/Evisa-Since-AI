@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip deals with physical mount bolts after a storm, whereas the existing tip deals with ATPC settings after a firmware upgrade."
+  },
+  {
+   "existing_id": "T003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip addresses mount bolts loosening after a storm, while the existing tip addresses ice buildup on the radome during snow."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+Thread-ID: E005
+Date: 2024-05-07T09:40:00+03:00
+From: Erkki Expert <Network Expert>
+To: Antti Aalto <Network Expert>
+Subject: Third-party SFPs on the old transmission nodes
+
+Hi Antti,
+
+FYI since your team shares the spare stock with us. The older transmission nodes refuse the third-party SFPs from the latest spare batch. The port just says the module is not supported and stays down.
+
+We wasted two site visits on this last week. Only use the approved part, SFP-10G-LR-02. The newer transmission nodes accept both.
+
+I asked logistics to label the shelf.
+
+Regards,
+Erkki

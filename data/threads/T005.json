@@ -1,0 +1,83 @@
+{
+  "thread_id": "T005",
+  "channel": "teams",
+  "date": "2025-05-22",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:15",
+      "timestamp": "2025-05-22T08:15:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Antti, AGG-007 Rovaniemi. Firmware was upgraded to 7.4 last night and the LACP bundle to the core is still down this morning"
+    },
+    {
+      "seq": 2,
+      "time": "08:17",
+      "timestamp": "2025-05-22T08:17:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Physical links up?"
+    },
+    {
+      "seq": 3,
+      "time": "08:17",
+      "timestamp": "2025-05-22T08:17:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Yes, both members up, optics fine. Bundle just won't form"
+    },
+    {
+      "seq": 4,
+      "time": "08:19",
+      "timestamp": "2025-05-22T08:19:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Known thing with 7.4. Remove the member ports from the port-channel config and add them back. The upgrade leaves them in a weird state"
+    },
+    {
+      "seq": 5,
+      "time": "08:20",
+      "timestamp": "2025-05-22T08:20:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "No reboot needed?"
+    },
+    {
+      "seq": 6,
+      "time": "08:20",
+      "timestamp": "2025-05-22T08:20:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "No, just the config"
+    },
+    {
+      "seq": 7,
+      "time": "08:26",
+      "timestamp": "2025-05-22T08:26:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Done, bundle is up and passing traffic 👍"
+    },
+    {
+      "seq": 8,
+      "time": "08:27",
+      "timestamp": "2025-05-22T08:27:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Good. Probably the same on the other routers when they get 7.4"
+    }
+  ]
+}

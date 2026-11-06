@@ -1,0 +1,99 @@
+{
+  "thread_id": "T002",
+  "channel": "teams",
+  "date": "2025-09-04",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "10:05",
+      "timestamp": "2025-09-04T10:05:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Moi Erkki, oon Muoniossa TRN-077:llä. Vaihdoin SFP:n, linkki on ylhäällä ja hälyt poissa mut liikenne ei kulje 🤔"
+    },
+    {
+      "seq": 2,
+      "time": "10:07",
+      "timestamp": "2025-09-04T10:07:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Moi. Onko tää niitä vanhoja laitteita?"
+    },
+    {
+      "seq": 3,
+      "time": "10:07",
+      "timestamp": "2025-09-04T10:07:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo, 2018 asennettu jos muistan oikein"
+    },
+    {
+      "seq": 4,
+      "time": "10:08",
+      "timestamp": "2025-09-04T10:08:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Katso kasvaako liikennelaskurit. Jos ne on nollassa vaikka portti on ylhäällä, niin se on sama juttu kuin Kolarissa keväällä"
+    },
+    {
+      "seq": 5,
+      "time": "10:10",
+      "timestamp": "2025-09-04T10:10:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Laskurit nollassa joo. RX taso ok"
+    },
+    {
+      "seq": 6,
+      "time": "10:11",
+      "timestamp": "2025-09-04T10:11:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Laitanko vielä uuden SFP:n?"
+    },
+    {
+      "seq": 7,
+      "time": "10:11",
+      "timestamp": "2025-09-04T10:11:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Ei tarvii. Ota portti alas, odota hetki ja nosta takaisin. Älä buuttaa koko laitetta"
+    },
+    {
+      "seq": 8,
+      "time": "10:14",
+      "timestamp": "2025-09-04T10:14:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Done. Liikenne kulkee taas 👍"
+    },
+    {
+      "seq": 9,
+      "time": "10:15",
+      "timestamp": "2025-09-04T10:15:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Hyvä. Noissa vanhoissa forwarding jää välillä jumiin optiikan vaihdon jälkeen"
+    },
+    {
+      "seq": 10,
+      "time": "10:15",
+      "timestamp": "2025-09-04T10:15:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Ok, laitan korvan taakse 😅"
+    }
+  ]
+}

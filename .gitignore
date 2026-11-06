@@ -1,0 +1,6 @@
+.env
+.venv/
+__pycache__/
+.DS_Store
+# Neo4j credentials file downloaded from Aura (contains the database password)
+Neo4j-*.txt

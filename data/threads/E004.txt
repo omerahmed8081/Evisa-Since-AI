@@ -1,0 +1,16 @@
+Thread-ID: E004
+Date: 2025-02-27T15:20:00+02:00
+From: Erkki Expert <Network Expert>
+To: Laura Lahti <Field Engineer>
+Subject: RE: TRN-101 unknown module after swap
+
+Moi Laura,
+
+That's normal on the transmission nodes, ei hätää. After a hot swap the new line module shows as "unknown module" until the inventory refresh runs, se kestää noin 3 minuuttia.
+
+So wait ~3 min before you reseat or replace anything. Jos se on vielä unknown viiden minuutin jälkeen, then reseat it once.
+
+Hyvä että se nousi lopulta itsestään.
+
+Terveisin,
+Erkki

@@ -1,0 +1,51 @@
+{
+  "thread_id": "T021",
+  "channel": "teams",
+  "date": "2025-04-16",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:40",
+      "timestamp": "2025-04-16T14:40:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "All done at BTS-210, heading back"
+    },
+    {
+      "seq": 2,
+      "time": "14:41",
+      "timestamp": "2025-04-16T14:41:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "ok thanks"
+    },
+    {
+      "seq": 3,
+      "time": "14:41",
+      "timestamp": "2025-04-16T14:41:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Road is icy, back around 16"
+    },
+    {
+      "seq": 4,
+      "time": "14:42",
+      "timestamp": "2025-04-16T14:42:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "👍 drive safe"
+    }
+  ]
+}

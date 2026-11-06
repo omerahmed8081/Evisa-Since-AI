@@ -1,0 +1,83 @@
+{
+  "thread_id": "T003",
+  "channel": "teams",
+  "date": "2024-01-18",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "10:10",
+      "timestamp": "2024-01-18T10:10:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Moi Erkki, MW-405 Kittilässä pätkii taas. Lunta tullu koko yön"
+    },
+    {
+      "seq": 2,
+      "time": "10:12",
+      "timestamp": "2024-01-18T10:12:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Ootko jo paikan päällä?"
+    },
+    {
+      "seq": 3,
+      "time": "10:12",
+      "timestamp": "2024-01-18T10:12:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo, mastolla nyt"
+    },
+    {
+      "seq": 4,
+      "time": "10:13",
+      "timestamp": "2024-01-18T10:13:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Katso ensin onko antennin suojakuvussa jäätä. Älä koske radioon ennen sitä"
+    },
+    {
+      "seq": 5,
+      "time": "10:20",
+      "timestamp": "2024-01-18T10:20:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo, paksu jääkerros radomin päällä 🥶"
+    },
+    {
+      "seq": 6,
+      "time": "10:21",
+      "timestamp": "2024-01-18T10:21:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Putsaa se pois. Jää syö signaalin, radio on yleensä ihan ok"
+    },
+    {
+      "seq": 7,
+      "time": "10:38",
+      "timestamp": "2024-01-18T10:38:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Putsattu. Linkki pysyy nyt ylhäällä 👍"
+    },
+    {
+      "seq": 8,
+      "time": "10:39",
+      "timestamp": "2024-01-18T10:39:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Hyvä. Talvella aina eka radomi"
+    }
+  ]
+}

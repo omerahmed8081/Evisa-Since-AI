@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E001-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip addresses optical RX levels and fiber cleaning, whereas the existing tip deals with traffic counters and bouncing interfaces after SFP replacement."
+  }
+ ]
+}

@@ -1,0 +1,67 @@
+{
+  "thread_id": "T013",
+  "channel": "teams",
+  "date": "2023-06-12",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:30",
+      "timestamp": "2023-06-12T08:30:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Erkki, I'm at one of the old transmission boxes, console cable connected but I only get garbage on the screen"
+    },
+    {
+      "seq": 2,
+      "time": "08:31",
+      "timestamp": "2023-06-12T08:31:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "What speed are you using?"
+    },
+    {
+      "seq": 3,
+      "time": "08:31",
+      "timestamp": "2023-06-12T08:31:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "115200 like on the new ones"
+    },
+    {
+      "seq": 4,
+      "time": "08:32",
+      "timestamp": "2023-06-12T08:32:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "The old ones run at 9600. Change it"
+    },
+    {
+      "seq": 5,
+      "time": "08:33",
+      "timestamp": "2023-06-12T08:33:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Works now, thanks 😅"
+    },
+    {
+      "seq": 6,
+      "time": "08:33",
+      "timestamp": "2023-06-12T08:33:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "All the older transmission nodes are 9600, only the new ones are 115200"
+    }
+  ]
+}

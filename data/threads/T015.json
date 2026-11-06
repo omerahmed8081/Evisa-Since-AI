@@ -1,0 +1,67 @@
+{
+  "thread_id": "T015",
+  "channel": "teams",
+  "date": "2025-07-15",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:20",
+      "timestamp": "2025-07-15T11:20:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Tiina, TRN-031 Sodankylä. New SFP in, port is up and optics ok, but still no traffic"
+    },
+    {
+      "seq": 2,
+      "time": "11:22",
+      "timestamp": "2025-07-15T11:22:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Then that SFP is probably bad too, we've had bad ones lately. Put in another one"
+    },
+    {
+      "seq": 3,
+      "time": "11:23",
+      "timestamp": "2025-07-15T11:23:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "I have one more in the car"
+    },
+    {
+      "seq": 4,
+      "time": "11:41",
+      "timestamp": "2025-07-15T11:41:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Second SFP in. Same thing, port up but counters at zero"
+    },
+    {
+      "seq": 5,
+      "time": "11:43",
+      "timestamp": "2025-07-15T11:43:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Weird. I'll open a ticket for the transmission team"
+    },
+    {
+      "seq": 6,
+      "time": "11:44",
+      "timestamp": "2025-07-15T11:44:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Ok. Heading to the next site, will come back tomorrow"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides updated physical access information (gate code and instructions) for a base station site.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "Gate code at BTS-210 changed to 9035; padlock remains sticky and requires lifting the gate slightly to open.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    1,
+    3
+   ],
+   "confirmed_at_seq": 1,
+   "details": "New gate code is 9035. Padlock is sticky, lift the gate a bit to open."
+  }
+ ]
+}

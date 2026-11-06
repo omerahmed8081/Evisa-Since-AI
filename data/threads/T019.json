@@ -1,0 +1,67 @@
+{
+  "thread_id": "T019",
+  "channel": "teams",
+  "date": "2024-12-05",
+  "language": "mixed",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:30",
+      "timestamp": "2024-12-05T11:30:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Pikkujoulut 13.12! Rovaniemi again, who is in? 🎄"
+    },
+    {
+      "seq": 2,
+      "time": "11:32",
+      "timestamp": "2024-12-05T11:32:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Mä tuun. Unless AGG-007 decides to die that evening 😅"
+    },
+    {
+      "seq": 3,
+      "time": "11:33",
+      "timestamp": "2024-12-05T11:33:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Joo mukana. Can someone book the sauna?"
+    },
+    {
+      "seq": 4,
+      "time": "11:35",
+      "timestamp": "2024-12-05T11:35:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "I'll drive from Kolari, have space for 2"
+    },
+    {
+      "seq": 5,
+      "time": "11:36",
+      "timestamp": "2024-12-05T11:36:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Hyvä, I'll book a table for 12"
+    }
+  ]
+}

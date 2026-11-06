@@ -1,0 +1,59 @@
+{
+  "thread_id": "T022",
+  "channel": "teams",
+  "date": "2024-06-03",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:20",
+      "timestamp": "2024-06-03T15:20:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Moi Pekka, meen huomenna BTS-210:lle Muonioon. Tiedätsä portin koodin?"
+    },
+    {
+      "seq": 2,
+      "time": "15:22",
+      "timestamp": "2024-06-03T15:22:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo, aidan portin koodi on 4471"
+    },
+    {
+      "seq": 3,
+      "time": "15:22",
+      "timestamp": "2024-06-03T15:22:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Ja se riippulukko jumittaa, nosta porttia vähän ylöspäin niin se aukeaa"
+    },
+    {
+      "seq": 4,
+      "time": "15:23",
+      "timestamp": "2024-06-03T15:23:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Kiitos! 🙏"
+    },
+    {
+      "seq": 5,
+      "time": "15:24",
+      "timestamp": "2024-06-03T15:24:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Eikä tota oo missään järjestelmässä 😅"
+    }
+  ]
+}

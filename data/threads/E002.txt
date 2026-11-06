@@ -1,0 +1,16 @@
+Thread-ID: E002
+Date: 2024-11-20T13:30:00+02:00
+From: Antti Aalto <Network Expert>
+To: Laura Lahti <Field Engineer>
+Subject: RE: AGG-012 uplink CRC errors after cable work
+
+Hi Laura,
+
+Good to hear the cable swap fixed it this morning. Errors have stayed at zero here too since about 10:40.
+
+On these routers it's almost always the patch cable when CRC errors start right after cable work. Before anyone orders a new line card, swap the patch cable on the uplink first.
+
+I've seen the same on several aggregation routers, old and new, so worth checking the cable every time.
+
+Br,
+Antti

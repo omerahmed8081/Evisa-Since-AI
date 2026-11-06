@@ -1,0 +1,16 @@
+Thread-ID: E007
+Date: 2026-04-08T10:15:00+03:00
+From: Erkki Expert <Network Expert>
+To: Veikko Vikkelä <Field Engineer>, Pekka Pylväs <Field Engineer>
+Subject: Traffic stuck after SFP swap: fixed in 3.4
+
+Hi both,
+
+Good news on the old transmission nodes. TRN-077 and TRN-015 were upgraded to firmware 3.4 last month, and since then we have replaced SFPs on both without the traffic getting stuck. The release notes also mention a fix for the forwarding state after optics changes.
+
+So the interface disable/enable trick is only needed on the older units that are still below 3.4. On 3.4 you can skip it; if traffic doesn't recover there, it's something else.
+
+TRN-042 and TRN-031 are still on the old software, so keep doing the disable/enable there until they get upgraded.
+
+Regards,
+Erkki

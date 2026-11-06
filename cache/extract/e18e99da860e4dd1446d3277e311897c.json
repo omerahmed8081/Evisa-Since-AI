@@ -1,0 +1,39 @@
+{
+ "useful": true,
+ "reason": "Expert provides a confirmed troubleshooting solution for CRC errors after maintenance by replacing the patch cable.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On aggregation routers, CRC errors appearing after rack maintenance are usually caused by a faulty patch cable; replace the patch cable before replacing the line card.",
+   "device_mentions": [
+    "AGG-003"
+   ],
+   "node_type": "aggregation_router",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "MAINTENANCE",
+    "PATCH_CABLE_CHANGE"
+   ],
+   "symptoms": [
+    "CRC_ERRORS"
+   ],
+   "actions": [
+    "REPLACE_PATCH_CABLE"
+   ],
+   "avoid": [
+    "REPLACE_LINE_CARD"
+   ],
+   "outcome": "worked",
+   "author": "Antti Aalto",
+   "source_message_seqs": [
+    4,
+    5,
+    6
+   ],
+   "confirmed_at_seq": 5,
+   "details": null
+  }
+ ]
+}

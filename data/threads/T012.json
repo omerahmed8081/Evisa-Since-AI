@@ -1,0 +1,67 @@
+{
+  "thread_id": "T012",
+  "channel": "teams",
+  "date": "2025-01-28",
+  "language": "mixed",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:25",
+      "timestamp": "2025-01-28T08:25:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Moi Antti, AGG-003 Oulussa: CRC errors on the uplink since this morning. There was maintenance here yesterday"
+    },
+    {
+      "seq": 2,
+      "time": "08:27",
+      "timestamp": "2025-01-28T08:27:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Did they touch the cables?"
+    },
+    {
+      "seq": 3,
+      "time": "08:28",
+      "timestamp": "2025-01-28T08:28:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Joo, they re-patched the whole rack"
+    },
+    {
+      "seq": 4,
+      "time": "08:29",
+      "timestamp": "2025-01-28T08:29:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Same as Kajaani last autumn then. Vaihda patch-kaapeli ensin, don't touch the line card yet"
+    },
+    {
+      "seq": 5,
+      "time": "08:41",
+      "timestamp": "2025-01-28T08:41:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Swapped the cable. Errors stopped 👍"
+    },
+    {
+      "seq": 6,
+      "time": "08:42",
+      "timestamp": "2025-01-28T08:42:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Nice. Almost always the cable on these"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "thread_id": "T009",
+  "channel": "teams",
+  "date": "2025-11-05",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative.",
+  "participants": [
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:50",
+      "timestamp": "2025-11-05T09:50:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Erkki, TRN-112 after yesterday's maintenance: RX level low on 1/1/2, about 6 dB worse than before. Swap the SFP?"
+    },
+    {
+      "seq": 2,
+      "time": "09:52",
+      "timestamp": "2025-11-05T09:52:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Did they unplug the fibre during the work?"
+    },
+    {
+      "seq": 3,
+      "time": "09:52",
+      "timestamp": "2025-11-05T09:52:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Yes, they moved patches around"
+    },
+    {
+      "seq": 4,
+      "time": "09:53",
+      "timestamp": "2025-11-05T09:53:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Clean the connector first. Click-cleaner on both ends. A dirty connector is way more common than a bad SFP"
+    },
+    {
+      "seq": 5,
+      "time": "10:04",
+      "timestamp": "2025-11-05T10:04:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "Cleaned both. RX back to normal 👍"
+    },
+    {
+      "seq": 6,
+      "time": "10:05",
+      "timestamp": "2025-11-05T10:05:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "There you go. Don't throw away good SFPs 😄"
+    }
+  ]
+}

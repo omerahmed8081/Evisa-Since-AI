@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T022-1",
+   "relation": "supersedes",
+   "firmware_below": null,
+   "reason": "The gate code has changed to 9035, making the old code no longer valid."
+  }
+ ]
+}
