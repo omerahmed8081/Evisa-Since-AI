@@ -186,7 +186,7 @@ def link_terms(a: dict):
 
 
 ASSERTION_FIELDS = """
-    {.id, .knowledge_type, .summary, .actions, .outcome, .details, .scope_node_type,
+    {.id, .knowledge_type, .summary, .actions, .symptoms, .events, .outcome, .details, .scope_node_type,
      .scope_firmware_below, .scope_firmware_at_least, valid_from: toString(X.valid_from)}
 """
 
@@ -266,3 +266,17 @@ def apply_relation(new_id: str, existing_id: str, relation: str, firmware_below:
         run("""MATCH (n:Assertion {id: $n}), (c:Assertion {id: $c})
                SET c.status = 'disputed', n.status = 'disputed'
                MERGE (n)-[r:CONFLICTS_WITH]->(c) SET r.reason = $reason""", n=new_id, c=existing_id, reason=reason)
+
+
+
+def same_knowledge_cluster(assertion_id: str) -> list[str]:
+    """All tips connected to this one through REINFORCES links (in either direction)."""
+    rows = run(
+        """
+        MATCH (t:Assertion {id: $id})-[:REINFORCES*0..4]-(m:Assertion)
+        WHERE m.valid_to IS NULL
+        RETURN DISTINCT m.id AS id
+        """,
+        id=assertion_id,
+    )
+    return [r["id"] for r in rows]

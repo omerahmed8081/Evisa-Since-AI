@@ -1,0 +1,35 @@
+{
+ "useful": true,
+ "reason": "Expert identifies a known fan alarm false alarm caused by a software bug, specifying no dispatch is needed unless chassis temperature rises.",
+ "knowledge": [
+  {
+   "knowledge_type": "known_false_alarm",
+   "summary": "A fan alarm on transmission units running software version 3.1 is a known false alarm caused by a sensor bug; do not dispatch unless the chassis temperature goes up.",
+   "device_mentions": [
+    "TRN-015"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": "3.2",
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "FAN_ALARM"
+   ],
+   "actions": [
+    "CHECK_CHASSIS_TEMP",
+    "NO_DISPATCH_NEEDED"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    2,
+    3,
+    4
+   ],
+   "confirmed_at_seq": 4,
+   "details": "Normal chassis temperature is 38 C."
+  }
+ ]
+}

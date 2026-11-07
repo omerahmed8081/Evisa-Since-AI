@@ -31,17 +31,34 @@ def reconcile(new_id: str):
         return
 
     has_limits = new.get("scope_firmware_below") or new.get("scope_firmware_at_least")
-    if new["knowledge_type"] != "access_info" and not has_limits and all(same_knowledge(new, c) for c in candidates):
-        for c in candidates:
+    to_ask = candidates
+    if new["knowledge_type"] != "access_info" and not has_limits:
+        # Plain repeats of the same fix are decided by code (no API call) ...
+        same = [c for c in candidates if same_knowledge(new, c)]
+        for c in same:
             graph.apply_relation(new_id, c["id"], "same_knowledge", None, "same actions (decided by code)")
             print(f"  relation: {new_id} reinforces {c['id']}")
+        # ... and only the remaining, different tips go to Gemini (possible conflicts)
+        to_ask = [c for c in candidates if c not in same]
+    if not to_ask:
         return
 
-    result = extract.classify_relations(build_relation_prompt(new, candidates))
-    valid_ids = {c["id"] for c in candidates}
+    result = extract.classify_relations(build_relation_prompt(new, to_ask))
+    valid_ids = {c["id"] for c in to_ask}
+    done = set()
     for j in result.judgements:
         if j.existing_id not in valid_ids or j.relation == "unrelated":
             continue
-        graph.apply_relation(new_id, j.existing_id, j.relation, j.firmware_below, j.reason)
-        extra = f" (below {j.firmware_below})" if j.firmware_below else ""
-        print(f"  relation: {new_id} {j.relation}{extra} {j.existing_id}: {j.reason}")
+        # A narrowing or superseding decision applies to the whole group of tips that are the
+        # same knowledge (linked by REINFORCES), so Gemini doesn't have to judge each copy right.
+        targets = [j.existing_id]
+        if j.relation in ("narrows_scope", "supersedes"):
+            targets = graph.same_knowledge_cluster(j.existing_id) or targets
+        for target in targets:
+            if (target, j.relation) in done or target == new_id:
+                continue
+            done.add((target, j.relation))
+            graph.apply_relation(new_id, target, j.relation, j.firmware_below, j.reason)
+            extra = f" (below {j.firmware_below})" if j.firmware_below else ""
+            via = "" if target == j.existing_id else f" [same knowledge as {j.existing_id}]"
+            print(f"  relation: {new_id} {j.relation}{extra} {target}{via}: {j.reason}")

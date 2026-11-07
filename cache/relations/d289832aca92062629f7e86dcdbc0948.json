@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip addresses storm-related loose mount bolts, whereas E003-1 deals with firmware upgrade issues."
+  },
+  {
+   "existing_id": "T003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip is about storm-induced loose mount bolts, whereas T003-1 addresses snow and ice accumulation on the radome."
+  }
+ ]
+}

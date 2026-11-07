@@ -5,64 +5,107 @@ The examples are deliberately NOT from our dataset, so they don't inflate test s
 
 SYSTEM_INSTRUCTION = """You read conversations between telecom network engineers (Teams chats, emails,
 phone-call transcripts) and extract reusable operational knowledge for a knowledge graph.
+Conversations may be in Finnish, English or mixed, with slang, typos and emojis.
 
-Step 1 - Decide if the conversation is useful.
-Useful = it contains knowledge another engineer could reuse later: a fix or workaround,
-a diagnosis rule, a known false alarm, a hardware compatibility rule, a practical tip,
-or access information (how to physically get to equipment: keys, gate codes, road conditions).
-For access information: scope_hint this_device_only, put the code/key location in details.
-Also useful: advice that was tried and FAILED (record it with outcome "failed"), because
-knowing what does not work saves time.
-Not useful = small talk, scheduling, status updates, or pure speculation with no conclusion.
+STEP 1 - Is the conversation useful?
+Useful = it contains knowledge another engineer could reuse later:
+  - a fix or workaround, a diagnosis rule, a known false alarm, a hardware compatibility rule,
+    a practical tip,
+  - access information: how to physically get to equipment (keys, lockbox or gate codes,
+    road or seasonal conditions),
+  - advice that was tried and FAILED (outcome "failed"): knowing what does not work saves time.
+    This is useful EVEN IF the conversation ends unresolved or with a ticket being opened:
+    "replaced the SFP again, same problem" is a failed attempt worth keeping,
+  - a claim that contradicts earlier advice, even if unconfirmed (outcome "unknown").
+Not useful = small talk, scheduling, shift swaps, status updates ("all done, heading back"),
+or speculation that ends without any conclusion. Mentioning a device does not make it useful.
 
-Step 2 - If useful, extract each piece of knowledge into the schema.
-- For events, symptoms and actions, use the CURRENT VOCABULARY given with the conversation.
-  Map what people say to those terms by MEANING, not by exact words.
-  Conversations may be in Finnish, English or mixed, with slang and typos.
-  Examples: "changed the optic" / "vaihdoin SFP:n" = SFP_REPLACEMENT;
-  "disable and enable the port" / "bounce it" / "sammuta ja käynnistä portti" = BOUNCE_INTERFACE.
-- Only if no existing term fits, create a NEW term: UPPER_SNAKE_CASE, 1-4 words, generic and
-  reusable (no device IDs, names or dates), e.g. REPLACE_ANTENNA_CONNECTOR.
-- Firmware limits: if knowledge is only needed below a version, set firmware_below; if it only holds
-  from a version upward, set firmware_at_least. Use just the version, e.g. "3.4".
-  NEVER set both to the same version. A message like "this is fixed in firmware 3.4, the workaround is
-  only needed on older software" is knowledge about the FIX: set firmware_at_least "3.4", leave
-  actions empty (or list only what to do on the new firmware), and do not repeat the old workaround.
-- device_mentions: only devices where the knowledge was actually observed or applied, not every
-  device that is mentioned.
-- Put specifics that terms can't hold (part numbers, values, conditions) in details.
-- Write the summary in English.
-- Only extract what the conversation actually says. Do not add your own technical advice.
-- scope_hint: "older_devices_of_same_type" when the expert refers to old/older units
-  ("these old units", "ne vanhat laitteet"); "all_devices_of_same_type" when they say it
-  is true for all such devices; otherwise "this_device_only".
+STEP 2 - Extract each distinct piece of knowledge.
+- One item per distinct fix, rule or access fact. Do not split one fix into several items;
+  put related specifics of the same fix into one item.
+- events / symptoms / actions / avoid: use the CURRENT VOCABULARY given with the conversation.
+  Map by MEANING, not by exact words. Examples: "changed the optic" / "vaihdoin SFP:n" =
+  SFP_REPLACEMENT; "disable and enable the port" / "bounce it" / "ota portti alas ja nosta
+  takaisin" = BOUNCE_INTERFACE. Only if no term fits, create a NEW term: UPPER_SNAKE_CASE,
+  1-4 words, generic and reusable (no device IDs, names or dates).
+- symptoms: include what the field engineer observes and reports, not only what the expert says.
+- avoid: include what the expert advises against or talks the engineer out of.
+- actions: the recommended steps in order. For failed advice, the action that was tried.
+- outcome: worked = success confirmed in the conversation or the author says it has worked
+  before; failed = tried and did not help; unknown = no result reported. For access information
+  the outcome is always "unknown".
+- known false alarms: if the expert says no visit or action is needed, include NO_DISPATCH_NEEDED
+  in actions.
+- author: the person who gave the knowledge (not the person asking).
+- device_mentions: only devices where the knowledge was actually observed or applied in THIS
+  conversation. Do not include devices mentioned as earlier cases ("same as on TRN-042 last
+  spring"), for comparison, or as still pending.
+- scope_hint:
+    "older_devices_of_same_type" when the knowledge is tied to old/older units ("these old
+    units", "noissa vanhoissa", or the expert asks "is this one of the older units?" and it is),
+    "all_devices_of_same_type" when it is stated as generally true for that kind of device
+    ("on those routers it's always...", "it's usually a dirty connector", "almost always"),
+    "this_device_only" otherwise, and always for access information.
+- Firmware limits: firmware_below if the knowledge is only needed below a version;
+  firmware_at_least if it only holds from a version upward. Use just the version, e.g. "3.4".
+  NEVER set both to the same version. A message like "fixed in firmware 3.4, the workaround is only
+  needed on older software" is knowledge about the FIX: set firmware_at_least "3.4", leave actions
+  empty, and do not repeat the old workaround as a separate item.
+- details: specifics the terms can't hold (codes, part numbers, thresholds, conditions),
+  copied exactly. For access information the code or key location MUST be in details.
+- summary: English, one or two sentences, actionable.
+- Only extract what the conversation actually says. Never add your own technical advice.
 
-The engineer may give extra context about the devices mentioned; use it to fill node_type.
+The prompt may include device context from the inventory; use it to fill node_type.
 """
 
-FEW_SHOT_EXAMPLES = """### Example 1 (useful)
+FEW_SHOT_EXAMPLES = """### Example 1 (useful: fix with field-engineer symptoms and an avoid)
 Channel: teams
-[seq 1 | 2024-02-01T10:02:00+02:00 | Laura (Field Engineer)]
-AGG-099 port 3 keeps flapping since we moved the rack
-[seq 2 | 2024-02-01T10:04:00+02:00 | Antti (Network Expert)]
-on those routers it's nearly always the patch cord getting bent in the move. swap it before you touch the card
-[seq 3 | 2024-02-01T10:15:00+02:00 | Laura (Field Engineer)]
+[seq 1 | 2024-02-01T10:02:00+02:00 | Laura Lahti (Field Engineer)]
+AGG-099 port 3 keeps flapping since we moved the rack. Light levels look fine
+[seq 2 | 2024-02-01T10:04:00+02:00 | Antti Aalto (Network Expert)]
+on those routers it's nearly always the patch cord getting bent in the move
+[seq 3 | 2024-02-01T10:05:00+02:00 | Laura Lahti (Field Engineer)]
+should I swap the line card?
+[seq 4 | 2024-02-01T10:06:00+02:00 | Antti Aalto (Network Expert)]
+no, swap the cord first
+[seq 5 | 2024-02-01T10:15:00+02:00 | Laura Lahti (Field Engineer)]
 new cord, stable now 👍
 
 Expected output:
 {"useful": true, "reason": "Expert gives a confirmed fix for link flapping after a rack move.",
  "knowledge": [{"knowledge_type": "troubleshooting_rule",
-  "summary": "On aggregation routers, port flapping after physically moving equipment is usually a damaged patch cable; replace the cable before replacing the line card.",
+  "summary": "On aggregation routers, port flapping after equipment is moved is usually a bent patch cable; replace the cable before replacing the line card.",
   "device_mentions": ["AGG-099"], "node_type": "aggregation_router", "scope_hint": "all_devices_of_same_type",
-  "firmware_below": null, "firmware_at_least": null, "events": ["MAINTENANCE"], "symptoms": ["LINK_FLAPPING"],
+  "firmware_below": null, "firmware_at_least": null, "events": ["MAINTENANCE"],
+  "symptoms": ["LINK_FLAPPING", "OPTICAL_LEVELS_NORMAL"],
   "actions": ["REPLACE_PATCH_CABLE"], "avoid": ["REPLACE_LINE_CARD"], "outcome": "worked",
-  "author": "Antti", "source_message_seqs": [2, 3], "confirmed_at_seq": 3, "details": null}]}
+  "author": "Antti Aalto", "source_message_seqs": [2, 4, 5], "confirmed_at_seq": 5, "details": null}]}
 
-### Example 2 (not useful)
+### Example 2 (useful: failed attempt)
 Channel: teams
-[seq 1 | 2024-03-05T11:30:00+02:00 | Pekka (Field Engineer)]
-lounas klo 12?
-[seq 2 | 2024-03-05T11:31:00+02:00 | Laura (Field Engineer)]
+[seq 1 | 2024-04-11T13:20:00+03:00 | Pekka Pylväs (Field Engineer)]
+BTS-299 alarm keeps coming back, any idea?
+[seq 2 | 2024-04-11T13:22:00+03:00 | Mikko Mäkelä (Field Engineer)]
+try resetting the alarm module, worked for me once
+[seq 3 | 2024-04-11T13:40:00+03:00 | Pekka Pylväs (Field Engineer)]
+did that, alarm back after 10 min 😕
+
+Expected output:
+{"useful": true, "reason": "A suggested fix was tried and did not help.",
+ "knowledge": [{"knowledge_type": "troubleshooting_rule",
+  "summary": "Resetting the alarm module did not stop a recurring alarm on a base station; the alarm returned after about 10 minutes.",
+  "device_mentions": ["BTS-299"], "node_type": "base_station", "scope_hint": "this_device_only",
+  "firmware_below": null, "firmware_at_least": null, "events": [], "symptoms": ["RECURRING_ALARM"],
+  "actions": ["RESET_ALARM_MODULE"], "avoid": [], "outcome": "failed",
+  "author": "Mikko Mäkelä", "source_message_seqs": [2, 3], "confirmed_at_seq": 3,
+  "details": "Alarm returned about 10 minutes after the reset."}]}
+
+### Example 3 (not useful)
+Channel: teams
+[seq 1 | 2024-03-05T11:30:00+02:00 | Pekka Pylväs (Field Engineer)]
+lounas klo 12? oon vielä AGG-099:llä
+[seq 2 | 2024-03-05T11:31:00+02:00 | Laura Lahti (Field Engineer)]
 joo, nähdään
 
 Expected output:
@@ -86,14 +129,17 @@ A NEW tip was just captured from a conversation. Decide how it relates to each E
 (captured earlier from other conversations). Give exactly one judgement per existing tip:
 
 - same_knowledge: the new tip repeats or confirms the existing tip (same problem, same fix),
-  possibly on another device. Example: the same interface-bounce fix confirmed on another unit.
-- narrows_scope: the existing tip is still true, but the new tip says it now only applies to some
-  devices, e.g. "fixed in firmware 3.4, the workaround is only needed below 3.4".
-  Set firmware_below to that version ("3.4").
+  possibly on another device or with extra details.
+- narrows_scope: the existing tip is still true, but the new tip says it only applies to some
+  devices now, e.g. "fixed in firmware 3.4, the workaround is only needed below 3.4".
+  Set firmware_below to that version ("3.4"). Use this for every existing tip describing that
+  workaround.
 - supersedes: the new tip makes the existing tip no longer true at all, e.g. "the gate code has
   changed, the old code no longer works".
-- conflicts: the new tip contradicts the existing tip (different diagnosis or fix for the same
-  problem) and the conversation does not settle who is right.
+- conflicts: the new tip gives a DIFFERENT diagnosis or fix for the SAME problem (same kind of
+  device, same symptoms) as the existing tip, and nothing settles who is right. Example: one expert
+  says winter link drops are caused by ice on the radome, another says they are caused by the
+  power supply: that is a conflict. Two fixes for clearly different problems are NOT a conflict.
 - unrelated: different problem, or no meaningful connection.
 
 Judge only from what the tips say. Do not invent relations."""
@@ -103,6 +149,12 @@ def build_relation_prompt(new: dict, existing: list[dict]) -> str:
     def fmt(t: dict) -> str:
         lines = [f"id: {t['id']}", f"captured: {t.get('valid_from')}", f"type: {t.get('knowledge_type')}",
                  f"devices: {', '.join(t.get('devices') or []) or '-'}", f"summary: {t.get('summary')}"]
+        if t.get("outcome"):
+            lines.append(f"outcome: {t['outcome']}")
+        if t.get("events"):
+            lines.append(f"happened before: {', '.join(t['events'])}")
+        if t.get("symptoms"):
+            lines.append(f"symptoms: {', '.join(t['symptoms'])}")
         if t.get("actions"):
             lines.append(f"actions: {', '.join(t['actions'])}")
         if t.get("details"):

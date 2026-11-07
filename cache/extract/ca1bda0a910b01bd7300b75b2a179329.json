@@ -1,0 +1,40 @@
+{
+ "useful": true,
+ "reason": "Expert provides a confirmed fix for low RX levels after maintenance, advising to clean the connector instead of replacing the SFP.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Low optical RX levels after maintenance or fiber handling are usually caused by a dirty connector; clean both ends with a click-cleaner before considering SFP replacement.",
+   "device_mentions": [
+    "TRN-112"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "MAINTENANCE"
+   ],
+   "symptoms": [
+    "OPTICAL_LEVELS_LOW"
+   ],
+   "actions": [
+    "CLEAN_CONNECTOR"
+   ],
+   "avoid": [
+    "REPLACE_SFP"
+   ],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "confirmed_at_seq": 5,
+   "details": null
+  }
+ ]
+}

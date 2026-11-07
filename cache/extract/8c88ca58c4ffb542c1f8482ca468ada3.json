@@ -1,0 +1,39 @@
+{
+ "useful": true,
+ "reason": "Expert provides a confirmed fix for a cell remaining down after a power outage on older base stations using a cold restart of the baseband.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On older base stations, after a power outage, a normal software reboot does not bring the cell up; a cold restart of the baseband unit is required.",
+   "device_mentions": [
+    "BTS-233"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "POWER_OUTAGE"
+   ],
+   "symptoms": [
+    "CELL_DOWN"
+   ],
+   "actions": [
+    "COLD_RESTART_BASEBAND"
+   ],
+   "avoid": [
+    "WARM_REBOOT"
+   ],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    4,
+    5,
+    7,
+    8
+   ],
+   "confirmed_at_seq": 7,
+   "details": "Power off completely, wait 30 sec, power on."
+  }
+ ]
+}

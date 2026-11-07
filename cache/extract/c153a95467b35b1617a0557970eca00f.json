@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert identifies that outdoor unit power supply fails in extreme cold weather and recommends replacement.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "In extreme cold weather, microwave link power supplies can fail, causing the link to drop even if the radome is clear of ice; replace the PSU.",
+   "device_mentions": [
+    "MW-405"
+   ],
+   "node_type": "microwave_link",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "COLD_WEATHER"
+   ],
+   "symptoms": [
+    "LINK_DOWN"
+   ],
+   "actions": [
+    "REPLACE_PSU"
+   ],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Jari Jänne",
+   "source_message_seqs": [
+    2,
+    4,
+    6
+   ],
+   "confirmed_at_seq": 2,
+   "details": "Observed at -32 degrees Celsius."
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides site access details including gate code and a tip for a stuck padlock at the base station.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "To access BTS-210, use gate code 4471. If the padlock jams, lift the gate slightly to open it.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Pekka Pylväs",
+   "source_message_seqs": [
+    2,
+    3
+   ],
+   "confirmed_at_seq": 3,
+   "details": "Gate code is 4471. Padlock jams, lift the gate slightly to open it."
+  }
+ ]
+}

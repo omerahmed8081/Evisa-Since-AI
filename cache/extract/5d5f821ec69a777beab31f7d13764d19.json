@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides updated gate access information including a new code and physical quirks for a base station site.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "The gate code for the BTS-210 site in Muonio has been updated to 9035. The padlock remains sticky and the gate needs to be lifted slightly to open.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    1,
+    3
+   ],
+   "confirmed_at_seq": 3,
+   "details": "New gate code is 9035. Padlock is sticky and you need to lift the gate a bit."
+  }
+ ]
+}

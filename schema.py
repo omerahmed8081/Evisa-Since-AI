@@ -48,18 +48,18 @@ ScopeHint = Literal["this_device_only", "older_devices_of_same_type", "all_devic
 # ---------- What Gemini must return ----------
 class Knowledge(BaseModel):
     knowledge_type: KnowledgeType
-    summary: str = Field(description="One or two plain English sentences an engineer can act on. Always English, even if the chat is Finnish.")
+    summary: str = Field(description="One or two plain English sentences an engineer can act on: the situation, the cause if known, and what to do. Always English, even if the chat is Finnish. Keep codes, part numbers and values exactly as written.")
     device_mentions: list[str] = Field(description="IDs of the devices where this knowledge was actually observed or applied in the conversation, exactly as written, e.g. 'TRN-042'. Do NOT include devices only mentioned for comparison, as background, or as still waiting for something. Empty if none.")
     node_type: Optional[NodeType] = Field(description="Type of device the knowledge is about, if it can be told.")
     scope_hint: ScopeHint = Field(description="Does the expert say it applies only to this device, to older units of this type, or to all units of this type?")
     firmware_below: Optional[str] = Field(description="Only if the text says the knowledge applies only BELOW a firmware version (e.g. a workaround only needed before '3.4'). Otherwise null.")
     firmware_at_least: Optional[str] = Field(description="Only if the text says the knowledge applies only FROM a firmware version upward (e.g. 'on 3.4 and later the problem is gone'). Otherwise null.")
     events: list[str] = Field(description="Event terms: what happened before the problem. Reuse vocabulary terms; create a new UPPER_SNAKE_CASE term only if none fits.")
-    symptoms: list[str] = Field(description="Symptom terms. Reuse vocabulary terms; create a new UPPER_SNAKE_CASE term only if none fits.")
+    symptoms: list[str] = Field(description="Symptom terms: everything observed about the problem, including what the field engineer reports (e.g. 'RX power looks normal' = OPTICAL_LEVELS_NORMAL). Reuse vocabulary terms; create a new UPPER_SNAKE_CASE term only if none fits.")
     actions: list[str] = Field(description="Action terms: recommended steps in order. For failed advice: the action that was tried. Reuse vocabulary terms; create new ones only if none fits.")
-    avoid: list[str] = Field(description="Action terms the expert says NOT to do (yet).")
-    outcome: Outcome = Field(description="Did the advice work according to the conversation?")
-    author: str = Field(description="Name of the person whose knowledge this is (usually the expert).")
+    avoid: list[str] = Field(description="Action terms that should NOT be done (yet): what the expert advises against or talks the engineer out of (e.g. 'Should I replace the SFP again?' 'No, usually it's fine' = REPLACE_SFP), and actions the expert says to try only as a last resort.")
+    outcome: Outcome = Field(description="worked = success is confirmed in the conversation, or the author says it has worked before; failed = it was tried and did not help; unknown = advice given but no result reported.")
+    author: str = Field(description="Full name of the person whose knowledge this is: the person who gave the advice or rule (usually the expert, not the person asking). For failed advice: the person who suggested it.")
     source_message_seqs: list[int] = Field(description="seq numbers of the messages that contain the knowledge.")
     confirmed_at_seq: Optional[int] = Field(description="seq of the message where the result was confirmed (e.g. 'Traffic is back'), else the seq where the advice was given.")
     details: Optional[str] = Field(description="Important specifics the terms don't capture (part numbers, values, conditions). Else null.")

@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert provides a troubleshooting rule for GPS sync loss after heavy snow, identifying a blown heater fuse as the cause.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Heavy snow and ice accumulation can cause GPS sync loss on base stations if the antenna heater fuse is blown; replacing the fuse restores synchronization.",
+   "device_mentions": [
+    "BTS-261"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "HEAVY_SNOW_ICE"
+   ],
+   "symptoms": [
+    "GPS_SYNC_LOST"
+   ],
+   "actions": [
+    "REPLACE_FUSE"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    2,
+    4,
+    5
+   ],
+   "confirmed_at_seq": 5,
+   "details": null
+  }
+ ]
+}

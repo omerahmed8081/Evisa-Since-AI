@@ -1,0 +1,30 @@
+{
+ "useful": true,
+ "reason": "Expert provides the correct console baud rate for older transmission boxes when garbage text appears on screen.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Older transmission units use a console baud rate of 9600 instead of 115200; adjust the baud rate if garbage appears on the console screen.",
+   "device_mentions": [],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [
+    "SET_CONSOLE_BAUD_9600"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    4,
+    5,
+    6
+   ],
+   "confirmed_at_seq": 5,
+   "details": "Baud rate needs to be set to 9600 for older nodes."
+  }
+ ]
+}

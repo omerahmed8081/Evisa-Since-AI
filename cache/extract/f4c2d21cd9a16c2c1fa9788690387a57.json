@@ -1,0 +1,31 @@
+{
+ "useful": true,
+ "reason": "Expert shares a compatibility rule for old transmission nodes refusing third-party SFPs.",
+ "knowledge": [
+  {
+   "knowledge_type": "hardware_compatibility",
+   "summary": "Older transmission nodes reject third-party SFPs with a module not supported error; use only the approved part SFP-10G-LR-02.",
+   "device_mentions": [],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "MODULE_UNKNOWN",
+    "INTERFACE_DOWN"
+   ],
+   "actions": [
+    "USE_APPROVED_PART"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Approved part number: SFP-10G-LR-02. Applies to older transmission nodes."
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "useful": true,
+ "reason": "Expert gives a confirmed troubleshooting rule for a microwave link failing due to snow and ice on the radome.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "During heavy snow and ice, a microwave link fading or dropping is usually caused by ice accumulation on the antenna radome; check and clear the radome before touching the radio.",
+   "device_mentions": [
+    "MW-405"
+   ],
+   "node_type": "microwave_link",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "HEAVY_SNOW_ICE",
+    "COLD_WEATHER"
+   ],
+   "symptoms": [
+    "LINK_FADING"
+   ],
+   "actions": [
+    "CLEAR_ICE_RADOME"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    4,
+    6,
+    7,
+    8
+   ],
+   "confirmed_at_seq": 7,
+   "details": "Thick layer of ice found on top of the radome."
+  }
+ ]
+}

@@ -31,6 +31,7 @@ embeddings) and saves genuinely new terms, so every later chat can use them. The
 | `reconcile.py` | Updates older knowledge when new knowledge arrives: reinforce / narrow scope / supersede (valid_to) / conflict |
 | `cache.py` | Disk cache of all Gemini answers (`cache/`), so re-runs cost no API calls |
 | `retrieve.py` | What applies to a device: scope + validity + firmware filter, duplicates merged (the agent's tool) |
+| `evaluate.py` | Compares the graph with `data/ground_truth.json` + runs demo retrieval checks (no Gemini calls) |
 | `reset_graph.py` | Empty the database |
 | `queries.cypher` | Queries to inspect the graph in Neo4j Browser |
 | `data/` | The dataset: inventory, events, 33 conversations, answer key (`ground_truth.json`), `DATA.md` |
@@ -72,6 +73,9 @@ python ingest.py data/threads
 python retrieve.py TRN-077
 python retrieve.py TRN-042 --symptoms TRAFFIC_COUNTERS_ZERO INTERFACE_UP
 python retrieve.py TRN-077 --json        # exactly what the chatbot agent will receive
+
+# 5. Measure everything against the answer key (no Gemini calls)
+python evaluate.py --details
 ```
 
 **Duplicates are merged at retrieval time** (`retrieve.py`), not when storing. The graph keeps one
@@ -117,6 +121,5 @@ teammates and the jury reproduce the graph without an API key. `--refresh` ignor
 
 - **Chatbot agent** that calls `retrieve.py` and answers the engineer, plus feedback buttons.
 - **Point-in-time queries** (`as_of` date) using `valid_from`/`valid_to` and the firmware history in events.
-- **Evaluation** against `data/ground_truth.json`.
 - **Evaluation:** compare output with `data/ground_truth.json`.
 - **Retrieval tools + chatbot agent.**

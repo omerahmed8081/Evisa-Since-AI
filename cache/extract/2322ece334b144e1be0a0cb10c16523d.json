@@ -1,0 +1,38 @@
+{
+ "useful": true,
+ "reason": "Expert gives a confirmed troubleshooting rule for a microwave link losing signal after a storm.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "After a storm, a microwave link with low signal is usually caused by loose mount bolts rather than a broken radio; check and tighten the mount bolts and realign the dish.",
+   "device_mentions": [
+    "MW-412"
+   ],
+   "node_type": "microwave_link",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "STORM"
+   ],
+   "symptoms": [
+    "ALIGNMENT_LOST",
+    "LINK_FADING"
+   ],
+   "actions": [
+    "CHECK_MOUNT_BOLTS",
+    "REALIGN_ANTENNA"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Jari Jänne",
+   "source_message_seqs": [
+    2,
+    4,
+    5
+   ],
+   "confirmed_at_seq": 5,
+   "details": "Two bolts loose on the pole mount, dish turned a bit."
+  }
+ ]
+}

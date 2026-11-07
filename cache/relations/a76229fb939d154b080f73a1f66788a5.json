@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E005-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip is about hot-swapped line modules showing unknown temporarily, whereas E005-1 is about third-party SFPs being rejected."
+  },
+  {
+   "existing_id": "T007-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip concerns line module inventory refresh delays, whereas T007-1 is about fan sensor false alarms on specific software versions."
+  }
+ ]
+}

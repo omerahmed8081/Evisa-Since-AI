@@ -1,0 +1,38 @@
+{
+ "useful": true,
+ "reason": "Expert provides a successful fix for a base station cell failing to come up after a power outage on older units.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On older base stations, a standard reboot fails to bring up a cell after a power outage; perform a cold restart of the baseband unit by turning off power completely, waiting 30 seconds, and powering back on.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "POWER_OUTAGE"
+   ],
+   "symptoms": [
+    "CELL_DOWN"
+   ],
+   "actions": [
+    "COLD_RESTART_BASEBAND"
+   ],
+   "avoid": [
+    "WARM_REBOOT"
+   ],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    4,
+    6,
+    7
+   ],
+   "confirmed_at_seq": 6,
+   "details": "Wait 30 seconds with power completely off before turning back on."
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T010-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The tips refer to entirely different symptoms and operational events."
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E001-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The existing tip addresses post-SFP-replacement traffic issues, while the new tip addresses low optical RX levels caused by dirty connectors."
+  },
+  {
+   "existing_id": "T001-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The existing tip deals with interface bouncing after SFP replacement, whereas the new tip concerns cleaning dirty connectors after maintenance."
+  },
+  {
+   "existing_id": "T002-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The existing tip is about traffic getting stuck after optic replacement, while the new tip discusses cleaning connectors for low optical RX levels."
+  }
+ ]
+}

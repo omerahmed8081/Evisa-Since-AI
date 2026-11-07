@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides gate access information and key location for the private road leading to the TRN-042 and BTS-233 sites.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "Access to the TRN-042 and BTS-233 sites via the private road requires a key located in a lockbox at the neighbouring red house before the locked barrier.",
+   "device_mentions": [
+    "TRN-042",
+    "BTS-233"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": null,
+   "details": "The key to the locked barrier is in a lockbox at the neighbouring farm (the red house right before the barrier). Lockbox code is 2580."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T004-1",
+   "relation": "same_knowledge",
+   "firmware_below": null,
+   "reason": "The new tip repeats the exact same troubleshooting rule for the same device and firmware constraint."
+  },
+  {
+   "existing_id": "C001-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip applies to BTS-233, while the existing tip applies to a different model, BTS-210."
+  }
+ ]
+}

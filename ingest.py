@@ -81,13 +81,18 @@ def compute_scope(k, observed_devices: list[dict], node_type: str | None) -> dic
         if all(is_older(d) for d in observed_devices):
             scope["installed_before"] = older_cutoff()
 
-    # Contradictory firmware limits (e.g. below 3.4 AND from 3.4): keep the "from" reading
+    # Contradictory firmware limits (e.g. below 2.6 AND from 2.6). If the tip has actions it
+    # describes the WORKAROUND (only needed below the version); without actions it describes the FIX.
     below, at_least = scope["firmware_below"], scope["firmware_at_least"]
     if below and at_least:
         from retrieve import compare_versions
         if compare_versions(below, at_least) <= 0:
-            print(f"  scope: contradictory firmware limits (below {below}, from {at_least}); keeping 'from {at_least}'")
-            scope["firmware_below"] = None
+            if k.actions:
+                print(f"  scope: contradictory firmware limits; tip has actions -> workaround, keeping 'below {below}'")
+                scope["firmware_at_least"] = None
+            else:
+                print(f"  scope: contradictory firmware limits; tip has no actions -> fix, keeping 'from {at_least}'")
+                scope["firmware_below"] = None
     return scope
 
 
@@ -134,8 +139,12 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary):
         return
 
     for i, k in enumerate(result.knowledge, start=1):
-        # Link only to devices that really exist in the inventory
-        observed = sorted(set(k.device_mentions) & known_ids) or sorted(known_ids)
+        # Link only to devices that really exist in the inventory. If Gemini named none, general
+        # knowledge stays unlinked (its scope rule applies it); device-specific knowledge and access
+        # info fall back to the devices named in the conversation so they are not orphaned.
+        observed = sorted(set(k.device_mentions) & known_ids)
+        if not observed and (k.knowledge_type == "access_info" or k.scope_hint == "this_device_only"):
+            observed = sorted(known_ids)
         observed_devices = [d for d in devices if d["node_id"] in observed]
         node_type = k.node_type or (observed_devices[0]["node_type"] if observed_devices else None)
         scope = compute_scope(k, observed_devices, node_type)

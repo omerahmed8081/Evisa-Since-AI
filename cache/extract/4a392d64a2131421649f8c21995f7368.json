@@ -1,0 +1,37 @@
+{
+ "useful": true,
+ "reason": "A suggested replacement SFP action was tried twice and failed to restore traffic.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Replacing the SFP did not restore traffic on TRN-031 despite the port coming up and optical levels being okay.",
+   "device_mentions": [
+    "TRN-031"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "SFP_REPLACEMENT"
+   ],
+   "symptoms": [
+    "INTERFACE_UP",
+    "OPTICAL_LEVELS_NORMAL",
+    "TRAFFIC_COUNTERS_ZERO"
+   ],
+   "actions": [
+    "REPLACE_SFP"
+   ],
+   "avoid": [],
+   "outcome": "failed",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    2,
+    4
+   ],
+   "confirmed_at_seq": 4,
+   "details": "Tried two different SFPs with the same result."
+  }
+ ]
+}

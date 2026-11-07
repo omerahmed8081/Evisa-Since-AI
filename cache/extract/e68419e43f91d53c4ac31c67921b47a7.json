@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert identifies a known false alarm for a battery alarm during severe cold weather due to a temperature sensor glitch.",
+ "knowledge": [
+  {
+   "knowledge_type": "known_false_alarm",
+   "summary": "Battery alarms during severe cold weather can be false alarms caused by the temperature sensor failing at very low temperatures; check the temperature sensor reading and do not dispatch anyone if the battery voltage is normal.",
+   "device_mentions": [
+    "BTS-250"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "COLD_WEATHER"
+   ],
+   "symptoms": [
+    "BATARTERY_ALARM"
+   ],
+   "actions": [
+    "CHECK_TEMP_SENSOR",
+    "NO_DISPATCH_NEEDED"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    4,
+    6
+   ],
+   "confirmed_at_seq": 7,
+   "details": "Sensor may report unrealistic values like -40 in extreme cold while battery voltage remains normal."
+  }
+ ]
+}

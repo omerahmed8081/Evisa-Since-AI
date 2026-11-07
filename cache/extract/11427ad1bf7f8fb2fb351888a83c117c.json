@@ -1,0 +1,39 @@
+{
+ "useful": true,
+ "reason": "Expert provides a confirmed fix for an LACP bundle failure after a firmware upgrade.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "After upgrading to firmware 7.4, an LACP bundle may fail to form even though the physical links are up; removing the member ports from the port-channel configuration and adding them back resolves the issue.",
+   "device_mentions": [
+    "AGG-007"
+   ],
+   "node_type": "aggregation_router",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": "7.4",
+   "events": [
+    "FIRMWARE_UPGRADE"
+   ],
+   "symptoms": [
+    "LACP_BUNDLE_DOWN",
+    "LINK_UP",
+    "OPTICAL_LEVELS_NORMAL"
+   ],
+   "actions": [
+    "READD_PORT_CHANNEL_MEMBER"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Antti Aalto",
+   "source_message_seqs": [
+    4,
+    6,
+    7,
+    8
+   ],
+   "confirmed_at_seq": 7,
+   "details": null
+  }
+ ]
+}
