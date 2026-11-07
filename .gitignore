@@ -21,3 +21,10 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Frontend: bun.lock (from Lovable) is the committed lockfile; npm's lockfile stays local
+frontend/package-lock.json
+
+# Chat caches written by the API at runtime (local only)
+backend/cache/api_answer/
+backend/cache/api_understand/
