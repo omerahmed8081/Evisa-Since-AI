@@ -1,0 +1,28 @@
+{
+ "useful": true,
+ "reason": "Provides gate access information and a physical tip for accessing the BTS-210 site.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "Access information for the BTS-210 site in Muonio, including the gate code and physical handling of the gate.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Field Engineer",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Gate code is 9035 (engineer comment also mentions 3000). Padlock is sticky and gate needs to be lifted slightly to open."
+  }
+ ]
+}

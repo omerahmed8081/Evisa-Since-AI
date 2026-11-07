@@ -21,14 +21,17 @@ def chat_events(req: ChatRequest):
     u = understand.understand(req.message, req.node_id, hist, store.last_nodes(cid))
     # Step B
     if u.node_ids:
-        k = knowledge.for_devices(u.node_ids, u.symptoms, u.events, u.wants_access_info)
+        k = knowledge.for_devices(u.node_ids, u.symptoms, u.events, u.wants_access_info,
+                                  overview=u.wants_overview, history=u.wants_history)
     else:
         k = knowledge.search(u.symptoms, u.events, u.node_type, u.wants_access_info)
 
     yield "meta", {"conversation_id": cid, "resolved_nodes": u.node_ids, "unknown_nodes": u.unknown_nodes,
                    "symptoms": u.symptoms, "events": u.events, "node_type": u.node_type,
                    "retrieval": k.mode, "understood_by": u.by,
-                   "resolved_by": u.resolved_by, "resolution_note": u.resolution_note}
+                   "resolved_by": u.resolved_by, "resolution_note": u.resolution_note,
+                   "ignored_selection": u.ignored_selection,
+                   "question_type": "history" if u.wants_history else ("overview" if u.wants_overview else "problem")}
 
     # Step C
     parts: list[str] = []

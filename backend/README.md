@@ -123,8 +123,10 @@ python scripts/retrieve.py TRN-077 --json                            # machine-r
   stores how it was made and how sure it is (ID 1.0, nickname 0.9, place 0.8, site 0.5); retrieval lowers
   a tip's confidence accordingly. The chat resolves "the Kolari box" the same way, in code.
 - **Failed attempts are knowledge too.** "Rebooting didn't help on TRN-015" warns the next engineer.
-- **Feedback closes the loop.** 👍 +0.1, 👎 −0.2, disputed after repeated failures; an engineer's comment is
-  captured as new knowledge through the same pipeline.
+- **Feedback closes the loop.** 👍 +0.1, 👎 −0.2 (one vote per answer and card), disputed after repeated
+  failures. A failed vote never expires knowledge by itself; the engineer's note is captured as a new
+  conversation through the same pipeline, so "the code changed to 7731" supersedes the old tip (`valid_to`)
+  and "it was the patch cable" becomes a new tip. `(Feedback)-[:CAPTURED_AS]->(Source)` traces it.
 - **Growing vocabulary.** Symptoms/actions are mapped to shared terms in any language; new terms are added
   automatically and near-duplicates are merged with embeddings.
 

@@ -77,12 +77,28 @@ Additions to the UI contract (all optional for the frontend):
 | `API_THINKING_BUDGET` | 0 | Gemini thinking off for fast replies; empty = model default. Retried without it automatically if the model rejects it |
 | `API_GEMINI_RETRIES` | 8 | Gemini rate limit (429) / overload (503): retry this many times before the template fallback |
 | `API_GEMINI_MAX_WAIT` | 30 | max seconds between retries (Gemini's own `retryDelay` is used when it gives one) |
+| `APP_NAME` | Evisa | shown as the source ("Evisa · Erkki Expert") of knowledge captured from feedback notes |
+| `DEMO_USER_NAME`, `DEMO_USER_ROLE` | (empty) | who gives feedback until login exists; the frontend can send `user_name` / `user_role` in `POST /api/feedback` (or a login proxy sets `X-User-Name` / `X-User-Role`) |
 | `API_CACHE_ANSWERS` | true | repeated question + same knowledge = no Gemini call (`cache/api_answer`) |
 | `FEEDBACK_DISPUTE_AFTER` | 2 | failed reports (and more failed than worked) before a tip becomes disputed |
 
 ## Good to know
 
 - Chats are kept in memory: restarting the API forgets conversations, not knowledge.
+- Feedback is tied to the logged-in user: votes get `(Feedback)-[:BY]->(Person {name, role})`; a note is captured
+  as written by that person in the app (`channel = APP_NAME`). Role sets the starting confidence (expert / NOC 0.7,
+  field engineer 0.6), and users are trusted: a first-hand report that a fact changed (code, key, route) supersedes
+  the old tip instead of creating a conflict.
+- One vote per answer and card: the note sent after a click doesn't count again, changing the verdict undoes
+  the earlier vote, and skip counts nothing. Feedback is stored as `(:Feedback)-[:ABOUT]->(:Assertion)`,
+  `-[:ON]->(:Device)` and, for a note, `-[:CAPTURED_AS]->(:Source {channel: 'feedback'})`, whose new tips
+  are linked and reconciled like any chat (so a note can supersede an old tip and set its `valid_to`).
+- Question types (Step A, `meta.question_type`): `problem` (troubleshooting, up to 6 cards), `overview` ("all faults
+  on BTS-210": everything that applies, up to 20 cards, listed one per line) and `history` ("older gate codes": also
+  the replaced tips, as `outdated` cards with `valid_to` and what replaced them; never given as instructions).
+  Facts in answers come only from the tips, never from earlier chat turns.
+- A device written in the message (ID, nickname or place) wins over the device picked in the UI; the picker
+  only counts when the message names none. `meta.ignored_selection` says when the picker was overruled.
 - Feedback changes `confidence` on the Assertion nodes. Re-running `scripts/ingest.py --force` resets confidence;
   the `(:Feedback)` nodes stay.
 - Step A and Step C answers are cached in `cache/api_understand` and `cache/api_answer`. Delete those folders

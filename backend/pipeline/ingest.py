@@ -31,6 +31,15 @@ from pipeline import DATA_DIR, extract, linking, threads
 from pipeline.vocabulary import Vocabulary
 
 BASE_CONFIDENCE = {"worked": 0.7, "unknown": 0.5, "failed": 0.3}
+ACCESS_INFO_CONFIDENCE = 0.7  # a stated gate code / key location is a fact, not an untested fix
+# Starting confidence for reports from logged-in app users, by role (feedback notes)
+ROLE_CONFIDENCE = {"network expert": 0.7, "noc operator": 0.7, "field engineer": 0.6}
+
+
+def reporter_confidence(reporter: dict | None) -> float:
+    if not reporter:
+        return 0.0
+    return ROLE_CONFIDENCE.get((reporter.get("role") or "").strip().lower(), 0.5)
 INVENTORY_CSV = DATA_DIR / "inventory" / "nodes.csv"
 
 
@@ -196,13 +205,15 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
             "scope_installed_before": scope["installed_before"],
             "scope_firmware_below": scope["firmware_below"],
             "scope_firmware_at_least": scope["firmware_at_least"],
-            "confidence": BASE_CONFIDENCE[k.outcome],
+            "confidence": BASE_CONFIDENCE[k.outcome] if k.outcome == "failed" else max(
+                ACCESS_INFO_CONFIDENCE if k.knowledge_type == "access_info" else BASE_CONFIDENCE[k.outcome],
+                reporter_confidence(thread.get("reported_by"))),
             "valid_from": threads.message_timestamp(thread, k.confirmed_at_seq),
         }
         graph.save_assertion(assertion)
         graph.link_terms(assertion)
         print(f"  saved {assertion['id']}: {k.summary[:80]}...")
-        reconcile.reconcile(assertion["id"])
+        reconcile.reconcile(assertion["id"], thread.get("reported_by"))
         summary["tips"].append({"id": assertion["id"], "summary": k.summary, "devices": observed,
                                 "knowledge_type": k.knowledge_type, "outcome": k.outcome})
     graph.mark_source_done(thread["thread_id"])

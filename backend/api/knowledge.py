@@ -33,6 +33,23 @@ RETURN a.id AS id,
        collect(DISTINCT d.node_id) AS devices
 """
 
+# History: knowledge that USED to apply to the device and was replaced (valid_to set), newest first,
+# with the tip that replaced it. Only asked for when the question is about the past ("older codes").
+HISTORY_QUERY = """
+MATCH (d:Device {node_id: $node_id})
+MATCH (a:Assertion)
+WHERE a.valid_to IS NOT NULL
+  AND ( EXISTS { (a)-[:OBSERVED_ON]->(d) }
+        OR EXISTS { (a)-[:OBSERVED_AT]->(:Site)<-[:AT]-(d) }
+        OR ( a.scope_node_type IS NOT NULL AND a.scope_node_type = d.node_type
+             AND (a.scope_installed_before IS NULL OR d.install_date < a.scope_installed_before) ) )
+OPTIONAL MATCH (n:Assertion)-[:SUPERSEDES]->(a)
+WITH a, head(collect(n.summary)) AS replaced_by, head(collect(n.id)) AS replaced_by_id
+RETURN a.id AS id, toString(a.valid_to) AS valid_to, replaced_by, replaced_by_id
+ORDER BY a.valid_to DESC
+LIMIT 10
+"""
+
 SEARCH_QUERY = """
 MATCH (a:Assertion)
 WHERE a.valid_to IS NULL
@@ -160,7 +177,7 @@ def build_card(group: dict, infos: dict, scope_note: str | None = None, force_st
         "avoid": avoid,
         "avoid_text": [C.avoid_text(x) for x in avoid],
         "outcome": group.get("outcome") or "unknown",
-        "status": force_status or C.card_status(statuses, group.get("outcome"), valid_to),
+        "status": force_status or C.card_status(statuses, group.get("outcome"), valid_to, group.get("knowledge_type")),
         "confidence": group.get("confidence") or 0.0,
         "symptom_match": group.get("symptom_match"),
         "how_it_applies": group.get("how_it_applies"),
@@ -256,7 +273,10 @@ def finish_cards(groups: list[dict], infos: dict, wants_access: bool, outdated: 
 
 # ---------- public entry points ----------
 def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wants_access: bool,
-                panel: bool = False) -> KnowledgeResult:
+                panel: bool = False, overview: bool = False, history: bool = False) -> KnowledgeResult:
+    """panel: device side panel. overview: "all faults / what do we know about X" -> everything that applies,
+    like the panel. history: "older codes / what changed" -> also the replaced (no longer valid) tips."""
+    panel = panel or overview
     res = KnowledgeResult(mode="device")
     groups, seen = [], set()
     excluded: list[tuple[str, dict, dict]] = []  # (node_id, excluded entry, device)
@@ -283,7 +303,42 @@ def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wan
     outdated = _outdated_cards(excluded, infos, symptoms, events) if (symptoms or events or panel) else []
     res.cards = finish_cards(groups, infos, wants_access, outdated, has_symptoms=bool(symptoms or events),
                              max_cards=20 if panel else MAX_CARDS)
+    if history:
+        past = history_cards(node_ids, wants_access)
+        if past:
+            # Only show the current cards on the same subject as the history (asking for older gate
+            # codes shows the current code, not every troubleshooting tip for the device)
+            kinds = {c["knowledge_type"] for c in past}
+            res.cards = [c for c in res.cards if c["knowledge_type"] in kinds]
+        res.cards += past
+        res.notes.append(f"History requested: {len(past)} replaced (no longer valid) tip(s) are included with "
+                         f"status 'outdated' and 'valid_until'. They are history, not current instructions."
+                         if past else "History requested, but no replaced (older) knowledge exists for this device.")
+    if overview:
+        res.notes.append("Overview requested: list every tip briefly.")
     return res
+
+
+def history_cards(node_ids: list[str], wants_access: bool) -> list[dict]:
+    """Replaced knowledge for these devices, as 'outdated' cards that say until when and by what."""
+    rows, seen = [], set()
+    for nid in node_ids:
+        for r in graph.run(HISTORY_QUERY, node_id=nid):
+            if r["id"] not in seen:
+                seen.add(r["id"])
+                rows.append(dict(r))
+    infos = fetch_assertions([r["id"] for r in rows])
+    if wants_access:
+        rows = [r for r in rows if (infos.get(r["id"]) or {}).get("a", {}).get("knowledge_type") == "access_info"]
+    cards = []
+    for r in rows:
+        if r["id"] not in infos:
+            continue
+        g = group_assertions([r["id"]], infos, how="replaced, no longer valid")[0]
+        until = (r["valid_to"] or "")[:10]
+        note = f"No longer valid since {until}" + (f"; replaced by: {r['replaced_by']}" if r.get("replaced_by") else "")
+        cards.append(_clean(build_card(g, infos, scope_note=note, force_status="outdated")))
+    return cards
 
 
 def _outdated_cards(excluded, infos: dict, symptoms: list[str], events: list[str]) -> list[dict]:

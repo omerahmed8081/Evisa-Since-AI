@@ -1,15 +1,18 @@
 """POST /api/feedback: 👍 / 👎 / skip on a knowledge card, with an optional comment."""
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
 from api import feedback, store
-from api.config import MIN_COMMENT_CHARS
+from api.config import DEMO_USER_NAME, DEMO_USER_ROLE, MIN_COMMENT_CHARS
 from api.models import FeedbackRequest, FeedbackResponse
 
 router = APIRouter(prefix="/api", tags=["feedback"])
 
 
 @router.post("/feedback", response_model=FeedbackResponse)
-def post_feedback(req: FeedbackRequest, background: BackgroundTasks):
+def post_feedback(req: FeedbackRequest, background: BackgroundTasks, request: Request):
+    # Who: the logged-in user (body fields, or headers from a login proxy), else the demo user
+    user = {"name": req.user_name or request.headers.get("x-user-name") or DEMO_USER_NAME or "Field Engineer",
+            "role": req.user_role or request.headers.get("x-user-role") or DEMO_USER_ROLE or "Field Engineer"}
     message = store.get_message(req.message_id)
     shown = (message or {}).get("cards", {}).get(req.assertion_id or "", {})
     # A card can stand for several merged assertions: apply the feedback to all of them.
@@ -17,12 +20,14 @@ def post_feedback(req: FeedbackRequest, background: BackgroundTasks):
     if not ids:
         raise HTTPException(422, "Give assertion_id (or assertion_ids)")
 
-    updated = feedback.record(ids, req.verdict, req.comment, req.message_id)
+    comment = (req.comment or "").strip() or None
+    updated, note_ids = feedback.record(ids, req.verdict, comment, req.message_id,
+                                        devices=(message or {}).get("node_ids"), user=user)
     if not updated:
         raise HTTPException(404, "None of the given assertions exist")
 
-    comment = (req.comment or "").strip()
-    queued = len(comment) >= MIN_COMMENT_CHARS
+    queued = len(comment or "") >= MIN_COMMENT_CHARS
     if queued:
-        background.add_task(feedback.ingest_comment, comment, req.verdict, ids, message, shown.get("summary"))
+        background.add_task(feedback.ingest_comment, comment, req.verdict, ids, message, shown.get("summary"),
+                            note_ids, user)
     return {"ok": True, "updated": updated, "comment_queued": queued}

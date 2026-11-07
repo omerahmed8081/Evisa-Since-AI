@@ -14,7 +14,7 @@ ACTION_TEXT = {
     "BOUNCE_INTERFACE": "Disable and re-enable the interface",
     "REBOOT_UNIT": "Reboot the whole unit",
     "REPLACE_SFP": "Replace the SFP",
-    "CLEAN_CONNECTOR": "Clean the optical connector",
+    "CLEAN_CONNECTOR": "Clean the connector",
     "CLEAR_ICE_RADOME": "Clear ice from the radome",
     "REPLACE_PSU": "Replace the power supply unit",
     "READD_PORT_CHANNEL_MEMBER": "Remove and re-add the port-channel member",
@@ -85,13 +85,15 @@ def scope_text(scope: dict, observed_on: list[str], link: dict | None = None) ->
     return ", ".join(parts)
 
 
-def card_status(statuses: set[str], outcome: str, valid_to: str | None) -> str:
+def card_status(statuses: set[str], outcome: str, valid_to: str | None, knowledge_type: str | None = None) -> str:
     if "disputed" in statuses:
         return "disputed"
     if valid_to or "superseded" in statuses:
         return "outdated"
     if outcome == "worked":
         return "confirmed"
+    if knowledge_type == "access_info":
+        return "confirmed"  # a gate code / key location is a stated fact, not an untested fix (until superseded)
     return "unconfirmed"
 
 
@@ -145,7 +147,12 @@ def compact_for_llm(card: dict) -> dict:
     }
     if card.get("details"):
         out["details"] = card["details"]
-    if card.get("scope_note"):
+    if card.get("valid_to"):
+        out["valid_until"] = short_date(card["valid_to"])   # replaced: history, not a current instruction
+        out["valid_from"] = short_date(card.get("valid_from"))
+        if card.get("scope_note"):
+            out["history"] = card["scope_note"]
+    elif card.get("scope_note"):
         out["not_applicable_because"] = card["scope_note"]
     if card.get("related_failed"):
         out["tried_and_failed"] = [

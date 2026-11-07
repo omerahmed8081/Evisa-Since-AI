@@ -1,0 +1,28 @@
+{
+ "useful": true,
+ "reason": "Field engineer provides a correction to the gate code for the site.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "The gate code for the BTS-210 site is 3000.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Field Engineer",
+   "source_message_seqs": [
+    2
+   ],
+   "confirmed_at_seq": 2,
+   "details": "Gate code is 3000."
+  }
+ ]
+}

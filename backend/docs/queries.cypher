@@ -54,3 +54,12 @@ ORDER BY linked_by DESC, a.id;
 MATCH (s:Site)<-[:AT]-(d:Device)
 OPTIONAL MATCH (a:Assertion)-[r:OBSERVED_AT]->(s)
 RETURN s.name, collect(DISTINCT d.node_id) AS devices, collect(DISTINCT a.id) AS site_tips;
+
+// 12. Feedback: votes, notes, the device asked about, and what each note became in the graph
+MATCH (f:Feedback)-[:ABOUT]->(a:Assertion)
+WHERE f.replaced IS NULL
+OPTIONAL MATCH (f)-[:ON]->(d:Device)
+OPTIONAL MATCH (f)-[:CAPTURED_AS]->(s:Source)<-[:FROM]-(n:Assertion)
+RETURN f.verdict, f.comment, a.id AS about, a.confidence, a.status, collect(DISTINCT d.node_id) AS devices,
+       s.id AS note_source, collect(DISTINCT n.summary) AS note_became
+ORDER BY f.created_at DESC;

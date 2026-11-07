@@ -12,6 +12,11 @@ For each new tip:
        narrows_scope  -> old.scope_firmware_below = "3.4"        (old stays valid for older firmware)
        supersedes     -> old.valid_to = new.valid_from            (old is no longer true)
        conflicts      -> both marked status = 'disputed'
+
+Reports from logged-in users of the app (feedback notes) come with WHO reported them. Users are
+trusted: a first-hand report that a fact changed (code, key, location...) supersedes the older tip
+instead of creating a conflict. Only those prompts get the extra note, so the cached judgements for
+all other conversations stay valid.
 """
 from pipeline import extract
 from pipeline import graph
@@ -19,7 +24,17 @@ from pipeline.prompts import build_relation_prompt
 from pipeline.retrieve import same_knowledge
 
 
-def reconcile(new_id: str):
+def reporter_note(reporter: dict) -> str:
+    return (f"\n\nNOTE ABOUT THE NEW TIP: it is a first-hand report from {reporter.get('name')} "
+            f"({reporter.get('role') or 'user'}), a logged-in user of the {reporter.get('app') or 'knowledge'} app, "
+            f"made on {reporter.get('date') or 'the capture date'}. Reports from logged-in users are trusted. "
+            "If the new tip says a fact has changed or gives a different CURRENT value for the same fact "
+            "(a gate or lockbox code, key location, access route, part number, contact), the relation to the "
+            "older tip is supersedes, not conflicts. If it only says an older fix did not work this time and "
+            "something else did, that is not supersedes unless it says the older fix is wrong in general.")
+
+
+def reconcile(new_id: str, reporter: dict | None = None):
     new = graph.get_assertion(new_id)
     if not new:
         return
@@ -43,7 +58,10 @@ def reconcile(new_id: str):
     if not to_ask:
         return
 
-    result = extract.classify_relations(build_relation_prompt(new, to_ask))
+    prompt = build_relation_prompt(new, to_ask)
+    if reporter:
+        prompt += reporter_note(reporter)
+    result = extract.classify_relations(prompt)
     valid_ids = {c["id"] for c in to_ask}
     done = set()
     for j in result.judgements:

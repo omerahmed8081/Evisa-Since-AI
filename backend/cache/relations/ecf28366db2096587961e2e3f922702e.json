@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T023-1",
+   "relation": "supersedes",
+   "firmware_below": null,
+   "reason": "The new tip provides a newer gate code for the BTS-210 site, replacing the old one."
+  }
+ ]
+}

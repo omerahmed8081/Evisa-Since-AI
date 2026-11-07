@@ -32,6 +32,8 @@ class Understanding(BaseModel):
     events: list[str] = Field(description="Event terms from the vocabulary: what happened before the problem. Only use listed terms.")
     wants_access_info: bool = Field(description="True if the user asks how to get to / into a site (gate, code, key, road, lockbox).")
     is_follow_up: bool = Field(description="True if the message continues the previous turn about the same device (e.g. 'what if that doesn't work?').")
+    wants_overview: bool = Field(default=False, description="True if the user wants EVERYTHING known about a device rather than help with one problem (e.g. 'all possible faults on BTS-210', 'what do we know about TRN-042', 'list the known issues').")
+    wants_history: bool = Field(default=False, description="True if the user asks about the PAST: older or previous values, what changed, what it used to be (e.g. 'older gate codes', 'what was the code before'). NOT for 'older units' / 'old devices', which is about device age.")
     language: Literal["en", "fi", "other"] = Field(description="Language of the user's message.")
 
 
@@ -49,10 +51,13 @@ class Understood:
     symptoms: list[str] = field(default_factory=list)
     events: list[str] = field(default_factory=list)
     wants_access_info: bool = False
+    wants_overview: bool = False
+    wants_history: bool = False
     language: str = "en"
     by: str = "gemini"  # gemini | fallback
     resolved_by: str | None = None   # id | alias | location | site | selected | previous_turn | gemini
     resolution_note: str | None = None
+    ignored_selection: str | None = None  # device picked in the UI but overruled by the message
 
 
 # ---------- inventory + vocabulary, cached for a minute ----------
@@ -105,23 +110,24 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
     match = inv.resolve(message)          # IDs (also "trn042"), nicknames, places: done by code, not Gemini
     written = sorted(match.ids | match.unknown_ids)
     u = Understood(unknown_nodes=sorted(match.unknown_ids))
-    nodes = sorted(match.ids) + sorted(set(match.aliases) - match.ids)
-    if nodes:
-        u.resolved_by = "id" if match.ids else "alias"
-    if match.aliases:
-        u.resolution_note = "; ".join(f"'{a}' is the nickname of {n}" for n, a in match.aliases.items())
-    if selected_node and selected_node.upper() in known_ids:
-        nodes.insert(0, selected_node.upper())
-        u.resolved_by = u.resolved_by or "selected"
+    named = sorted(match.ids) + sorted(set(match.aliases) - match.ids)
+    selected = selected_node.upper() if selected_node and selected_node.upper() in known_ids else None
+    # What the message says beats the device picker: "TRN-077 ..." with TRN-031 still selected in the
+    # UI is a question about TRN-077. The picker only counts when the message names no device/place.
+    message_names_device = bool(named or written or match.locations)
 
     follow_up = False
+    gemini_nodes: list[str] = []
     try:
-        r = generate_json(_prompt(message, history, ctx, selected_node), SYSTEM, Understanding, "api_understand")
-        nodes += [n.upper() for n in r.node_ids if n.upper() in known_ids]
+        r = generate_json(_prompt(message, history, ctx, None if message_names_device else selected),
+                          SYSTEM, Understanding, "api_understand")
+        gemini_nodes = [n.upper() for n in r.node_ids if n.upper() in known_ids]
         u.node_type = r.node_type
         u.symptoms = _normalise_terms(r.symptoms, ctx["terms"]["symptom"])
         u.events = _normalise_terms(r.events, ctx["terms"]["event"])
         u.wants_access_info = r.wants_access_info
+        u.wants_overview = r.wants_overview
+        u.wants_history = r.wants_history
         u.language = r.language
         follow_up = r.is_follow_up
     except Exception as e:
@@ -130,10 +136,19 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         low = message.lower()
         u.wants_access_info = any(w in low for w in ("gate", "code", "access", "key", "lock", "portti", "koodi", "avain"))
 
-    # No ID or nickname, but a place ("the Kolari box"): decide from the inventory in code, not by
-    # trusting Gemini's guess. One device of the right type -> that device; several -> all of them,
-    # and the answer says which tip is for which device and asks which one is meant.
-    if not match.named and not selected_node and match.locations and not written:
+    # Which device(s)? Priority: written ID / nickname > place > device picker > Gemini's guess > previous turn
+    nodes: list[str] = []
+    if named:
+        nodes = named
+        u.resolved_by = "id" if match.ids else "alias"
+        if match.aliases:
+            u.resolution_note = "; ".join(f"'{a}' is the nickname of {n}" for n, a in match.aliases.items())
+    elif written:
+        pass  # only unknown IDs: say so, don't silently answer for another device
+    elif match.locations:
+        # A place ("the Kolari box"): decided from the inventory in code, not by trusting Gemini's guess.
+        # One device of the right type -> that device; several -> all of them, and the answer says which
+        # tip is for which device and asks which one is meant.
         types = {u.node_type} if u.node_type else match.type_hints
         cands = inv.candidates(match.locations, types or None) or inv.candidates(match.locations)
         if cands:
@@ -149,8 +164,14 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
                                      f"devices: {listed}. " + (
                                          "Site access information applies to the whole site." if u.wants_access_info
                                          else "Say which device each tip is for and ask which one the user means."))
-    elif nodes and not u.resolved_by:
+    elif selected:
+        nodes = [selected]
+        u.resolved_by = "selected"
+    elif gemini_nodes:
+        nodes = gemini_nodes
         u.resolved_by = "gemini"
+    if selected and message_names_device and selected not in nodes:
+        u.ignored_selection = selected  # shown in meta so the UI can update its picker
 
     u.node_ids = list(dict.fromkeys(nodes))
     if not u.node_ids and previous_nodes and (follow_up or u.by == "fallback") and not u.unknown_nodes:

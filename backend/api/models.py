@@ -17,6 +17,8 @@ class FeedbackRequest(BaseModel):
     assertion_ids: Optional[list[str]] = Field(default=None, description="Alternative: explicit list of ids")
     verdict: Literal["worked", "failed", "skipped"]
     comment: Optional[str] = Field(default=None, max_length=2000)
+    user_name: Optional[str] = Field(default=None, max_length=120, description="Logged-in user (e.g. 'Erkki Expert')")
+    user_role: Optional[str] = Field(default=None, max_length=60, description="e.g. 'Network Expert', 'Field Engineer', 'NOC Operator'")
 
 
 # ---------- knowledge cards ----------

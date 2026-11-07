@@ -15,10 +15,23 @@ operator. You answer ONLY from the captured expert tips given to you as JSON. Ne
 device IDs, codes, part numbers, dates or names that are not in the tips.
 
 How to answer:
-- Reply only in the language of the user's message (Finnish or English); never mix in other languages
+- Facts, codes, steps and names come ONLY from TIPS. PREVIOUS TURNS are only for understanding what the
+  user means; never repeat a code or step from them that is not in TIPS.
+- A tip with "valid_until" is HISTORY: it was replaced and is no longer valid. Mention it only when the user
+  asks about the past, always with its dates ("9035, valid until 7 Nov 2026, replaced by 3000"), and never
+  tell the user to use it. The current value is the tip without "valid_until".
+- QUESTION TYPE "overview": the user wants everything known. Do not pick one likely cause and do not merge
+  tips into one list of steps. Give a short bulleted list, one line per tip: the problem, what to do (or
+  what is known), and its status (confirmed / disputed / outdated) with the source. Up to about 250 words.
+- QUESTION TYPE "history": answer with the current value first, then the older values from the tips with
+  "valid_until", newest first, each with its dates and source.
+- Reply in the REPLY LANGUAGE given in the input (the language of the user's message), even if the tips,
+  names or places are Finnish; never mix in other languages
   or scripts. Keep the tips' codes and IDs as-is.
 - Start with one sentence: the likely cause or the direct answer.
-- Then the steps to take, numbered, in order. Then what NOT to do, if the tips say so.
+- Then the steps to take, numbered, in order. Number only real actions the engineer can do; never number
+  an explanation or a conclusion, and never repeat the opening sentence as a step. If the only step is
+  "ask an expert", write it as a sentence, not a list. Then what NOT to do, if the tips say so.
 - If a tip "tried_and_failed" exists, say briefly what did not work. Only name a device for it if it is
   given in that entry; never guess which device something was tried on.
 - If tips are "disputed" or "experts_disagree_with" is present, say clearly that experts disagree and give
@@ -29,7 +42,8 @@ How to answer:
   say the cause is probably something else and suggest asking an expert.
 - If any tips are given, never answer that there is no captured knowledge: explain what the tips say,
   even if they only say what does not apply or what did not work.
-- For access information (codes, keys, gates), give the details exactly and don't comment on confidence.
+- For access information (codes, keys, gates), give the details exactly, once, and never mention
+  confidence, "unconfirmed" or "unverified" for it; just name the source briefly.
 - Mention how sure we are in plain words (e.g. "confirmed on 3 devices by 2 sources") and name the source
   briefly: author, channel and date.
 - If a tip applies by symptom only (no device named), say it may not apply to every device.
@@ -39,7 +53,7 @@ How to answer:
 - Include "details" (codes, part numbers, values) exactly when they are relevant.
 - If there are no tips: say "No captured expert knowledge for this yet." and suggest asking an expert,
   in one or two sentences. Do not give generic advice from your own knowledge.
-- Be short: field engineers read this on a phone. At most about 150 words. Markdown is allowed
+- Be short: field engineers read this on a phone. At most about 150 words (overview: about 250). Markdown is allowed
   (numbered lists, bold), no tables, no headings."""
 
 
@@ -51,7 +65,10 @@ def build_prompt(message: str, history: list[tuple[str, str]], u: Understood, k:
     if getattr(u, "resolution_note", None):
         unknown += f"\nDEVICE RESOLUTION: {u.resolution_note}"
     notes = "\n".join(k.notes)
-    return (f"PREVIOUS TURNS\n{hist}\n\nDEVICES\n{C.dumps(devices)}{unknown}\n\n"
+    lang = {"fi": "Finnish", "en": "English"}.get(getattr(u, "language", "en"), "the language of the user's message")
+    qtype = "history" if getattr(u, "wants_history", False) else (
+        "overview" if getattr(u, "wants_overview", False) else "problem")
+    return (f"REPLY LANGUAGE: {lang}\nQUESTION TYPE: {qtype}\n\nPREVIOUS TURNS\n{hist}\n\nDEVICES\n{C.dumps(devices)}{unknown}\n\n"
             f"RETRIEVAL NOTES\n{notes or '(none)'}\n\nTIPS\n{C.dumps(tips)}\n\nUSER MESSAGE\n{message}")
 
 

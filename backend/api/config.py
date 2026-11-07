@@ -42,6 +42,13 @@ GEMINI_MAX_WAIT = float(os.environ.get("API_GEMINI_MAX_WAIT", "30"))
 # Cache chat answers on disk (cache/api_answer): same question + same knowledge = no API call.
 CACHE_ANSWERS = os.environ.get("API_CACHE_ANSWERS", "true").lower() == "true"
 
+# Who is giving feedback. The app requires a login: the frontend sends the logged-in user's name and role
+# with each feedback (or a login proxy sets the X-User-Name / X-User-Role headers). Until login exists,
+# this demo user is used. APP_NAME is shown as the source of knowledge captured from notes.
+APP_NAME = os.environ.get("APP_NAME", "Evisa").strip() or "Evisa"
+DEMO_USER_NAME = os.environ.get("DEMO_USER_NAME", "").strip()
+DEMO_USER_ROLE = os.environ.get("DEMO_USER_ROLE", "").strip()
+
 # Feedback rules from Full_pipeline.txt
 FEEDBACK_WORKED_DELTA = 0.1
 FEEDBACK_FAILED_DELTA = -0.2

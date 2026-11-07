@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T023-1",
+   "relation": "supersedes",
+   "firmware_below": null,
+   "reason": "The new tip states the gate code is 3000, which replaces the previous code of 9035."
+  }
+ ]
+}
