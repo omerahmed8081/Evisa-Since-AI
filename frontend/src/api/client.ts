@@ -51,7 +51,9 @@ export function createRealClient(baseUrl: string): ApiClient {
       // JSON fallback: server doesn't stream.
       if (!ctype.includes("text/event-stream") || !res.body) {
         const data = adaptChatResponse(await res.json());
-        onEvent({ type: "meta", conversation_id: data.conversation_id });
+        onEvent({ type: "meta", conversation_id: data.conversation_id,
+          resolved_nodes: data.resolved_nodes, ignored_selection: data.ignored_selection,
+          resolution_note: data.resolution_note, question_type: data.question_type });
         onEvent({ type: "token", text: data.answer });
         onEvent({ type: "cards", cards: data.cards ?? [] });
         onEvent({ type: "done", message_id: data.message_id });

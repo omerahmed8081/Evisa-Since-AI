@@ -10,6 +10,7 @@ inventory, terms must exist in the vocabulary (aliases are mapped), and IDs writ
 always picked up by regex even if Gemini is down.
 """
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Literal, Optional
@@ -58,6 +59,28 @@ class Understood:
     resolved_by: str | None = None   # id | alias | location | site | selected | previous_turn | gemini
     resolution_note: str | None = None
     ignored_selection: str | None = None  # device picked in the UI but overruled by the message
+
+
+# ---------- keyword fallback when Gemini is unavailable (English + Finnish) ----------
+# Overview: "all possible faults", "known issues", "what do we know about", "mitä vikoja", "kaikki ongelmat"
+OVERVIEW_RE = re.compile(
+    r"\b(all|every|possible|known|common|typical)\s+(\w+\s+)?(faults|issues|problems|failures|tips)\b"
+    r"|\bwhat\s+(do\s+we|does\s+\w+)\s+know\b|\blist\b.*\b(faults?|issues?|problems?|tips?)\b"
+    r"|\boverview\b|\bmit(ä|a)\s+(vikoja|ongelmia|tiedet(ää|aan))\b"
+    r"|\b(kaikki|tunnetut|mahdolliset)\s+(\w+\s+)?(viat|vikoja|ongelmat|ongelmia)\b",
+    re.IGNORECASE)
+# History: "older/previous gate codes", "what was the code before", "used to be", "vanhat koodit", "aiempi".
+# Not "older units" / "old devices" (device age).
+HISTORY_RE = re.compile(
+    r"\b(older|previous|old|earlier|former)\s+(gate\s+|lockbox\s+|access\s+)?(codes?|values?|keys?|passwords?)\b"
+    r"|\bwhat\s+was\b.*\bbefore\b|\bused\s+to\s+be\b|\bwhat\s+changed\b"
+    r"|\b(vanha|vanhat|vanhoja|aiempi|aiemmat|edellinen|edelliset)\s+(\w+\s+)?(koodi|koodit|koodeja|arvot)\b",
+    re.IGNORECASE)
+
+
+def keyword_intent(message: str) -> tuple[bool, bool]:
+    """(wants_overview, wants_history) from keywords; used only when Gemini is down."""
+    return bool(OVERVIEW_RE.search(message)), bool(HISTORY_RE.search(message))
 
 
 # ---------- inventory + vocabulary, cached for a minute ----------
@@ -135,6 +158,7 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         u.by = "fallback"
         low = message.lower()
         u.wants_access_info = any(w in low for w in ("gate", "code", "access", "key", "lock", "portti", "koodi", "avain"))
+        u.wants_overview, u.wants_history = keyword_intent(message)
 
     # Which device(s)? Priority: written ID / nickname > place > device picker > Gemini's guess > previous turn
     nodes: list[str] = []

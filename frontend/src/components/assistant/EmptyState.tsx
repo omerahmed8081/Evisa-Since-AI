@@ -1,4 +1,6 @@
 import { Network } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLanguage, useT } from "@/i18n";
 
 export const EXAMPLES = [
   "TRN-031: SFP replaced, link up but no traffic. What should I do?",
@@ -8,22 +10,32 @@ export const EXAMPLES = [
   "MW-405 linkki alhaalla kovalla pakkasella",
 ];
 
-export function EmptyState({ onPick }: { onPick: (text: string) => void }) {
+export const EXAMPLES_FI = [
+  "TRN-031: SFP vaihdettu, linkki ylhäällä mutta liikenne ei kulje. Mitä teen?",
+  "BTS-233 solu alhaalla sähkökatkon jälkeen",
+  "Miten pääsen TRN-042-asemalle Kolarissa?",
+  "CRC-virheitä AGG-003:ssa huollon jälkeen",
+  "MW-405 linkki alhaalla kovalla pakkasella",
+];
+
+export function EmptyState({ onPick, nodeId, questions }: { onPick: (text: string) => void; nodeId?: string | undefined; questions?: string[] | undefined }) {
+  const t = useT();
+  const { lang } = useLanguage();
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-4 py-10 text-center">
       <div className="mb-5 grid size-12 place-items-center rounded-xl bg-accent text-accent-foreground">
         <Network className="size-6" />
       </div>
-      <h2 className="text-2xl font-semibold tracking-tight">Ask about a device, a symptom or a fix.</h2>
+      <h2 className="text-2xl font-semibold">{nodeId ? <>{t.empty.askAbout} <span className="font-mono">{nodeId}</span></> : t.empty.title}</h2>
       <div className="mt-8 flex flex-wrap justify-center gap-2">
-        {EXAMPLES.map((e) => (
-          <button
+        {(nodeId ? questions ?? [t.empty.knownIssues(nodeId)] : lang === "fi" ? EXAMPLES_FI : EXAMPLES).map((e) => (
+          <Button variant="outline"
             key={e}
             onClick={() => onPick(e)}
-            className="rounded-full border bg-card px-3.5 py-2 text-left text-sm text-card-foreground transition hover:border-primary hover:bg-accent active:scale-[0.98]"
+            className="h-auto min-h-11 max-w-full whitespace-normal rounded-full px-3.5 py-2 text-left text-sm font-normal"
           >
             {e}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

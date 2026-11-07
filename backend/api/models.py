@@ -9,6 +9,7 @@ class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None
     message: str = Field(min_length=1, max_length=4000)
     node_id: Optional[str] = Field(default=None, description="Device picked in the UI's device selector")
+    ui_language: Optional[Literal["en", "fi"]] = Field(default=None, description="Language of the UI. Answers follow the question's language; this is only used when that can't be told (very short messages, Gemini unavailable).")
 
 
 class FeedbackRequest(BaseModel):
@@ -19,6 +20,9 @@ class FeedbackRequest(BaseModel):
     comment: Optional[str] = Field(default=None, max_length=2000)
     user_name: Optional[str] = Field(default=None, max_length=120, description="Logged-in user (e.g. 'Erkki Expert')")
     user_role: Optional[str] = Field(default=None, max_length=60, description="e.g. 'Network Expert', 'Field Engineer', 'NOC Operator'")
+    # Structured outcome (vocabulary action codes), so the graph learns without Gemini guessing from text
+    tried_actions: Optional[list[str]] = Field(default=None, max_length=10, description="Action codes the engineer tried that did NOT fix it, e.g. ['BOUNCE_INTERFACE']")
+    resolved_by_action: Optional[str] = Field(default=None, max_length=64, description="Action code that DID fix it, e.g. 'REPLACE_PATCH_CABLE'")
 
 
 # ---------- knowledge cards ----------
@@ -69,6 +73,8 @@ class KnowledgeCard(BaseModel):
     sources: list[Source]
     conflicts_with: list["KnowledgeCard"] = []
     related_failed: list[FailedRef] = []
+    symptoms: list[str] = Field(default=[], description="Vocabulary codes, e.g. TRAFFIC_COUNTERS_ZERO")
+    events: list[str] = Field(default=[], description="Vocabulary codes for what happened before, e.g. SFP_REPLACEMENT")
     link: Optional[dict] = Field(default=None, description="How the knowledge reaches this device: "
                                  "{how: id|alias|location|site|scope, via, site, candidates}")
 
@@ -123,4 +129,5 @@ class Stats(BaseModel):
 class FeedbackResponse(BaseModel):
     ok: bool
     updated: list[dict]
-    comment_queued: bool
+    comment_queued: bool                       # free-text note sent through the capture pipeline (Gemini)
+    structured_queued: bool = False            # tips created directly from the action codes (no Gemini)

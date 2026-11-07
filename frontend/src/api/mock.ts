@@ -1,6 +1,7 @@
-import { findScenario, MOCK_NODES, MOCK_STATS, mockNodeDetail, NO_KNOWLEDGE_ANSWER } from "./mockData";
+import { findScenario, MOCK_NODES, MOCK_STATS, mockNodeDetail, NO_KNOWLEDGE_ANSWER, NO_KNOWLEDGE_ANSWER_FI } from "./mockData";
 import { ApiError } from "./client";
 import type { ApiClient } from "./types";
+import { findDeviceIds } from "@/lib/chat-store";
 
 function sleep(ms: number, signal?: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -58,14 +59,29 @@ export function createMockClient(): ApiClient {
     async chat(req, { onEvent }, signal) {
       const conversation_id = req.conversation_id ?? `mock-${crypto.randomUUID()}`;
       await sleep(500, signal);
-      onEvent({ type: "meta", conversation_id });
-      const scenario = findScenario(req.message, req.node_id);
-      const answer = scenario?.answer ?? NO_KNOWLEDGE_ANSWER;
+      const named = findDeviceIds(req.message)[0];
+      const device = named ?? req.node_id;
+      const resolved_nodes = device ? [device] : [];
+      const ignored_selection = named && req.node_id && named !== req.node_id ? req.node_id : null;
+      const overview = /known issues|all faults|what do we know/i.test(req.message);
+      onEvent({ type: "meta", conversation_id, resolved_nodes, ignored_selection,
+        resolution_note: null, question_type: overview ? "overview" : "problem" });
+      const scenario = findScenario(req.message, device);
+      const cards = overview && device ? mockNodeDetail(device)?.knowledge ?? [] : scenario?.cards ?? [];
+      const fi = req.ui_language === "fi";
+      const noKnowledge = fi ? NO_KNOWLEDGE_ANSWER_FI : NO_KNOWLEDGE_ANSWER;
+      const answer = overview
+        ? cards.length
+          ? fi
+            ? `Tunnetut viat laitteella ${device}:`
+            : `Known issues on ${device}:`
+          : noKnowledge
+        : (fi ? scenario?.answerFi : scenario?.answer) ?? noKnowledge;
       for (const chunk of chunkText(answer)) {
         await sleep(20 + Math.random() * 20, signal);
         onEvent({ type: "token", text: chunk });
       }
-      onEvent({ type: "cards", cards: scenario?.cards ?? [] });
+      onEvent({ type: "cards", cards });
       onEvent({ type: "done", message_id: `msg-${crypto.randomUUID()}` });
     },
   };

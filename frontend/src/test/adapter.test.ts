@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { adaptCard, adaptFeedback, adaptHealth, adaptNode, adaptNodeDetail } from "@/api/adapter";
+import { adaptCard, adaptFeedback, adaptHealth, adaptMeta, adaptNode, adaptNodeDetail } from "@/api/adapter";
 import { createRealClient } from "@/api/client";
 import { frameToEvent } from "@/api/sse";
 import type { StreamEvent } from "@/api/types";
@@ -19,6 +19,20 @@ const card = {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("backend adapter", () => {
+  it("retains typed resolution metadata and defaults missing fields", () => {
+    expect(adaptMeta({ conversation_id: "c", resolved_nodes: ["TRN-077", 7], ignored_selection: "TRN-031", resolution_note: "Message wins", question_type: "overview" })).toEqual({ type: "meta", conversation_id: "c", resolved_nodes: ["TRN-077"], ignored_selection: "TRN-031", resolution_note: "Message wins", question_type: "overview" });
+    expect(adaptMeta({ question_type: "history" }).question_type).toBe("history");
+    expect(adaptMeta({ question_type: "invalid" })).toEqual({ type: "meta", conversation_id: "", resolved_nodes: [], ignored_selection: null, resolution_note: null, question_type: "problem" });
+  });
+  it("retains symptoms and events on cards including conflicts", () => {
+    const payload = { ...card, symptoms: ["TRAFFIC_COUNTERS_ZERO"], events: ["SFP_REPLACEMENT"] };
+    const result = adaptCard({ ...payload, conflicts_with: [payload] });
+    expect(result.symptoms).toEqual(["TRAFFIC_COUNTERS_ZERO"]);
+    expect(result.events).toEqual(["SFP_REPLACEMENT"]);
+    expect(result.conflicts_with?.[0]?.symptoms).toEqual(["TRAFFIC_COUNTERS_ZERO"]);
+    expect(adaptCard({}).symptoms).toEqual([]);
+    expect(adaptCard({}).events).toEqual([]);
+  });
   it("maps node_type to type and preserves device facts", () => {
     expect(adaptNode(node)).toEqual({ ...node, type: "transmission", node_type: undefined });
   });
@@ -75,7 +89,7 @@ describe("live response boundaries", () => {
     for (const data of [[card], { cards: [card] }]) {
       expect(frameToEvent({ event: "cards", data: JSON.stringify(data) })).toEqual({ type: "cards", cards: [adaptCard(card)] });
     }
-    expect(frameToEvent({ event: "meta", data: JSON.stringify({ conversation_id: "chat-7", resolved_nodes: ["TRN-077"] }) })).toEqual({ type: "meta", conversation_id: "chat-7", resolved_nodes: ["TRN-077"] });
+    expect(frameToEvent({ event: "meta", data: JSON.stringify({ conversation_id: "chat-7", resolved_nodes: ["TRN-077"] }) })).toEqual(adaptMeta({ conversation_id: "chat-7", resolved_nodes: ["TRN-077"] }));
     expect(frameToEvent({ event: "done", data: '{"message_id":"answer-7"}' })).toEqual({ type: "done", message_id: "answer-7" });
   });
   it("adapts REST responses and sends the backend feedback shape", async () => {
@@ -95,13 +109,13 @@ describe("live response boundaries", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ conversation_id: "chat-7", message_id: "answer-7", answer: "Fixed", cards: [card] })));
     const events: StreamEvent[] = [];
     await createRealClient("https://backend.example").chat({ message: "TRN-077" }, { onEvent: e => events.push(e) });
-    expect(events).toEqual([{ type: "meta", conversation_id: "chat-7" }, { type: "token", text: "Fixed" }, { type: "cards", cards: [adaptCard(card)] }, { type: "done", message_id: "answer-7" }]);
+    expect(events).toEqual([adaptMeta({ conversation_id: "chat-7" }), { type: "token", text: "Fixed" }, { type: "cards", cards: [adaptCard(card)] }, { type: "done", message_id: "answer-7" }]);
   });
   it("adapts the real client's SSE flow and retains the message ID", async () => {
     const body = `event: meta\ndata: {"conversation_id":"chat-7"}\n\nevent: cards\ndata: ${JSON.stringify([card])}\n\nevent: done\ndata: {"message_id":"answer-7"}\n\n`;
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(body, { headers: { "Content-Type": "text/event-stream" } })));
     const events: StreamEvent[] = [];
     await createRealClient("https://backend.example").chat({ message: "TRN-077" }, { onEvent: e => events.push(e) });
-    expect(events).toEqual([{ type: "meta", conversation_id: "chat-7" }, { type: "cards", cards: [adaptCard(card)] }, { type: "done", message_id: "answer-7" }]);
+    expect(events).toEqual([adaptMeta({ conversation_id: "chat-7" }), { type: "cards", cards: [adaptCard(card)] }, { type: "done", message_id: "answer-7" }]);
   });
 });

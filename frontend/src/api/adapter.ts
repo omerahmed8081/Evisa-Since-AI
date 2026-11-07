@@ -1,5 +1,5 @@
 import type {
-  ChatResponse, FeedbackRequest, Health, KnowledgeCard, KnowledgeScope,
+  ChatMeta, ChatResponse, FeedbackRequest, Health, KnowledgeCard, KnowledgeScope,
   KnowledgeSource, Node, NodeDetail, NodeEvent, RelatedFailed, StreamEvent,
 } from "./types";
 
@@ -8,7 +8,7 @@ const object = (value: unknown): JsonObject =>
   value !== null && typeof value === "object" ? value as JsonObject : {};
 const text = (value: unknown): string => typeof value === "string" ? value : "";
 const array = (value: unknown): unknown[] => Array.isArray(value) ? value : [];
-const strings = (value: unknown): string[] => array(value).map(text);
+const strings = (value: unknown): string[] => array(value).filter((v): v is string => typeof v === "string");
 
 /** Optional backend nulls are omitted, so internal optional fields never contain null. */
 function optionalText<K extends string>(key: K, value: unknown): Partial<Record<K, string>> {
@@ -60,6 +60,7 @@ export function adaptCard(value: unknown): KnowledgeCard {
     status: (text(c["status"]) || "unconfirmed") as KnowledgeCard["status"],
     outcome: (text(c["outcome"]) || "unknown") as KnowledgeCard["outcome"],
     confidence: typeof c["confidence"] === "number" ? c["confidence"] : 0,
+    symptoms: strings(c["symptoms"]), events: strings(c["events"]),
     summary: text(c["summary"]), actions: adaptActions(c["actions"], c["actions_text"]),
     avoid: adaptActions(c["avoid"], c["avoid_text"]), scope,
     observed_on: strings(c["observed_on"]), sources: array(c["sources"]).map(adaptSource),
@@ -110,15 +111,25 @@ export function adaptChatResponse(value: unknown): ChatResponse {
   return {
     conversation_id: text(c["conversation_id"]), answer: text(c["answer"]),
     cards: adaptCards(c["cards"]), ...optionalText("message_id", c["message_id"]),
+    ...metaFields(c),
   };
 }
 
-// Preserve additional live metadata without changing the UI's internal event contract.
-export function adaptMeta(value: unknown): Extract<StreamEvent, { type: "meta" }> & { resolved_nodes?: unknown } {
+function metaFields(p: JsonObject): ChatMeta {
+  const kind = p["question_type"];
+  return {
+    resolved_nodes: strings(p["resolved_nodes"]),
+    ignored_selection: typeof p["ignored_selection"] === "string" ? p["ignored_selection"] : null,
+    resolution_note: typeof p["resolution_note"] === "string" ? p["resolution_note"] : null,
+    question_type: kind === "overview" || kind === "history" ? kind : "problem" as const,
+  };
+}
+
+export function adaptMeta(value: unknown): Extract<StreamEvent, { type: "meta" }> {
   const p = object(value);
   return {
     type: "meta", conversation_id: text(p["conversation_id"]),
-    ...(p["resolved_nodes"] != null ? { resolved_nodes: p["resolved_nodes"] } : {}),
+    ...metaFields(p),
   };
 }
 

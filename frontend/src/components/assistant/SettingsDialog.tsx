@@ -13,8 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { createRealClient, getSettings, resetSettings, saveSettings } from "@/api";
+import { useT } from "@/i18n";
 
 export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const t = useT();
   const [url, setUrl] = useState("");
   const [mock, setMock] = useState(true);
   const [test, setTest] = useState<"idle" | "testing" | "ok" | "fail">("idle");
@@ -54,12 +56,12 @@ export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenCh
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>Connect to the knowledge service or use built-in sample data.</DialogDescription>
+          <DialogTitle>{t.settings.title}</DialogTitle>
+          <DialogDescription>{t.settings.description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="api-url">API base URL</Label>
+            <Label htmlFor="api-url">{t.settings.apiUrl}</Label>
             <div className="flex gap-2">
               <Input
                 id="api-url"
@@ -72,39 +74,39 @@ export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenCh
               />
               <Button variant="outline" onClick={runTest} disabled={!url.trim() || test === "testing"}>
                 {test === "testing" && <Loader2 className="size-4 animate-spin" />}
-                Test connection
+                {t.settings.testConnection}
               </Button>
             </div>
             {test === "ok" && (
               <p className="flex items-center gap-1.5 text-sm text-success">
-                <CheckCircle2 className="size-4" /> Connected.
+                <CheckCircle2 className="size-4" /> {t.settings.connected}
               </p>
             )}
             {test === "fail" && (
               <p className="flex items-center gap-1.5 text-sm text-destructive">
-                <XCircle className="size-4" /> Couldn't reach /api/health.
+                <XCircle className="size-4" /> {t.settings.unreachable}
               </p>
             )}
           </div>
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>
-              <Label htmlFor="use-mock">Use mock data</Label>
-              <p className="text-xs text-muted-foreground">Sample answers, no server needed.</p>
+              <Label htmlFor="use-mock">{t.settings.useMock}</Label>
+              <p className="text-xs text-muted-foreground">{t.settings.mockHint}</p>
             </div>
             <Switch id="use-mock" checked={mock} onCheckedChange={setMock} />
           </div>
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs text-muted-foreground">
-              Defaults come from the build environment: VITE_API_BASE_URL and VITE_USE_MOCK.
+              {t.settings.defaultsHint}
             </p>
             <Button type="button" variant="link" size="sm" className="shrink-0 px-0" onClick={resetToDefaults}>
-              Reset to defaults
+              {t.settings.reset}
             </Button>
           </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t.settings.cancel}
           </Button>
           <Button
             onClick={() => {
@@ -112,7 +114,7 @@ export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenCh
               onOpenChange(false);
             }}
           >
-            Save
+            {t.settings.save}
           </Button>
         </DialogFooter>
       </DialogContent>

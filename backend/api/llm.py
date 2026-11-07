@@ -74,8 +74,11 @@ def with_retries(fn, what: str):
 
 
 def generate_json(prompt: str, system: str, schema, namespace: str):
-    """Structured output (Step A). Returns an instance of `schema`."""
-    key = cache.make_key(_chat_model(), system, prompt)
+    """Structured output (Step A). Returns an instance of `schema`.
+
+    The schema is part of the cache key: when fields are added (e.g. wants_overview), answers cached for
+    the old schema must not be reused, or the new fields would silently get their defaults."""
+    key = cache.make_key(_chat_model(), system, prompt, schema.model_json_schema())
     hit = cache.get(namespace, key)
     if hit is not None:
         return schema.model_validate(hit)

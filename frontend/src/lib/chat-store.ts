@@ -1,4 +1,4 @@
-import type { KnowledgeCard, Verdict } from "@/api/types";
+import type { ChatMeta, KnowledgeCard, Verdict } from "@/api/types";
 
 export interface ChatMessage {
   id: string;
@@ -12,6 +12,7 @@ export interface ChatMessage {
   messageId?: string | undefined;
   /** Chosen feedback verdict per assertion_id, persisted with the chat. */
   verdicts?: Record<string, Verdict> | undefined;
+  meta?: ChatMeta | undefined;
 }
 
 export interface StoredChat {
@@ -46,6 +47,18 @@ export function saveChats(chats: StoredChat[]) {
 /** Insert/replace a chat at the top, keeping at most MAX_CHATS. */
 export function upsertChat(chats: StoredChat[], chat: StoredChat): StoredChat[] {
   return [chat, ...chats.filter((c) => c.id !== chat.id)].slice(0, MAX_CHATS);
+}
+
+/** Remove a chat by id. */
+export function removeChat(chats: StoredChat[], id: string): StoredChat[] {
+  return chats.filter((c) => c.id !== id);
+}
+
+/** Re-insert a chat at its original position (used by undo), keeping at most MAX_CHATS. */
+export function insertChatAt(chats: StoredChat[], chat: StoredChat, index: number): StoredChat[] {
+  const without = chats.filter((c) => c.id !== chat.id);
+  const at = Math.max(0, Math.min(index, without.length));
+  return [...without.slice(0, at), chat, ...without.slice(at)].slice(0, MAX_CHATS);
 }
 
 export function titleFrom(message: string) {

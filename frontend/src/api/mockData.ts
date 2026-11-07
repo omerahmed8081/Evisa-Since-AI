@@ -46,6 +46,8 @@ export const MOCK_STATS: Stats = {
 };
 
 const base = {
+  symptoms: [],
+  events: [],
   actions: [],
   avoid: [],
   observed_on: [],
@@ -53,6 +55,7 @@ const base = {
 } satisfies Partial<KnowledgeCard>;
 
 const trn031Main: KnowledgeCard = {
+  symptoms: ["INTERFACE_UP", "TRAFFIC_COUNTERS_ZERO"], events: ["SFP_REPLACEMENT"],
   assertion_id: "T001-1",
   knowledge_ids: ["T001-1", "E001-1", "T002-1", "E006-1"],
   knowledge_type: "troubleshooting_rule",
@@ -129,6 +132,7 @@ const trn031Main: KnowledgeCard = {
 
 const trn031Fw: KnowledgeCard = {
   ...base,
+  symptoms: ["INTERFACE_UP", "TRAFFIC_COUNTERS_ZERO"], events: ["SFP_REPLACEMENT"],
   assertion_id: "E007-1",
   knowledge_ids: ["E007-1"],
   knowledge_type: "troubleshooting_rule",
@@ -147,6 +151,7 @@ const trn031Fw: KnowledgeCard = {
 };
 
 const bts233Main: KnowledgeCard = {
+  symptoms: ["CELL_DOWN"], events: ["POWER_OUTAGE"],
   assertion_id: "T004-1",
   knowledge_ids: ["T004-1", "C001-1"],
   knowledge_type: "troubleshooting_rule",
@@ -174,6 +179,7 @@ const bts233Main: KnowledgeCard = {
 
 const bts233Fw: KnowledgeCard = {
   ...base,
+  symptoms: ["CELL_DOWN"], events: ["POWER_OUTAGE"],
   assertion_id: "T016-1",
   knowledge_ids: ["T016-1"],
   knowledge_type: "troubleshooting_rule",
@@ -208,6 +214,7 @@ const accessCard: KnowledgeCard = {
 };
 
 const aggCard: KnowledgeCard = {
+  symptoms: ["CRC_ERRORS"], events: ["PATCH_CABLE_CHANGE"],
   assertion_id: "E002-1",
   knowledge_ids: ["E002-1", "T012-1"],
   knowledge_type: "troubleshooting_rule",
@@ -229,6 +236,7 @@ const aggCard: KnowledgeCard = {
 
 const mwIce: KnowledgeCard = {
   ...base,
+  symptoms: ["LINK_DOWN"], events: ["COLD_WEATHER"],
   assertion_id: "T003-1",
   knowledge_ids: ["T003-1"],
   knowledge_type: "troubleshooting_rule",
@@ -248,6 +256,7 @@ const mwIce: KnowledgeCard = {
 
 const mwPsu: KnowledgeCard = {
   ...base,
+  symptoms: ["LINK_DOWN"], events: ["COLD_WEATHER"],
   assertion_id: "T017-1",
   knowledge_ids: ["T017-1"],
   knowledge_type: "troubleshooting_rule",
@@ -271,6 +280,8 @@ export interface MockScenario {
   id: string;
   match: (text: string) => boolean;
   answer: string;
+  /** Finnish answer, used when the chat request carries ui_language "fi". */
+  answerFi: string;
   cards: KnowledgeCard[];
 }
 
@@ -282,6 +293,8 @@ export const MOCK_SCENARIOS: MockScenario[] = [
     match: (t) => has(t, "how do i get", "gate", "barrier", "access", "kolari", "road"),
     answer:
       "The road to the TRN-042 / BTS-233 site near Kolari has a locked barrier. The key is in a lockbox at the neighbouring farm (the red house just before the barrier), code **2580**. Please return the key.\n\nSource: Tiina Tuominen (email, 20 Nov 2024).",
+    answerFi:
+      "TRN-042 / BTS-233 -asemalle Kolarin lähellä johtavalla tiellä on lukittu portti. Avain on naapuritilan avainkaapissa (punainen talo juuri ennen porttia), koodi **2580**. Palauta avain käytön jälkeen.\n\nLähde: Tiina Tuominen (sähköposti, 20.11.2024).",
     cards: [accessCard],
   },
   {
@@ -289,6 +302,8 @@ export const MOCK_SCENARIOS: MockScenario[] = [
     match: (t) => has(t, "trn-031", "sfp", "no traffic"),
     answer:
       "Likely a forwarding-state issue after the SFP swap on an older transmission node.\n\n1. Check that the traffic counters are increasing.\n2. Disable and re-enable the interface.\n\n**Don't** reboot the whole unit or replace the SFP again: both were tried on similar units and didn't help.\n\nConfirmed on 3 devices by 4 sources (Erkki Expert, Teams and email, Mar 2025 – Feb 2026).",
+    answerFi:
+      "Kyseessä on luultavasti forwarding-tilan ongelma SFP-vaihdon jälkeen vanhemmalla transmissiosolmulla.\n\n1. Tarkista, että liikennelaskurit kasvavat.\n2. Ota portti alas ja nosta se takaisin ylös.\n\n**Älä** käynnistä koko laitetta uudelleen äläkä vaihda SFP:tä uudelleen: molempia on kokeiltu vastaavilla laitteilla eikä niistä ollut apua.\n\nVahvistettu 3 laitteella 4 lähteestä (Erkki Expert, Teams ja sähköposti, maalis 2025 – helmi 2026).",
     cards: [trn031Main, trn031Fw],
   },
   {
@@ -296,6 +311,8 @@ export const MOCK_SCENARIOS: MockScenario[] = [
     match: (t) => has(t, "bts-233", "cell down", "power outage", "sähkökatko"),
     answer:
       "Older base stations can keep the cell down after a power outage. A normal (warm) reboot does not help.\n\n1. Do a cold restart of the baseband unit.\n\n**Don't** do a warm reboot.\n\nBTS-233 runs firmware 2.4.1; the problem is fixed from 2.6, so the workaround still applies here. Confirmed on BTS-210 and BTS-233 by Sanna Siirto (Teams, Jun 2024; night call, Dec 2025).",
+    answerFi:
+      "Vanhemmilla tukiasemilla solu voi jäädä alas sähkökatkon jälkeen. Normaali (lämmin) uudelleenkäynnistys ei auta.\n\n1. Tee baseband-yksikölle kylmäkäynnistys.\n\n**Älä** tee lämmintä uudelleenkäynnistystä.\n\nBTS-233 käyttää ohjelmistoversiota 2.4.1; ongelma on korjattu versiosta 2.6 alkaen, joten kiertotie pätee edelleen tähän. Vahvistanut Sanna Siirto laitteilla BTS-210 ja BTS-233 (Teams, kesä 2024; yöpuhelu, joulu 2025).",
     cards: [bts233Main, bts233Fw],
   },
   {
@@ -303,6 +320,8 @@ export const MOCK_SCENARIOS: MockScenario[] = [
     match: (t) => has(t, "agg-003", "crc"),
     answer:
       "CRC errors on an aggregation router uplink right after cable work are almost always the patch cable.\n\n1. Replace the patch cable.\n\n**Don't** replace the line card first.\n\nConfirmed on AGG-012 and AGG-003 by Antti Aalto (email Nov 2024, Teams Jan 2025).",
+    answerFi:
+      "CRC-virheet aggregaattireitittimen uplinkissä heti kaapelointitöiden jälkeen johtuvat lähes aina patch-kaapelista.\n\n1. Vaihda patch-kaapeli.\n\n**Älä** vaihda linjakorttia ensin.\n\nVahvistanut Antti Aalto laitteilla AGG-012 ja AGG-003 (sähköposti marras 2024, Teams tammi 2025).",
     cards: [aggCard],
   },
   {
@@ -310,12 +329,17 @@ export const MOCK_SCENARIOS: MockScenario[] = [
     match: (t) => has(t, "mw-405", "pakka", "frost", "microwave", "linkki"),
     answer:
       "Experts disagree on this one.\n\n- **Erkki Expert:** link drops in snow or icing are caused by ice on the radome; clearing the ice restored the link (confirmed).\n- **Jari Jänne:** in hard frost (-32 °C, no ice) it is the outdoor unit power supply; replace the PSU (not confirmed).\n\nCheck the radome for ice first; if it is clear, report back so the PSU theory can be confirmed or ruled out.",
+    answerFi:
+      "Asiantuntijat ovat eri mieltä tästä.\n\n- **Erkki Expert:** linkin katkeilu lumessa tai jäätäessä johtuu suojakuvun jäästä; jään poisto palautti linkin (vahvistettu).\n- **Jari Jänne:** kovalla pakkasella (-32 °C, ei jäätä) kyse on ulkoyksikön virtalähteestä; vaihda virtalähde (ei vahvistettu).\n\nTarkista ensin suojakupu jään varalta; jos se on puhdas, ilmoita takaisin, jotta virtalähdeoteoria voidaan vahvistaa tai sulkea pois.",
     cards: [mwPsu],
   },
 ];
 
 export const NO_KNOWLEDGE_ANSWER =
   "No captured expert knowledge for this yet. Consider asking an expert.";
+
+export const NO_KNOWLEDGE_ANSWER_FI =
+  "Tähän ei ole vielä tallennettua asiantuntijatietoa. Harkitse asiantuntijalta kysymistä.";
 
 export function findScenario(message: string, nodeId?: string): MockScenario | null {
   const t = `${message} ${nodeId ?? ""}`.toLowerCase();
@@ -378,7 +402,12 @@ export const MOCK_EVENTS: Record<string, NodeEvent[]> = {
 /** All unique cards across scenarios. */
 function allCards(): KnowledgeCard[] {
   const seen = new Map<string, KnowledgeCard>();
-  for (const s of MOCK_SCENARIOS) for (const c of s.cards) seen.set(c.assertion_id, c);
+  const visit = (c: KnowledgeCard) => {
+    if (seen.has(c.assertion_id)) return;
+    seen.set(c.assertion_id, c);
+    c.conflicts_with?.forEach(visit);
+  };
+  for (const s of MOCK_SCENARIOS) s.cards.forEach(visit);
   return [...seen.values()];
 }
 

@@ -4,13 +4,8 @@ import { Loader2, Send, SkipForward, ThumbsDown, ThumbsUp, type LucideIcon } fro
 import { Button } from "@/components/ui/button";
 import { getClient, type Verdict } from "@/api";
 import { refreshStats } from "@/hooks/use-stats";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
-
-const VERDICTS: { v: Verdict; label: string; icon: LucideIcon }[] = [
-  { v: "worked", label: "This worked", icon: ThumbsUp },
-  { v: "failed", label: "Didn't work", icon: ThumbsDown },
-  { v: "skip", label: "Skip", icon: SkipForward },
-];
 
 export function FeedbackBar({
   assertionId,
@@ -24,10 +19,17 @@ export function FeedbackBar({
   verdict?: Verdict | undefined;
   onVerdict?: ((v: Verdict) => void) | undefined;
 }) {
+  const t = useT();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
   const [commentSent, setCommentSent] = useState(false);
+
+  const VERDICTS: { v: Verdict; label: string; icon: LucideIcon }[] = [
+    { v: "worked", label: t.feedback.worked, icon: ThumbsUp },
+    { v: "failed", label: t.feedback.failed, icon: ThumbsDown },
+    { v: "skip", label: t.feedback.skip, icon: SkipForward },
+  ];
 
   const post = async (v: Verdict, text: string | null) => {
     setPending(true);
@@ -43,8 +45,8 @@ export function FeedbackBar({
       if (text != null) {
         setCommentSent(true);
         setComment("");
-        if (res.comment_queued) toast.success("Thanks — your note will be added to the knowledge base.");
-        else toast.success("Thanks for the feedback.");
+        if (res.comment_queued) toast.success(t.feedback.noteQueued);
+        else toast.success(t.feedback.thanks);
       }
       return true;
     } catch {
@@ -99,7 +101,7 @@ export function FeedbackBar({
             onClick={() => verdict && choose(verdict)}
             className="text-xs text-destructive underline underline-offset-2 hover:no-underline"
           >
-            Couldn't save, retry
+            {t.feedback.saveFailed}
           </button>
         )}
       </div>
@@ -109,11 +111,11 @@ export function FeedbackBar({
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendComment()}
-            placeholder="What actually happened? (optional)"
+            placeholder={t.feedback.commentPlaceholder}
             className="h-8 min-w-0 flex-1 rounded-md border bg-background px-2.5 text-xs outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
           />
           <Button size="sm" variant="outline" className="h-8" onClick={sendComment} disabled={pending || !comment.trim()}>
-            {pending ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" />} Send
+            {pending ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" />} {t.feedback.send}
           </Button>
         </div>
       )}

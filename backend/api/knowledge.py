@@ -120,6 +120,7 @@ def group_assertions(ids, infos: dict, symptoms: list[str] | None = None, how: s
             "actions": max((a.get("actions") or [] for a in members), key=len),
             "avoid": sorted(set().union(*[set(a.get("avoid") or []) for a in members])),
             "symptoms": sorted(sym),
+            "events": sorted(set().union(*[set(a.get("events") or []) for a in members])),
             "details": [a["details"] for a in members if a.get("details")],
             "confidence": round(base if failed else min(retrieve.MAX_CONFIDENCE,
                                 base + retrieve.CONFIRMATION_BONUS * max(0, len(sources) - 1)), 2),
@@ -182,6 +183,7 @@ def build_card(group: dict, infos: dict, scope_note: str | None = None, force_st
         "symptom_match": group.get("symptom_match"),
         "how_it_applies": group.get("how_it_applies"),
         "symptoms": list(group.get("symptoms") or []),
+        "events": list(group.get("events") or []),
         "scope": scope,
         "scope_text": C.scope_text(scope, observed, group.get("link")),
         "link": group.get("link"),
@@ -247,7 +249,7 @@ def _attach_conflicts(cards: list[dict], infos: dict) -> list[dict]:
 
 def _clean(card: dict) -> dict:
     card.pop("_conflict_ids", None)
-    card.pop("symptoms", None)
+    # symptoms/events stay on the card: the UI turns them into device-specific example questions
     for c in card["conflicts_with"]:
         _clean(c)
     return card

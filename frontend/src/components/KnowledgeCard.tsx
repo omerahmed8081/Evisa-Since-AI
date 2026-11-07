@@ -1,5 +1,4 @@
 import { Children, cloneElement, isValidElement, useState, type ReactNode } from "react";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import {
   AlertTriangle,
@@ -26,15 +25,24 @@ import {
 import { Button } from "@/components/ui/button";
 import type { KnowledgeCard as KnowledgeCardData, KnowledgeSource, RelatedFailed, Verdict } from "@/api/types";
 import { FeedbackBar } from "@/components/FeedbackBar";
+import { en, fi, useLanguage, useT, type Lang } from "@/i18n";
 import { splitDeviceRefs } from "@/lib/device-refs";
+import { actionText, avoidText } from "@/lib/vocabulary";
 import { cn } from "@/lib/utils";
 
 export type DeviceSelectHandler = (nodeId: string) => void;
 
-export function formatCardDate(ts?: string): string {
+/** "12 Mar 2025" (en) / "12.3.2025" (fi), Europe/Helsinki. */
+export function formatCardDate(ts: string | undefined, lang: Lang = "en"): string {
   if (!ts) return "";
   const d = new Date(ts);
-  return Number.isNaN(d.getTime()) ? ts : format(d, "d MMM yyyy");
+  if (Number.isNaN(d.getTime())) return ts;
+  return new Intl.DateTimeFormat(lang === "fi" ? "fi-FI" : "en-GB", {
+    timeZone: "Europe/Helsinki",
+    day: "numeric",
+    month: lang === "fi" ? "numeric" : "short",
+    year: "numeric",
+  }).format(d);
 }
 
 /** Monospace device button; clicking selects the device and opens the device panel. */
@@ -75,13 +83,22 @@ export function linkifyDeviceChildren(children: ReactNode, onDeviceSelect?: Devi
   });
 }
 
-const TYPE_META: Record<string, { label: string; icon: LucideIcon }> = {
-  troubleshooting_rule: { label: "Troubleshooting", icon: Wrench },
-  warning: { label: "Known false alarm", icon: BellOff },
-  device_fact: { label: "Hardware compatibility", icon: Cpu },
-  procedure: { label: "Practical tip", icon: Lightbulb },
-  access_info: { label: "Site access", icon: KeyRound },
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  troubleshooting_rule: Wrench,
+  warning: BellOff,
+  known_false_alarm: BellOff,
+  device_fact: Cpu,
+  hardware_compatibility: Cpu,
+  procedure: Lightbulb,
+  practical_tip: Lightbulb,
+  access_info: KeyRound,
 };
+
+/** Knowledge-type badge meta in the active language. */
+export function typeMeta(type: string, lang: Lang = "en"): { label: string; icon: LucideIcon } {
+  const labels = (lang === "fi" ? fi : en).card.types as Record<string, string>;
+  return { label: labels[type] ?? (type ?? "").replace(/_/g, " "), icon: TYPE_ICONS[type] ?? Wrench };
+}
 
 interface StatusMeta {
   label: string;
@@ -89,23 +106,19 @@ interface StatusMeta {
   className: string;
 }
 
-const OUTDATED_META: StatusMeta = { label: "Outdated", icon: Clock, className: "bg-muted text-muted-foreground" };
-
-const STATUS_META: Record<string, StatusMeta> = {
-  confirmed: { label: "Confirmed", icon: CheckCircle2, className: "bg-success/15 text-success" },
-  disputed: {
-    label: "Disputed",
-    icon: AlertTriangle,
-    className: "bg-warning/20 text-warning-foreground dark:text-warning",
-  },
-  superseded: OUTDATED_META,
-  outdated: OUTDATED_META,
-  unconfirmed: { label: "Unconfirmed", icon: HelpCircle, className: "bg-secondary text-secondary-foreground" },
+const STATUS_STYLE: Record<string, { icon: LucideIcon; className: string }> = {
+  confirmed: { icon: CheckCircle2, className: "bg-success/15 text-success" },
+  disputed: { icon: AlertTriangle, className: "bg-warning/20 text-warning-foreground dark:text-warning" },
+  superseded: { icon: Clock, className: "bg-muted text-muted-foreground" },
+  outdated: { icon: Clock, className: "bg-muted text-muted-foreground" },
+  unconfirmed: { icon: HelpCircle, className: "bg-secondary text-secondary-foreground" },
 };
 
 /** Status badge meta; unknown statuses fall back to "Unconfirmed". */
-export function statusMeta(status: string): StatusMeta {
-  return STATUS_META[status] ?? { label: "Unconfirmed", icon: HelpCircle, className: "bg-secondary text-secondary-foreground" };
+export function statusMeta(status: string, lang: Lang = "en"): StatusMeta {
+  const labels = (lang === "fi" ? fi : en).card.status as Record<string, string>;
+  const style = STATUS_STYLE[status] ?? STATUS_STYLE["unconfirmed"]!;
+  return { label: labels[status] ?? labels["unconfirmed"]!, ...style };
 }
 
 /** Outdated cards are greyed out and carry the 🕓 badge. */
@@ -113,16 +126,17 @@ export function isOutdated(status: string): boolean {
   return status === "outdated" || status === "superseded";
 }
 
-const SOURCE_META: Record<string, { label: string; icon: LucideIcon }> = {
-  teams: { label: "Teams", icon: MessageSquare },
-  email: { label: "Email", icon: Mail },
-  call: { label: "Call", icon: Phone },
-  feedback: { label: "Feedback", icon: MessageCircle },
-  manual: { label: "Manual", icon: Pencil },
+const SOURCE_ICONS: Record<string, LucideIcon> = {
+  teams: MessageSquare,
+  email: Mail,
+  call: Phone,
+  feedback: MessageCircle,
+  manual: Pencil,
 };
 
-function sourceMeta(type: string) {
-  return SOURCE_META[type] ?? { label: type, icon: Pencil };
+function sourceMeta(type: string, lang: Lang) {
+  const labels = (lang === "fi" ? fi : en).card.sourceTypes as Record<string, string>;
+  return { label: labels[type] ?? type, icon: SOURCE_ICONS[type] ?? Pencil };
 }
 
 function SectionTitle({ children, className }: { children: ReactNode; className?: string }) {
@@ -135,7 +149,8 @@ function SectionTitle({ children, className }: { children: ReactNode; className?
 
 function SourceChip({ source }: { source: KnowledgeSource }) {
   const [open, setOpen] = useState(false);
-  const meta = sourceMeta(source.source_type);
+  const { lang } = useLanguage();
+  const meta = sourceMeta(source.source_type, lang);
   const Icon = meta.icon;
   const quote = source.excerpt ?? source.note;
   return (
@@ -150,7 +165,7 @@ function SourceChip({ source }: { source: KnowledgeSource }) {
       >
         <Icon className="size-3.5 shrink-0" />
         <span className="truncate">
-          {meta.label} · {source.author} · {formatCardDate(source.timestamp)}
+          {meta.label} · {source.author} · {formatCardDate(source.timestamp, lang)}
         </span>
       </button>
       <div
@@ -173,11 +188,12 @@ function SourceChip({ source }: { source: KnowledgeSource }) {
 
 function Sources({ sources }: { sources: KnowledgeSource[] }) {
   const [showAll, setShowAll] = useState(false);
+  const t = useT();
   if (!sources.length) return null;
   const visible = showAll ? sources : sources.slice(0, 3);
   return (
     <section>
-      <SectionTitle>Sources</SectionTitle>
+      <SectionTitle>{t.card.sources}</SectionTitle>
       <div className="flex flex-wrap items-start gap-1.5">
         {visible.map((s) => (
           <SourceChip key={s.source_id} source={s} />
@@ -188,7 +204,7 @@ function Sources({ sources }: { sources: KnowledgeSource[] }) {
             onClick={() => setShowAll(true)}
             className="rounded-full border border-dashed px-2.5 py-1 text-xs text-muted-foreground transition hover:text-foreground"
           >
-            +{sources.length - 3} more
+            {t.card.moreSources(sources.length - 3)}
           </button>
         )}
       </div>
@@ -197,12 +213,13 @@ function Sources({ sources }: { sources: KnowledgeSource[] }) {
 }
 
 function DetailsBlock({ details }: { details: string }) {
+  const t = useT();
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(details);
-      toast.success("Copied", { duration: 1500 });
+      toast.success(t.card.copied, { duration: 1500 });
     } catch {
-      toast.error("Copy failed", { duration: 1500 });
+      toast.error(t.card.copyFailed, { duration: 1500 });
     }
   };
   return (
@@ -211,7 +228,7 @@ function DetailsBlock({ details }: { details: string }) {
       <button
         type="button"
         onClick={copy}
-        aria-label="Copy details"
+        aria-label={t.card.copyDetails}
         className="-mr-1 -mt-0.5 shrink-0 rounded p-1 text-muted-foreground transition hover:bg-background hover:text-foreground"
       >
         <Copy className="size-3.5" />
@@ -221,17 +238,19 @@ function DetailsBlock({ details }: { details: string }) {
 }
 
 function Steps({ card }: { card: KnowledgeCardData }) {
+  const t = useT();
+  const { lang } = useLanguage();
   if (!(card.actions ?? []).length) return null;
   return (
     <section>
-      <SectionTitle>Recommended steps</SectionTitle>
+      <SectionTitle>{t.card.steps}</SectionTitle>
       <ol className="space-y-1.5">
         {(card.actions ?? []).map((a, i) => (
           <li key={a.code} className="animate-msg-in flex gap-2 text-sm" style={{ animationDelay: `${i * 50}ms` }}>
             <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 font-mono text-[11px] font-medium text-primary">
               {i + 1}
             </span>
-            <span>{a.text}</span>
+            <span>{actionText(a, lang)}</span>
           </li>
         ))}
       </ol>
@@ -240,15 +259,17 @@ function Steps({ card }: { card: KnowledgeCardData }) {
 }
 
 function AvoidList({ card }: { card: KnowledgeCardData }) {
+  const t = useT();
+  const { lang } = useLanguage();
   if (!(card.avoid ?? []).length) return null;
   return (
     <section>
-      <SectionTitle className="text-destructive">Avoid</SectionTitle>
+      <SectionTitle className="text-destructive">{t.card.avoid}</SectionTitle>
       <ul className="space-y-1">
         {(card.avoid ?? []).map((a) => (
           <li key={a.code} className="flex gap-2 text-sm text-destructive">
             <Ban className="mt-0.5 size-4 shrink-0" />
-            <span>{a.text}</span>
+            <span>{avoidText(a, lang)}</span>
           </li>
         ))}
       </ul>
@@ -257,6 +278,7 @@ function AvoidList({ card }: { card: KnowledgeCardData }) {
 }
 
 function ScopeLine({ card, onDeviceSelect }: { card: KnowledgeCardData; onDeviceSelect?: DeviceSelectHandler | undefined }) {
+  const t = useT();
   // "Only the device(s) …" scope just repeats the Seen-on chips — skip it.
   const scopeText = card.scope_text?.startsWith("Only the device") ? undefined : card.scope_text;
   if (!scopeText && !(card.observed_on ?? []).length) return null;
@@ -264,13 +286,13 @@ function ScopeLine({ card, onDeviceSelect }: { card: KnowledgeCardData; onDevice
     <section className="text-sm">
       {scopeText && (
         <p>
-          <span className="text-muted-foreground">Applies to: </span>
+          <span className="text-muted-foreground">{t.card.appliesTo} </span>
           {scopeText}
         </p>
       )}
       {(card.observed_on ?? []).length > 0 && (
         <p className="mt-1 flex flex-wrap items-center gap-1">
-          <span className="text-muted-foreground">Seen on:</span>
+          <span className="text-muted-foreground">{t.card.seenOn}</span>
           {(card.observed_on ?? []).map((id) => (
             <DeviceChip key={id} id={id} onSelect={onDeviceSelect} />
           ))}
@@ -281,36 +303,42 @@ function ScopeLine({ card, onDeviceSelect }: { card: KnowledgeCardData; onDevice
 }
 
 function ValidLine({ card }: { card: KnowledgeCardData }) {
+  const t = useT();
+  const { lang } = useLanguage();
   if (!card.valid_from) return null;
-  return (
-    <p className="text-xs text-muted-foreground">
-      {card.valid_to ? (
-        <>
-          Valid: {formatCardDate(card.valid_from)} → <s>{formatCardDate(card.valid_to)} (superseded)</s>
-        </>
-      ) : (
-        <>Valid: since {formatCardDate(card.valid_from)}</>
-      )}
-    </p>
-  );
+  if (card.valid_to) {
+    const text = t.card.validUntil(formatCardDate(card.valid_from, lang), formatCardDate(card.valid_to, lang));
+    const to = formatCardDate(card.valid_to, lang);
+    const [before, after] = text.split(to);
+    return (
+      <p className="text-xs text-muted-foreground">
+        {before}
+        <s>{to}</s>
+        {after}
+      </p>
+    );
+  }
+  return <p className="text-xs text-muted-foreground">{t.card.validSince(formatCardDate(card.valid_from, lang))}</p>;
 }
 
 /** Compact muted section for things that were tried and failed — never styled as advice. */
 function WhatDidntWork({ items }: { items: RelatedFailed[] }) {
+  const t = useT();
+  const { lang } = useLanguage();
   if (!items.length) return null;
   return (
     <section className="rounded-md bg-muted/50 px-3 py-2">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">What didn't work</p>
+      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t.card.whatDidntWork}</p>
       <ul className="mt-1.5 space-y-1.5">
         {items.map((f) => {
-          const Icon = sourceMeta(f.source_type).icon;
+          const Icon = sourceMeta(f.source_type, lang).icon;
           return (
             <li key={f.assertion_id} className="flex gap-2 text-sm text-muted-foreground">
               <X className="mt-0.5 size-4 shrink-0" />
               <span>
                 {f.summary}{" "}
                 <span className="ml-1 inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-px align-middle text-[11px]">
-                  <Icon className="size-3" /> {f.author} · {formatCardDate(f.date)}
+                  <Icon className="size-3" /> {f.author} · {formatCardDate(f.date, lang)}
                 </span>
               </span>
             </li>
@@ -323,9 +351,10 @@ function WhatDidntWork({ items }: { items: RelatedFailed[] }) {
 
 /** A top-level card whose outcome is "failed" renders as a compact "What didn't work" card. */
 function FailedCard({ card }: { card: KnowledgeCardData }) {
+  const t = useT();
   return (
     <div className="rounded-lg border bg-muted/40 p-3">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">What didn't work</p>
+      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t.card.whatDidntWork}</p>
       <p className="mt-1 flex gap-2 text-sm text-muted-foreground">
         <X className="mt-0.5 size-4 shrink-0" />
         {card.summary}
@@ -339,10 +368,11 @@ function FailedCard({ card }: { card: KnowledgeCardData }) {
 
 /** One side of a disputed card, labelled with the expert who said it. */
 function Opinion({ card }: { card: KnowledgeCardData }) {
-  const author = card.sources?.[0]?.author ?? "Expert";
+  const t = useT();
+  const author = card.sources?.[0]?.author ?? t.card.expert;
   return (
     <div className="min-w-0 rounded-md border bg-background/60 p-3">
-      <p className="text-xs font-medium text-muted-foreground">{author} says…</p>
+      <p className="text-xs font-medium text-muted-foreground">{t.card.says(author)}</p>
       <p className="mt-1 text-sm font-medium leading-snug">{card.summary}</p>
       <div className="mt-2 space-y-2.5">
         <Steps card={card} />
@@ -358,6 +388,7 @@ function Opinion({ card }: { card: KnowledgeCardData }) {
  * "Not needed…" = grey outdated note, "Not yet…" = blue "Upgrade fixes this" note.
  */
 export function ScopeNote({ card, className }: { card: KnowledgeCardData; className?: string }) {
+  const t = useT();
   const note = card.scope_note;
   if (!note) return null;
   if (note.startsWith("Not needed")) {
@@ -382,7 +413,7 @@ export function ScopeNote({ card, className }: { card: KnowledgeCardData; classN
       >
         <ArrowUpCircle className="mt-px size-3.5 shrink-0" />
         <span>
-          <span className="font-medium">Upgrade fixes this.</span> {note}
+          <span className="font-medium">{t.card.upgradeFixes}</span> {note}
         </span>
       </span>
     );
@@ -409,6 +440,8 @@ export function KnowledgeCard({
   verdict?: Verdict | undefined;
   onVerdict?: ((v: Verdict) => void) | undefined;
 }) {
+  const t = useT();
+  const { lang } = useLanguage();
   if (card.outcome === "failed") return <FailedCard card={card} />;
 
   const disputed = card.status === "disputed";
@@ -416,11 +449,8 @@ export function KnowledgeCard({
   const notNeeded = card.scope_note?.startsWith("Not needed") ?? false;
   const notYet = !notNeeded && (card.scope_note?.startsWith("Not yet") ?? false);
   const greyed = isOutdated(card.status) || notNeeded;
-  const type = TYPE_META[card.knowledge_type] ?? {
-    label: (card.knowledge_type ?? "").replace(/_/g, " "),
-    icon: Wrench,
-  };
-  const status = statusMeta(card.status);
+  const type = typeMeta(card.knowledge_type, lang);
+  const status = statusMeta(card.status, lang);
   const TypeIcon = type.icon;
   const StatusIcon = status.icon;
   const pct = Math.round((card.confidence ?? 0) * 100);
@@ -441,7 +471,7 @@ export function KnowledgeCard({
         </span>
         {disputed ? (
           <span className="inline-flex items-center gap-1.5 rounded-md bg-warning/20 px-2 py-0.5 text-xs font-medium text-warning-foreground dark:text-warning">
-            <AlertTriangle className="size-3.5" /> Experts disagree
+            <AlertTriangle className="size-3.5" /> {t.card.expertsDisagree}
           </span>
         ) : (
           <span
@@ -457,7 +487,7 @@ export function KnowledgeCard({
           <span className="hidden h-1 w-16 overflow-hidden rounded-full bg-muted sm:block">
             <span className="block h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
           </span>
-          {pct}% · {(card.sources ?? []).length} source{(card.sources ?? []).length === 1 ? "" : "s"}
+          {pct}% · {t.card.sourceCount((card.sources ?? []).length)}
         </span>
       </header>
 
@@ -513,6 +543,7 @@ export function KnowledgeCards({
   onVerdict?: ((assertionId: string, v: Verdict) => void) | undefined;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const t = useT();
   if (!cards.length) return null;
   const visible = expanded ? cards : cards.slice(0, 2);
   return (
@@ -529,7 +560,7 @@ export function KnowledgeCards({
       ))}
       {!expanded && cards.length > 2 && (
         <Button variant="outline" size="sm" onClick={() => setExpanded(true)}>
-          <ChevronDown className="size-4" /> Show {cards.length - 2} more tips
+          <ChevronDown className="size-4" /> {t.card.showMore(cards.length - 2)}
         </Button>
       )}
     </div>
@@ -538,19 +569,20 @@ export function KnowledgeCards({
 
 /** Shown when the service returns no cards at all. */
 export function NoKnowledgeBox({ question }: { question?: string | undefined }) {
+  const t = useT();
   const ask = async () => {
     try {
       await navigator.clipboard.writeText(question ?? "");
-      toast.success("Question copied — paste it to an expert", { duration: 1500 });
+      toast.success(t.card.questionCopied, { duration: 1500 });
     } catch {
-      toast.error("Copy failed", { duration: 1500 });
+      toast.error(t.card.copyFailed, { duration: 1500 });
     }
   };
   return (
     <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-dashed bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-      <span className="min-w-40 flex-1">No captured expert knowledge for this yet.</span>
+      <span className="min-w-40 flex-1">{t.card.noKnowledge}</span>
       <Button size="sm" variant="outline" onClick={ask}>
-        <Copy className="size-3.5" /> Ask an expert
+        <Copy className="size-3.5" /> {t.card.askExpert}
       </Button>
     </div>
   );

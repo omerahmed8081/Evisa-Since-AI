@@ -144,6 +144,10 @@ def compact_for_llm(card: dict) -> dict:
         "seen_on": card["observed_on"],
         "sources": [f"{s.get('author') or 'unknown'} ({s['channel']}, {short_date(s.get('timestamp'))})"
                     for s in card["sources"]],
+        # Exact numbers, so the answer never has to count (it used to say "2 sources" for 4)
+        "source_count": len({s.get("thread_id") or i for i, s in enumerate(card["sources"])}),
+        "device_count": len(card["observed_on"]),
+        "authors": sorted({s["author"] for s in card["sources"] if s.get("author")}),
     }
     if card.get("details"):
         out["details"] = card["details"]
@@ -153,7 +157,11 @@ def compact_for_llm(card: dict) -> dict:
         if card.get("scope_note"):
             out["history"] = card["scope_note"]
     elif card.get("scope_note"):
-        out["not_applicable_because"] = card["scope_note"]
+        # Two opposite firmware cases (see knowledge._outdated_cards); they used to share one field, so
+        # "fixed from 3.4" on a 3.3.0 device was read as "doesn't apply" instead of "upgrade fixes it".
+        note = card["scope_note"]
+        key = "upgrade_fixes_this" if note.startswith("Not yet") else "not_needed_on_this_device"
+        out[key] = note
     if card.get("related_failed"):
         out["tried_and_failed"] = [
             f["summary"] + (f" (seen on {', '.join(f['observed_on'])})" if f.get("observed_on") else "")

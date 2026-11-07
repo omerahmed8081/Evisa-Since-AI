@@ -19,6 +19,10 @@ def chat_events(req: ChatRequest):
 
     # Step A
     u = understand.understand(req.message, req.node_id, hist, store.last_nodes(cid))
+    # Answers follow the question's language. Only when that can't be told (Gemini down, or a message like
+    # "TRN-031?") the UI's language decides.
+    if req.ui_language and (u.by == "fallback" or u.language not in ("en", "fi") or len(req.message.split()) <= 2):
+        u.language = req.ui_language
     # Step B
     if u.node_ids:
         k = knowledge.for_devices(u.node_ids, u.symptoms, u.events, u.wants_access_info,

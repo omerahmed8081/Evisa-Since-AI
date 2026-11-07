@@ -21,13 +21,23 @@ def post_feedback(req: FeedbackRequest, background: BackgroundTasks, request: Re
         raise HTTPException(422, "Give assertion_id (or assertion_ids)")
 
     comment = (req.comment or "").strip() or None
+    # Structured outcome: only codes that exist in the vocabulary count
+    tried = feedback.valid_action_codes(req.tried_actions) if req.tried_actions else []
+    resolved = (feedback.valid_action_codes([req.resolved_by_action]) or [None])[0] if req.resolved_by_action else None
     updated, note_ids = feedback.record(ids, req.verdict, comment, req.message_id,
-                                        devices=(message or {}).get("node_ids"), user=user)
+                                        devices=(message or {}).get("node_ids"), user=user,
+                                        tried_actions=tried or None, resolved_by_action=resolved)
     if not updated:
         raise HTTPException(404, "None of the given assertions exist")
 
-    queued = len(comment or "") >= MIN_COMMENT_CHARS
+    # Codes -> tips directly (no Gemini); the note is kept as the tip's details.
+    # Only free text without usable codes ("Something else…") goes through the Gemini capture pipeline.
+    structured = bool(resolved or (tried and req.verdict == "failed"))
+    if structured:
+        background.add_task(feedback.capture_structured, req.verdict, ids, message, shown.get("summary"),
+                            tried, resolved, comment, note_ids, user)
+    queued = not structured and len(comment or "") >= MIN_COMMENT_CHARS
     if queued:
         background.add_task(feedback.ingest_comment, comment, req.verdict, ids, message, shown.get("summary"),
                             note_ids, user)
-    return {"ok": True, "updated": updated, "comment_queued": queued}
+    return {"ok": True, "updated": updated, "comment_queued": queued, "structured_queued": structured}

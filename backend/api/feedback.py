@@ -71,7 +71,8 @@ RETURN a.id AS id, a.confidence AS confidence, a.status AS status,
 
 CREATE_QUERY = """
 MATCH (a:Assertion {id: $aid})
-CREATE (f:Feedback {id: $fid, verdict: $verdict, comment: $comment, message_id: $mid, created_at: datetime()})
+CREATE (f:Feedback {id: $fid, verdict: $verdict, comment: $comment, message_id: $mid, created_at: datetime(),
+                    tried_actions: $tried_actions, resolved_by_action: $resolved_by_action})
 CREATE (f)-[:ABOUT]->(a)
 MERGE (p:Person {name: $user_name})
 SET p.role = coalesce($user_role, p.role)
@@ -104,7 +105,9 @@ def _apply(aid: str, verdict: str, sign: int) -> dict | None:
 
 
 def record(ids: list[str], verdict: str, comment: str | None, message_id: str | None,
-           devices: list[str] | None = None, user: dict | None = None) -> tuple[list[dict], list[str]]:
+           devices: list[str] | None = None, user: dict | None = None,
+           tried_actions: list[str] | None = None, resolved_by_action: str | None = None
+           ) -> tuple[list[dict], list[str]]:
     """Apply one vote to every assertion of a card. Returns (new state per assertion, Feedback ids that
     hold the note, used to link the note to what it became in the graph)."""
     updated, note_ids = [], []
@@ -115,9 +118,15 @@ def record(ids: list[str], verdict: str, comment: str | None, message_id: str | 
         prev = dict(prev[0]) if prev else None
 
         if prev and prev["verdict"] == verdict:
-            # Same vote again (the note arriving): attach the note, don't count twice
+            # Same vote again (the note / chosen option arriving): attach it, don't count twice
             if comment:
                 graph.run("MATCH (f:Feedback {id: $id}) SET f.comment = $c", id=prev["id"], c=comment)
+            if tried_actions or resolved_by_action:
+                graph.run("MATCH (f:Feedback {id: $id}) "
+                          "SET f.tried_actions = coalesce($tried_actions, f.tried_actions), "
+                          "f.resolved_by_action = coalesce($resolved_by_action, f.resolved_by_action)",
+                          id=prev["id"], tried_actions=tried_actions or None, resolved_by_action=resolved_by_action)
+            if comment or tried_actions or resolved_by_action:
                 note_ids.append(prev["id"])
             state = graph.run(STATE_QUERY, aid=aid)
             updated.append(dict(state[0]))
@@ -135,8 +144,9 @@ def record(ids: list[str], verdict: str, comment: str | None, message_id: str | 
         fid = f"FB-{uuid.uuid4().hex[:10]}-{aid}"
         graph.run(CREATE_QUERY, aid=aid, fid=fid, verdict=verdict, comment=comment, mid=message_id,
                   devices=list(devices or []), user_name=(user or {}).get("name") or "Field Engineer",
-                  user_role=(user or {}).get("role"))
-        if comment:
+                  user_role=(user or {}).get("role"),
+                  tried_actions=list(tried_actions or []) or None, resolved_by_action=resolved_by_action)
+        if comment or tried_actions or resolved_by_action:
             note_ids.append(fid)
         updated.append(_apply(aid, verdict, +1))
     return [u for u in updated if u], note_ids
@@ -200,3 +210,106 @@ def ingest_comment(comment: str, verdict: str, ids: list[str], message: dict | N
         log.info("Feedback comment ingested as %s", thread["thread_id"])
     except Exception:
         log.exception("Could not ingest feedback comment")
+
+
+# ---------- structured outcomes: tips straight from vocabulary codes (no Gemini extraction) ----------
+def valid_action_codes(codes: list[str] | None) -> list[str]:
+    """Keep only codes that exist as action terms in the vocabulary (the UI offers only those)."""
+    codes = [c for c in dict.fromkeys(codes or []) if c]
+    if not codes:
+        return []
+    rows = graph.run("MATCH (t:Term {category: 'action'}) WHERE t.name IN $codes RETURN t.name AS name", codes=codes)
+    known = {r["name"] for r in rows}
+    return [c for c in codes if c in known]
+
+
+CARD_CONTEXT_QUERY = """
+MATCH (a:Assertion) WHERE a.id IN $ids
+RETURN a.symptoms AS symptoms, a.events AS events, a.knowledge_type AS knowledge_type
+"""
+
+_NORMAL_STATES = {"INTERFACE_UP", "OPTICAL_LEVELS_NORMAL", "ALARMS_CLEARED"}
+
+
+def _phrase(code: str) -> str:
+    from api.cards import action_text
+    return action_text(code) if code else ""
+
+
+def _symptom_words(symptoms: list[str]) -> str:
+    from api.cards import humanize
+    main = [s for s in symptoms if s not in _NORMAL_STATES] or symptoms
+    return humanize(main[0]).lower() if main else "the problem"
+
+
+def _reconcile(assertion_id: str, reporter: dict | None):
+    from pipeline import reconcile
+    reconcile.reconcile(assertion_id, reporter)
+
+
+def capture_structured(verdict: str, ids: list[str], message: dict | None, summary: str | None,
+                       tried_actions: list[str] | None, resolved_by_action: str | None, comment: str | None,
+                       feedback_ids: list[str] | None = None, user: dict | None = None):
+    """Background task: the engineer's chosen options become tips directly, built from the codes.
+
+    - tried_actions (didn't help)  -> a 'failed attempt' tip (shows under "What didn't work")
+    - resolved_by_action (fixed it) -> a 'worked' tip with that action as the fix
+    Symptoms and events come from the card the engineer answered, so the new tips describe the same problem.
+    They are bound to the device(s) of the question; reconcile then relates them to older tips."""
+    from pipeline.ingest import BASE_CONFIDENCE, reporter_confidence
+
+    try:
+        nodes = (message or {}).get("node_ids") or _devices_of(ids)
+        devices = ", ".join(nodes) or "an unnamed device"
+        ctx = [dict(r) for r in graph.run(CARD_CONTEXT_QUERY, ids=list(ids))]
+        symptoms = sorted({x for r in ctx for x in (r.get("symptoms") or [])})
+        events = sorted({x for r in ctx for x in (r.get("events") or [])})
+        problem = _symptom_words(symptoms)
+        now = _now()
+        who = (user or {}).get("name") or "Field Engineer"
+        role = (user or {}).get("role") or "Field Engineer"
+        reporter = {"name": who, "role": role, "app": APP_NAME, "date": now[:10]}
+        tried = [_phrase(c) for c in tried_actions or []]
+        thread_id = f"FB-{uuid.uuid4().hex[:8].upper()}"
+        text = (f"Structured report in {APP_NAME} by {who} ({role}) on {devices}. "
+                f"Question: {(message or {}).get('question') or '-'} Suggested tip: {summary or '-'} "
+                f"Verdict: {verdict}. Tried without success: {', '.join(tried) or '-'}. "
+                f"Fixed by: {_phrase(resolved_by_action) if resolved_by_action else '-'}. Note: {comment or '-'}")
+        thread = {"thread_id": thread_id, "channel": APP_NAME, "language": None, "subject": f"Report on {devices}",
+                  "participants": [who], "reported_by": reporter,
+                  "messages": [{"seq": 1, "timestamp": now, "author": who, "role": role, "text": text}]}
+
+        base = {"source_id": thread_id, "knowledge_type": "troubleshooting_rule", "events": events,
+                "symptoms": symptoms, "avoid": [], "author": who, "observed_on": list(nodes),
+                "scope_node_type": None, "scope_installed_before": None, "scope_firmware_below": None,
+                "scope_firmware_at_least": None, "valid_from": now}
+        tips = []
+        if tried_actions and verdict == "failed":
+            tips.append({**base, "id": f"{thread_id}-1", "outcome": "failed", "actions": list(tried_actions),
+                         "confidence": BASE_CONFIDENCE["failed"], "details": None,
+                         "summary": f"On {devices}, {' and '.join(t.lower() for t in tried)} did not fix "
+                                    f"{problem} (reported by {who} in {APP_NAME})."})
+        if resolved_by_action:
+            fix = _phrase(resolved_by_action)
+            tips.append({**base, "id": f"{thread_id}-2", "outcome": "worked", "actions": [resolved_by_action],
+                         "confidence": max(BASE_CONFIDENCE["worked"], reporter_confidence(reporter)),
+                         "details": comment or None,
+                         "summary": f"On {devices}, {problem} was fixed by: {fix[:1].lower() + fix[1:]}"
+                                    + (f" (after {', '.join(t.lower() for t in tried)} did not help)" if tried else "")
+                                    + f". Reported by {who} in {APP_NAME}."})
+        if not tips:
+            return
+        with _ingest_lock:
+            graph.save_source(thread, text)
+            for a in tips:
+                graph.save_assertion(a)
+                graph.link_terms(a)
+            for a in tips:
+                _reconcile(a["id"], reporter)
+            graph.mark_source_done(thread_id)
+        graph.run("MERGE (p:Person {name: $n}) SET p.role = $r", n=who, r=role)
+        graph.run("UNWIND $fids AS fid MATCH (f:Feedback {id: fid}) MATCH (s:Source {id: $sid}) "
+                  "MERGE (f)-[:CAPTURED_AS]->(s)", fids=list(feedback_ids or []), sid=thread_id)
+        log.info("Structured feedback captured as %s: %s", thread_id, [a["id"] for a in tips])
+    except Exception:
+        log.exception("Could not capture structured feedback")

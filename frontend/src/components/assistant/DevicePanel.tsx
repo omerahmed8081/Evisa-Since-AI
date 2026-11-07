@@ -1,236 +1,83 @@
-import { useCallback, useEffect, useState } from "react";
-import { format } from "date-fns";
-import {
-  AlertTriangle,
-  ArrowUpCircle,
-  Bell,
-  CheckCircle2,
-  ChevronRight,
-  ClipboardList,
-  Cpu,
-  MessageSquarePlus,
-  RotateCcw,
-  Truck,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertTriangle, ChevronRight, ChevronsUpDown, Cpu, MessageSquarePlus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getClient, useApiSettings, type NodeDetail, type NodeEvent } from "@/api";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { getClient, useApiSettings, type Node, type NodeDetail } from "@/api";
 import { ApiError } from "@/api/client";
-import { KnowledgeCard, ScopeNote, isOutdated, statusMeta, type DeviceSelectHandler } from "@/components/KnowledgeCard";
-import type { KnowledgeCard as KnowledgeCardData } from "@/api/types";
+import { KnowledgeCard, ScopeNote, isOutdated, statusMeta, typeMeta, type DeviceSelectHandler } from "@/components/KnowledgeCard";
+import type { KnowledgeCard as KnowledgeCardData, Verdict } from "@/api/types";
+import { useLanguage, useT } from "@/i18n";
+import { deviceSuggestions } from "@/lib/device-suggestions";
 import { cn } from "@/lib/utils";
 
-const EVENT_META: Record<string, { icon: LucideIcon; className: string }> = {
-  alarm_raised: { icon: Bell, className: "text-destructive" },
-  alarm_cleared: { icon: CheckCircle2, className: "text-success" },
-  work_order: { icon: ClipboardList, className: "text-muted-foreground" },
-  firmware_upgrade: { icon: ArrowUpCircle, className: "text-primary" },
-  hw_replacement: { icon: Wrench, className: "text-muted-foreground" },
-  dispatch: { icon: Truck, className: "text-muted-foreground" },
-};
-
-function eventMeta(type: string) {
-  return EVENT_META[type] ?? { icon: ClipboardList, className: "text-muted-foreground" };
-}
-
-function formatEventDate(ts: string): string {
-  const d = new Date(ts);
-  return Number.isNaN(d.getTime()) ? ts : format(d, "d MMM yyyy, HH:mm");
-}
-
 function Skeleton() {
-  return (
-    <div className="space-y-6 p-4" aria-label="Loading device">
-      <div className="space-y-2">
-        <div className="h-6 w-28 rounded bg-muted motion-safe:animate-pulse" />
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-4 w-full rounded bg-muted motion-safe:animate-pulse" />
-        ))}
-      </div>
-      <div className="space-y-2">
-        <div className="h-3 w-32 rounded bg-muted motion-safe:animate-pulse" />
-        <div className="h-24 w-full rounded-lg bg-muted motion-safe:animate-pulse" />
-      </div>
-      <div className="space-y-2">
-        <div className="h-3 w-28 rounded bg-muted motion-safe:animate-pulse" />
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="h-10 w-full rounded bg-muted motion-safe:animate-pulse" />
-        ))}
-      </div>
-    </div>
-  );
+  const t = useT();
+  return <div className="space-y-4 p-4" aria-label={t.panel.loading}>{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded bg-muted motion-safe:animate-pulse" />)}</div>;
 }
 
-/** Compact knowledge card for the panel; expands to the full card on click. */
-export function CompactCard({ card, onDeviceSelect }: { card: KnowledgeCardData; onDeviceSelect?: DeviceSelectHandler | undefined }) {
+export function CompactCard({ card, onDeviceSelect, messageId, verdict, onVerdict }: {
+  card: KnowledgeCardData; onDeviceSelect?: DeviceSelectHandler | undefined;
+  messageId?: string | undefined; verdict?: Verdict | undefined; onVerdict?: ((v: Verdict) => void) | undefined;
+}) {
   const [open, setOpen] = useState(false);
-  if (open) {
-    return (
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="absolute -right-1 -top-1 z-10 rounded-full border bg-card p-1 text-muted-foreground shadow-sm hover:text-foreground"
-          aria-label="Collapse card"
-        >
-          <ChevronRight className="size-3.5 rotate-90" />
-        </button>
-        <KnowledgeCard card={card} onDeviceSelect={onDeviceSelect} />
-      </div>
-    );
-  }
-  const notNeeded = card.scope_note?.startsWith("Not needed") ?? false;
-  const status = statusMeta(card.status);
+  const t = useT();
+  const { lang } = useLanguage();
+  const status = statusMeta(card.status, lang);
   const StatusIcon = status.icon;
-  return (
-    <button
-      type="button"
-      onClick={() => setOpen(true)}
-      className={cn(
-        "block w-full rounded-lg border bg-card p-3 text-left shadow-sm transition hover:shadow-md",
-        (isOutdated(card.status) || notNeeded) && "opacity-70",
-      )}
-    >
-      <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-        <span className="rounded bg-secondary px-1.5 py-px text-secondary-foreground">
-          {(card.knowledge_type ?? "").replace(/_/g, " ")}
-        </span>
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded px-1.5 py-px font-medium normal-case",
-            status.className,
-          )}
-        >
-          <StatusIcon className="size-3" /> {status.label}
-        </span>
-        <ChevronRight className="ml-auto size-3.5" />
-      </span>
-      <span className="mt-1.5 line-clamp-3 block text-sm font-medium leading-snug">{card.summary}</span>
-      {(card.actions ?? []).length > 0 && (
-        <ol className="mt-2 space-y-1">
-          {(card.actions ?? []).map((a, i) => (
-            <li key={a.code} className="flex gap-1.5 text-xs text-muted-foreground">
-              <span className="font-mono text-primary">{i + 1}.</span> {a.text}
-            </li>
-          ))}
-        </ol>
-      )}
-      {(card.avoid ?? []).length > 0 && (
-        <ul className="mt-1.5 space-y-1">
-          {(card.avoid ?? []).map((a) => (
-            <li key={a.code} className="flex gap-1.5 text-xs text-destructive">
-              <span aria-hidden>✕</span> {a.text}
-            </li>
-          ))}
-        </ul>
-      )}
-      <ScopeNote card={card} className="mt-2 text-[11px]" />
-    </button>
-  );
+  if (open) return <div className="relative pt-1">
+    <Button variant="outline" size="icon" aria-label={t.panel.collapseCard} onClick={() => setOpen(false)} className="absolute right-1 top-1 z-10"><ChevronRight className="size-4 rotate-90" /></Button>
+    <div className="[&_article>header]:pr-10"><KnowledgeCard card={card} onDeviceSelect={onDeviceSelect} messageId={messageId} verdict={verdict} onVerdict={onVerdict} /></div>
+  </div>;
+  return <Button variant="outline" aria-expanded={false} onClick={() => setOpen(true)} className={cn("h-auto min-h-11 w-full flex-col items-stretch gap-1.5 whitespace-normal rounded-lg p-3 text-left", (isOutdated(card.status) || card.scope_note?.startsWith("Not needed")) && "opacity-70")}>
+    <span className="flex w-full flex-wrap items-center gap-2">
+      <span className="rounded bg-secondary px-1.5 py-0.5 text-xs text-secondary-foreground">{typeMeta(card.knowledge_type, lang).label}</span>
+      <span className={cn("inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs", status.className)}><StatusIcon className="size-3" />{status.label}</span>
+      <span title={card.summary} className="min-w-0 flex-1 basis-48 truncate text-sm font-medium">{card.summary}</span>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+    </span>
+    <ScopeNote card={card} className="text-xs" />
+  </Button>;
 }
 
-function Timeline({ events }: { events: NodeEvent[] }) {
-  if (!events.length) return <p className="text-sm text-muted-foreground">No recent events.</p>;
-  return (
-    <ol className="relative space-y-4 border-l pl-5">
-      {events.map((e) => {
-        const meta = eventMeta(e.event_type);
-        const Icon = meta.icon;
-        return (
-          <li key={e.event_id} className="relative">
-            <span className="absolute -left-[27px] grid size-5 place-items-center rounded-full border bg-card">
-              <Icon className={cn("size-3", meta.className)} />
-            </span>
-            <p className="text-xs text-muted-foreground">{formatEventDate(e.timestamp ?? "")}</p>
-            <p className="mt-0.5 text-sm leading-snug">
-              {e.detail}
-              {e.event_type === "firmware_upgrade" && e.from_firmware && e.to_firmware && (
-                <span className="ml-1.5 font-mono text-xs text-muted-foreground">
-                  {e.from_firmware} → {e.to_firmware}
-                </span>
-              )}
-            </p>
-            {e.related_thread && (
-              <span className="mt-1 inline-block rounded-full border px-1.5 py-px font-mono text-[10px] text-muted-foreground">
-                {e.related_thread}
-              </span>
-            )}
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-function Detail({ detail, onAsk, onDeviceSelect }: { detail: NodeDetail; onAsk: (id: string) => void; onDeviceSelect?: DeviceSelectHandler | undefined }) {
+function Detail({ detail, onAsk, onQuestion }: { detail: NodeDetail; onAsk: (id: string) => void; onQuestion: (text: string) => void }) {
+  const t = useT();
+  const { lang } = useLanguage();
   const { node } = detail;
   const older = !!node.install_date && node.install_date < "2020-01-01";
-  return (
-    <div className="space-y-6 p-4">
-      <section>
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-mono text-lg font-semibold">{node.node_id}</h2>
-          {older && (
-            <span className="rounded-full bg-warning/20 px-2 py-0.5 text-[11px] font-medium text-warning-foreground dark:text-warning">
-              Older unit
-            </span>
-          )}
-        </div>
-        <dl className="mt-3 space-y-1.5 text-sm">
-          {(
-            [
-              ["Type", (node.type ?? "").replace(/_/g, " ")],
-              ["Location", node.location],
-              ["Firmware", node.firmware],
-              ["Installed", node.install_date],
-              ["Status", (node.status ?? "").replace(/_/g, " ")],
-            ] as const
-          ).map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">{k}</dt>
-              <dd className="text-right">{v}</dd>
-            </div>
-          ))}
-        </dl>
-        <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => onAsk(node.node_id)}>
-          <MessageSquarePlus className="size-3.5" /> Ask about this device
-        </Button>
-      </section>
-
-      <section>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Knowledge for this device
-        </p>
-        {(detail.knowledge ?? []).length ? (
-          <div className="space-y-2.5">
-            {(detail.knowledge ?? []).map((c) => (
-              <CompactCard key={c.assertion_id} card={c} onDeviceSelect={onDeviceSelect} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">No captured knowledge for this device yet.</p>
-        )}
-      </section>
-
-      <section>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent events</p>
-        <Timeline events={detail.events ?? []} />
-      </section>
-    </div>
-  );
+  const types = t.panel.types as Record<string, string>;
+  return <div className="space-y-6 p-4">
+    <section>
+      <div className="flex flex-wrap items-center gap-2"><h2 className="font-mono text-lg font-semibold">{node.node_id}</h2>{older && <span className="rounded bg-warning/20 px-2 py-1 text-xs text-warning-foreground dark:text-warning">{t.panel.olderUnit}</span>}</div>
+      <p className="mt-1 text-sm text-muted-foreground">{types[node.type] ?? node.type}</p>
+      <Button variant="outline" className="mt-4 min-h-11 w-full" onClick={() => onAsk(node.node_id)}><MessageSquarePlus className="size-4" />{t.panel.askAbout}</Button>
+    </section>
+    <section><h3 className="mb-2 text-xs font-medium uppercase text-muted-foreground">{t.panel.suggested}</h3>
+      <div className="space-y-2">{deviceSuggestions(detail, undefined, lang).map((question) => <Button key={question} variant="ghost" onClick={() => onQuestion(question)} className="h-auto min-h-11 w-full justify-start whitespace-normal border px-3 py-2.5 text-left text-sm font-normal">{question}</Button>)}</div>
+    </section>
+  </div>;
 }
 
 export function DevicePanel({
   nodeId,
   onAsk,
   onDeviceSelect,
+  nodes,
+  onQuestion,
+  onDetail,
 }: {
   nodeId?: string | undefined;
   onAsk: (id: string) => void;
-  onDeviceSelect?: DeviceSelectHandler | undefined;
+  onDeviceSelect: DeviceSelectHandler;
+  nodes: Node[];
+  onQuestion: (text: string) => void;
+  onDetail: (detail: NodeDetail) => void;
 }) {
   const settings = useApiSettings();
+  const t = useT();
+  const [selectorOpen, setSelectorOpen] = useState(false);
+  const detailCallback = useRef(onDetail);
+  detailCallback.current = onDetail;
   const [state, setState] = useState<
     { kind: "idle" } | { kind: "loading" } | { kind: "error"; notFound: boolean } | { kind: "ok"; detail: NodeDetail }
   >({ kind: "idle" });
@@ -240,7 +87,11 @@ export function DevicePanel({
       setState({ kind: "loading" });
       getClient(settings)
         .node(id, signal)
-        .then((detail) => setState({ kind: "ok", detail }))
+        .then((detail) => {
+          if (signal?.aborted) return;
+          setState({ kind: "ok", detail });
+          detailCallback.current(detail);
+        })
         .catch((e) => {
           if ((e as Error).name === "AbortError") return;
           setState({ kind: "error", notFound: e instanceof ApiError && e.status === 404 });
@@ -261,31 +112,43 @@ export function DevicePanel({
 
   return (
     <div className="h-full overflow-y-auto">
+      <div className="border-b p-4">
+        <Popover open={selectorOpen} onOpenChange={setSelectorOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" role="combobox" aria-expanded={selectorOpen} aria-label={t.panel.selectDevice} className="min-h-11 w-full justify-between">
+              <Cpu className="size-4" /><span className={nodeId ? "font-mono" : ""}>{nodeId ?? t.panel.selectDevice}</span><ChevronsUpDown className="size-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72 p-0" align="start">
+            <Command><CommandInput placeholder={t.panel.searchDevices} /><CommandList><CommandEmpty>{t.panel.noDeviceFound}</CommandEmpty><CommandGroup>
+              {nodes.map((n) => <CommandItem key={n.node_id} value={`${n.node_id} ${n.location} ${n.type}`} onSelect={() => { onDeviceSelect(n.node_id); setSelectorOpen(false); }} className="min-h-11">
+                <span className="font-mono">{n.node_id}</span><span className="ml-auto text-xs text-muted-foreground">{n.location}</span>
+              </CommandItem>)}
+            </CommandGroup></CommandList></Command>
+          </PopoverContent>
+        </Popover>
+      </div>
       {state.kind === "idle" && (
-        <div className="flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground">
           <Cpu className="size-6 opacity-60" />
-          Select a device to see its details.
+          {t.panel.noDeviceSelected}
         </div>
       )}
       {state.kind === "loading" && <Skeleton />}
       {state.kind === "error" && (
-        <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center text-sm">
+        <div className="flex flex-col items-center justify-center gap-3 p-4 text-center text-sm">
           <AlertTriangle className="size-6 text-destructive" />
-          {state.notFound ? (
-            <p className="text-muted-foreground">Unknown device.</p>
-          ) : (
-            <>
-              <p className="text-muted-foreground">Couldn't load this device.</p>
+          <>
+              <p className="text-muted-foreground">{state.notFound ? t.panel.unknownDevice : t.panel.loadFailed}</p>
               {nodeId && (
                 <Button size="sm" variant="outline" onClick={() => load(nodeId)}>
-                  <RotateCcw className="size-3.5" /> Retry
+                  <RotateCcw className="size-3.5" /> {t.panel.retry}
                 </Button>
               )}
-            </>
-          )}
+          </>
         </div>
       )}
-      {state.kind === "ok" && <Detail detail={state.detail} onAsk={onAsk} onDeviceSelect={onDeviceSelect} />}
+      {state.kind === "ok" && <Detail detail={state.detail} onAsk={onAsk} onQuestion={onQuestion} />}
     </div>
   );
 }

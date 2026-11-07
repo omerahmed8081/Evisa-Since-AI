@@ -11,11 +11,14 @@ import {
 } from "@/components/KnowledgeCard";
 import type { ChatMessage } from "@/lib/chat-store";
 import type { Verdict } from "@/api/types";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { CompactCard } from "./DevicePanel";
 
 function Typing() {
+  const t = useT();
   return (
-    <div className="flex gap-1 py-1" aria-label="Assistant is typing">
+    <div className="flex gap-1 py-1" aria-label={t.messages.typing}>
       {[0, 150, 300].map((d) => (
         <span
           key={d}
@@ -42,6 +45,7 @@ function Bot({
   onDeviceSelect?: DeviceSelectHandler | undefined;
   onVerdict?: ((assertionId: string, v: Verdict) => void) | undefined;
 }) {
+  const t = useT();
   const streaming = m.status === "streaming";
   return (
     <div className="animate-msg-in max-w-[44rem]">
@@ -62,20 +66,24 @@ function Bot({
           </ReactMarkdown>
         </div>
       )}
-      {m.status === "stopped" && <p className="mt-2 text-xs text-muted-foreground">Stopped.</p>}
+      {m.status === "stopped" && <p className="mt-2 text-xs text-muted-foreground">{t.messages.stopped}</p>}
       {m.status === "error" && (
         <div className="mt-3 flex flex-wrap items-center gap-3 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <AlertTriangle className="size-4" />
-          <span className="flex-1">{m.error ?? "Something went wrong."}</span>
+          <span className="flex-1">{m.error ?? t.messages.error}</span>
           <Button size="sm" variant="outline" onClick={onRetry} disabled={!canRetry}>
-            <RotateCcw className="size-3.5" /> Retry
+            <RotateCcw className="size-3.5" /> {t.messages.retry}
           </Button>
         </div>
       )}
       {m.status === "done" &&
         m.cards &&
         (m.cards.length ? (
-          <KnowledgeCards
+          m.meta?.question_type === "overview" ? <div className="mt-3 space-y-2">
+            {m.cards.map((card) => <CompactCard key={card.assertion_id} card={card} onDeviceSelect={onDeviceSelect}
+              messageId={m.messageId} verdict={m.verdicts?.[card.assertion_id]}
+              onVerdict={onVerdict ? (v) => onVerdict(card.assertion_id, v) : undefined} />)}
+          </div> : <KnowledgeCards
             cards={m.cards}
             onDeviceSelect={onDeviceSelect}
             messageId={m.messageId}

@@ -47,6 +47,8 @@ export interface KnowledgeCard {
   status: KnowledgeStatus;
   outcome: Outcome;
   confidence: number;
+  symptoms: string[];
+  events: string[];
   summary: string;
   details?: string;
   actions: KnowledgeAction[];
@@ -116,10 +118,21 @@ export interface ChatRequest {
   message: string;
   conversation_id?: string | undefined;
   node_id?: string | undefined;
+  /** UI language; the backend answers in the language of the question. */
+  ui_language?: "en" | "fi" | undefined;
 }
 
 /** Non-streaming JSON fallback response of POST /api/chat. */
-export interface ChatResponse {
+export type QuestionType = "problem" | "overview" | "history";
+
+export interface ChatMeta {
+  resolved_nodes: string[];
+  ignored_selection: string | null;
+  resolution_note: string | null;
+  question_type: QuestionType;
+}
+
+export interface ChatResponse extends ChatMeta {
   conversation_id: string;
   message_id?: string | undefined;
   answer: string;
@@ -140,7 +153,7 @@ export interface FeedbackResponse {
 }
 
 export type StreamEvent =
-  | { type: "meta"; conversation_id: string }
+  | ({ type: "meta"; conversation_id: string } & ChatMeta)
   | { type: "token"; text: string }
   | { type: "cards"; cards: KnowledgeCard[] }
   | { type: "done"; message_id?: string | undefined }
