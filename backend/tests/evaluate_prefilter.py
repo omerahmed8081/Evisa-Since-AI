@@ -40,6 +40,7 @@ def main():
     texts = np.array([Prefilter.model_text(t) for t in threads_])
     scored = [pf.score(t) for t in threads_]
     rule_keep = np.array([s >= MIN_SCORE for s, _ in scored])
+    protected = np.array([any(r.startswith("access info") for r in rs) for _, rs in scored])  # see Prefilter.decide
     n, n_useful = len(labels), int(labels.sum())
     n_noise = n - n_useful
 
@@ -66,7 +67,7 @@ def main():
             model = make_model().fit(list(texts[train]), labels[train])
             p = model.predict_proba(list(texts[test]))[:, 1]
             clf_skip[test] = p < thr
-        clf_skip &= rule_keep                      # the classifier only sees what the rules let through
+        clf_skip &= rule_keep & ~protected         # the classifier only sees what the rules let through
         skipped_noise_runs.append(int((clf_skip & (labels == 0)).sum()))
         lost_runs.append(int((clf_skip & (labels == 1)).sum()))
         for i in np.where(clf_skip)[0]:

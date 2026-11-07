@@ -1,0 +1,3 @@
+{
+ "text": "The known port disable/enable workaround does not apply to TRN-077 because firmware 3.4.0 already fixes stuck forwarding after an SFP replacement, so the cause is likely something else.\n\n1. Contact an expert for further troubleshooting on this firmware version.\n\n**What did not work:**\n- Rebooting the unit failed to restore traffic counters on TRN-015 (Mikko Mäkelä, teams, 2025-06-30).\n- Replacing the SFP again failed to restore traffic on TRN-031 (Tiina Tuominen, teams, 2025-07-15).\n\nThis firmware behavior is moderately confident (0.7) from Erkki Expert (email, 2026-04-08)."
+}

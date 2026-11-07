@@ -27,7 +27,8 @@ def chat_events(req: ChatRequest):
 
     yield "meta", {"conversation_id": cid, "resolved_nodes": u.node_ids, "unknown_nodes": u.unknown_nodes,
                    "symptoms": u.symptoms, "events": u.events, "node_type": u.node_type,
-                   "retrieval": k.mode, "understood_by": u.by}
+                   "retrieval": k.mode, "understood_by": u.by,
+                   "resolved_by": u.resolved_by, "resolution_note": u.resolution_note}
 
     # Step C
     parts: list[str] = []

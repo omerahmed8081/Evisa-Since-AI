@@ -44,3 +44,13 @@ ORDER BY n.id;
 // 9. Knowledge that is no longer valid (has a valid_to), and disputed knowledge
 MATCH (a:Assertion) WHERE a.valid_to IS NOT NULL OR a.status = 'disputed'
 RETURN a.id, a.status, toString(a.valid_from) AS valid_from, toString(a.valid_to) AS valid_to, a.summary;
+
+// 10. How each tip was linked to its device: by ID, nickname or place, and how sure
+MATCH (a:Assertion)-[r:OBSERVED_ON]->(d:Device)
+RETURN a.id, d.node_id, coalesce(r.linked_by, 'id') AS linked_by, r.link_confidence, r.via
+ORDER BY linked_by DESC, a.id;
+
+// 11. Sites: which devices are where, and knowledge reported at a site without naming a device
+MATCH (s:Site)<-[:AT]-(d:Device)
+OPTIONAL MATCH (a:Assertion)-[r:OBSERVED_AT]->(s)
+RETURN s.name, collect(DISTINCT d.node_id) AS devices, collect(DISTINCT a.id) AS site_tips;

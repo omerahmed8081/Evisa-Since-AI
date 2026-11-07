@@ -17,7 +17,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 from pipeline import graph
-from pipeline import threads
+from pipeline import linking
 from api.llm import generate_json
 from pipeline.schema import NodeType
 from pipeline.vocabulary import clean_term
@@ -51,6 +51,8 @@ class Understood:
     wants_access_info: bool = False
     language: str = "en"
     by: str = "gemini"  # gemini | fallback
+    resolved_by: str | None = None   # id | alias | location | site | selected | previous_turn | gemini
+    resolution_note: str | None = None
 
 
 # ---------- inventory + vocabulary, cached for a minute ----------
@@ -61,15 +63,16 @@ def _context() -> dict:
     if time.time() - _cache["at"] > 60:
         devices = [dict(r) for r in graph.run(
             "MATCH (d:Device) RETURN d.node_id AS node_id, d.node_type AS node_type, "
-            "toString(d.install_date) AS install_date, d.firmware AS firmware, d.location AS location "
-            "ORDER BY d.node_id")]
+            "toString(d.install_date) AS install_date, d.firmware AS firmware, d.location AS location, "
+            "coalesce(d.aliases, []) AS aliases ORDER BY d.node_id")]
         terms: dict[str, dict[str, str]] = {"symptom": {}, "event": {}}
         for r in graph.run("MATCH (t:Term) WHERE t.category IN ['symptom', 'event'] "
                            "RETURN t.category AS cat, t.name AS name, t.aliases AS aliases"):
             terms[r["cat"]][r["name"]] = r["name"]
             for alias in r["aliases"] or []:
                 terms[r["cat"]].setdefault(alias, r["name"])
-        _cache.update(at=time.time(), devices=devices, terms=terms)
+        inventory = linking.Inventory(devices, {a: d["node_id"] for d in devices for a in d.get("aliases") or []})
+        _cache.update(at=time.time(), devices=devices, terms=terms, inventory=inventory)
     return _cache
 
 
@@ -98,11 +101,18 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
     known_ids = {d["node_id"] for d in ctx["devices"]}
     types_by_id = {d["node_id"]: d["node_type"] for d in ctx["devices"]}
 
-    written = sorted({m.group(0).upper() for m in threads.DEVICE_ID_RE.finditer(message.upper())})
-    u = Understood(unknown_nodes=[x for x in written if x not in known_ids])
-    nodes = [x for x in written if x in known_ids]
+    inv: linking.Inventory = ctx["inventory"]
+    match = inv.resolve(message)          # IDs (also "trn042"), nicknames, places: done by code, not Gemini
+    written = sorted(match.ids | match.unknown_ids)
+    u = Understood(unknown_nodes=sorted(match.unknown_ids))
+    nodes = sorted(match.ids) + sorted(set(match.aliases) - match.ids)
+    if nodes:
+        u.resolved_by = "id" if match.ids else "alias"
+    if match.aliases:
+        u.resolution_note = "; ".join(f"'{a}' is the nickname of {n}" for n, a in match.aliases.items())
     if selected_node and selected_node.upper() in known_ids:
         nodes.insert(0, selected_node.upper())
+        u.resolved_by = u.resolved_by or "selected"
 
     follow_up = False
     try:
@@ -119,6 +129,28 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         u.by = "fallback"
         low = message.lower()
         u.wants_access_info = any(w in low for w in ("gate", "code", "access", "key", "lock", "portti", "koodi", "avain"))
+
+    # No ID or nickname, but a place ("the Kolari box"): decide from the inventory in code, not by
+    # trusting Gemini's guess. One device of the right type -> that device; several -> all of them,
+    # and the answer says which tip is for which device and asks which one is meant.
+    if not match.named and not selected_node and match.locations and not written:
+        types = {u.node_type} if u.node_type else match.type_hints
+        cands = inv.candidates(match.locations, types or None) or inv.candidates(match.locations)
+        if cands:
+            nodes = [d["node_id"] for d in cands]
+            listed = ", ".join(f"{d['node_id']} ({d['node_type'].replace('_', ' ')})" for d in cands)
+            if len(cands) == 1:
+                u.resolved_by = "location"
+                u.resolution_note = (f"No device ID was given; {cands[0]['node_id']} is the only matching device "
+                                     f"in {cands[0]['location']}.")
+            else:
+                u.resolved_by = "site"
+                u.resolution_note = (f"No device ID was given; {', '.join(match.locations)} has several matching "
+                                     f"devices: {listed}. " + (
+                                         "Site access information applies to the whole site." if u.wants_access_info
+                                         else "Say which device each tip is for and ask which one the user means."))
+    elif nodes and not u.resolved_by:
+        u.resolved_by = "gemini"
 
     u.node_ids = list(dict.fromkeys(nodes))
     if not u.node_ids and previous_nodes and (follow_up or u.by == "fallback") and not u.unknown_nodes:

@@ -2,8 +2,10 @@
 Retrieval: "what do we know that applies to this device?"
 
 This is the function the chatbot agent will call as a tool. It:
-  1. finds knowledge observed on the device itself, or whose scope rule covers it
-     (same device type, installed before the cutoff), that is still valid (valid_to is null),
+  1. finds knowledge observed on the device itself, reported at the device's SITE without naming the
+     device, or whose scope rule covers it (same device type, installed before the cutoff), that is
+     still valid (valid_to is null). How the device was linked (ID, nickname, place) and its link
+     confidence are kept: a tip linked only by place counts for less than one with the device ID,
   2. drops knowledge whose firmware limits exclude this device's firmware:
      firmware_below ("workaround only needed below 3.4") and firmware_at_least ("fixed from 3.4 on"),
   3. GROUPS duplicates: the same fix captured from several chats/emails/devices becomes ONE
@@ -26,6 +28,7 @@ MATCH (d:Device {node_id: $node_id})
 MATCH (a:Assertion)
 WHERE a.valid_to IS NULL
   AND ( EXISTS { (a)-[:OBSERVED_ON]->(d) }
+        OR EXISTS { (a)-[:OBSERVED_AT]->(:Site)<-[:AT]-(d) }
         OR ( a.scope_node_type IS NOT NULL
              AND a.scope_node_type = d.node_type
              AND (a.scope_installed_before IS NULL OR d.install_date < a.scope_installed_before) ) )
@@ -39,6 +42,12 @@ RETURN d {.node_id, .node_type, .firmware, install_date: toString(d.install_date
           scope_installed_before: toString(a.scope_installed_before),
           valid_from: toString(a.valid_from)} AS a,
        EXISTS { (a)-[:OBSERVED_ON]->(d) } AS direct,
+       head([(a)-[ob:OBSERVED_ON]->(d) | {linked_by: coalesce(ob.linked_by, 'id'),
+             link_confidence: coalesce(ob.link_confidence, 1.0), via: ob.via}]) AS link,
+       head([(a)-[oa:OBSERVED_AT]->(st:Site)<-[:AT]-(d) | {site: st.name,
+             link_confidence: coalesce(oa.link_confidence, 0.5), candidates: oa.candidates}]) AS site_link,
+       ( a.scope_node_type IS NOT NULL AND a.scope_node_type = d.node_type
+         AND (a.scope_installed_before IS NULL OR d.install_date < a.scope_installed_before) ) AS by_scope,
        collect(DISTINCT s {.id, .channel, timestamp: toString(s.timestamp)}) AS sources,
        collect(DISTINCT p.name) AS authors,
        collect(DISTINCT od.node_id) AS devices
@@ -144,6 +153,24 @@ def same_knowledge(a: dict, b: dict) -> bool:
     return x <= y or y <= x or len(x & y) / len(x | y) >= 0.5
 
 
+def how_it_applies(g: dict, device: dict) -> str:
+    link = g.get("link") or {}
+    how = link.get("how")
+    if how == "id" or (g["observed_on_this_device"] and how not in ("alias", "location")):
+        return "observed on this device"
+    if how == "alias":
+        return f"observed on this device ({link.get('via') or 'by its nickname'})"
+    if how == "location":
+        return f"observed on this device (identified by place: {link.get('via')}; no device ID was written)"
+    if how == "site":
+        others = [c for c in link.get("candidates") or [] if c != device["node_id"]]
+        return (f"reported at the {link.get('site')} site without naming the device"
+                + (f" (also possible: {', '.join(others)})" if others else "") + "; not confirmed for this device")
+    if g["age_limited"]:
+        return "applies to similar devices (same type and age)"
+    return "applies to all devices of this type"
+
+
 def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list[str] | None = None) -> dict:
     rows = graph.run(QUERY, node_id=node_id)
     if not rows:
@@ -170,6 +197,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
             "outcome": a["outcome"], "details": [], "status": set(), "base_confidence": 0.0,
             "sources": {}, "authors": set(), "seen_on_devices": set(), "observed_on_this_device": False,
             "age_limited": False, "firmware_limited": False, "latest": a["valid_from"],
+            "link": None, "link_factor": 0.0,
         })
         g["knowledge_ids"].append(a["id"])
         g["members"].append(a)
@@ -192,6 +220,21 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         g["authors"].update(r["authors"])
         g["seen_on_devices"].update(r["devices"])
         g["observed_on_this_device"] |= bool(r["direct"])
+        # How does this tip reach the device? Keep the most certain path (ID 1.0 > nickname 0.9 >
+        # place, one device fits 0.8 > scope rule 1.0 counts like a rule > site, device unknown 0.5).
+        link, site = r.get("link"), r.get("site_link")
+        if link:
+            path = {"how": link["linked_by"], "factor": link["link_confidence"] or 1.0, "via": link.get("via")}
+        elif r.get("by_scope"):
+            path = {"how": "scope", "factor": 1.0, "via": None}
+        elif site:
+            path = {"how": "site", "factor": site["link_confidence"] or 0.5, "site": site["site"],
+                    "candidates": site.get("candidates") or []}
+        else:
+            path = {"how": "scope", "factor": 1.0, "via": None}
+        rank = {"id": 5, "alias": 4, "location": 3, "scope": 2, "site": 1}
+        if g["link"] is None or rank[path["how"]] > rank[g["link"]["how"]]:
+            g["link"], g["link_factor"] = path, path["factor"]
         if a["valid_from"] and a["valid_from"] > (g["latest"] or ""):
             g["latest"], g["summary"] = a["valid_from"], a["summary"]  # newest wording wins
 
@@ -203,6 +246,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         confidence = min(MAX_CONFIDENCE, g["base_confidence"] + CONFIRMATION_BONUS * max(0, n_sources - 1))
         if g["outcome"] == "failed":
             confidence = g["base_confidence"]  # repeated failures don't make a fix more trustworthy
+        confidence *= g["link_factor"] or 1.0  # less sure it is about THIS device -> less confidence
         match = match_score(wanted_symptoms, wanted_events, g["symptoms"], g["events"])
         results.append({
             "summary": g["summary"],
@@ -215,9 +259,8 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
             "details": g["details"],
             "confidence": round(confidence, 2),
             "symptom_match": None if match is None else round(match, 2),
-            "how_it_applies": "observed on this device" if g["observed_on_this_device"]
-                              else ("applies to similar devices (same type and age)" if g["age_limited"]
-                                    else "applies to all devices of this type"),
+            "how_it_applies": how_it_applies(g, device),
+            "link": {k: v for k, v in (g["link"] or {}).items() if k != "factor"},
             "seen_on_devices": sorted(g["seen_on_devices"]),
             "sources": sorted(g["sources"].values(), key=lambda s: s.get("timestamp") or ""),
             "authors": sorted(x for x in g["authors"] if x),

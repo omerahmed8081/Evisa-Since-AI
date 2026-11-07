@@ -1,0 +1,33 @@
+{
+ "useful": true,
+ "reason": "Expert provides a known false alarm rule and workaround for a battery alarm latching after a power outage.",
+ "knowledge": [
+  {
+   "knowledge_type": "known_false_alarm",
+   "summary": "After a power outage, battery alarms on this unit stay latched even after mains power returns; clear the alarm latch remotely and verify battery voltage exceeds 52 V instead of dispatching.",
+   "device_mentions": [],
+   "node_type": null,
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [
+    "POWER_OUTAGE"
+   ],
+   "symptoms": [
+    "BATTERY_ALARM"
+   ],
+   "actions": [
+    "NO_DISPATCH_NEEDED"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    2,
+    3
+   ],
+   "confirmed_at_seq": 3,
+   "details": "Verify battery voltage is above 52 V after clearing the alarm latch."
+  }
+ ]
+}

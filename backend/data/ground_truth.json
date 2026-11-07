@@ -1326,5 +1326,119 @@
       }
     ],
     "notes": "v4 amendment 1: restates the padlock tip so superseding T022 loses nothing."
+  },
+  {
+    "thread_id": "T024",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "fi",
+    "knowledge": {
+      "scope": null,
+      "events": [
+        "POWER_OUTAGE"
+      ],
+      "symptoms": [
+        "BATTERY_ALARM"
+      ],
+      "actions": [
+        "NO_DISPATCH_NEEDED"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "Clear alarm latch remotely; battery voltage should be above 52 V (was 53.1 V).",
+      "knowledge_type": "known_false_alarm",
+      "summary": "On the Kolari transmission node the battery alarm stays latched after every power outage even when mains power is back; clear the alarm latch remotely and check the battery voltage is above 52 V, no site visit needed.",
+      "observed_on": [
+        "TRN-042"
+      ],
+      "author": "Erkki Expert",
+      "source_message_seqs": [
+        2,
+        3
+      ],
+      "valid_from": "2026-04-14T08:04:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "linking": {
+      "how": "location",
+      "place": "Kolari",
+      "device": "TRN-042"
+    },
+    "notes": "No device ID. 'Kolarin siirtolaite' = the only transmission node in Kolari (BTS-233 is also there) -> linked by location."
+  },
+  {
+    "thread_id": "T025",
+    "category": "access_info",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "scope": null,
+      "events": [],
+      "symptoms": [],
+      "actions": [],
+      "avoid": [],
+      "outcome": "unknown",
+      "details": "Padlock code 6142. Snowshoes on the left wall inside the container.",
+      "knowledge_type": "access_info",
+      "summary": "Kittilä mast site in winter: the last 500 m of the access road is not ploughed; park at the snowmobile track sign and walk, snowshoes are in the equipment container (padlock code 6142).",
+      "observed_on": [],
+      "author": "Tiina Tuominen",
+      "source_message_seqs": [
+        2,
+        3
+      ],
+      "valid_from": "2026-04-16T13:14:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "linking": {
+      "how": "site",
+      "place": "Kittilä",
+      "candidates": [
+        "BTS-261",
+        "MW-405",
+        "TRN-015"
+      ]
+    },
+    "notes": "No device ID and three devices in Kittilä -> linked to the Site, shown for all three."
+  },
+  {
+    "thread_id": "T026",
+    "category": "correct_fix",
+    "useful": true,
+    "language": "en",
+    "knowledge": {
+      "scope": null,
+      "events": [],
+      "symptoms": [
+        "CRC_ERRORS"
+      ],
+      "actions": [
+        "CLEAN_CONNECTOR"
+      ],
+      "avoid": [],
+      "outcome": "worked",
+      "details": "IF cable connector at the indoor unit; water gets in in spring. Re-tape after cleaning.",
+      "knowledge_type": "troubleshooting_rule",
+      "summary": "On the Ounasvaara microwave hop, CRC errors with normal alignment and RX levels come from water in the IF cable connector at the indoor unit; clean and re-tape it before touching the radio.",
+      "observed_on": [
+        "MW-412"
+      ],
+      "author": "Sanna Saari",
+      "source_message_seqs": [
+        2,
+        3
+      ],
+      "valid_from": "2026-04-20T10:58:00+03:00"
+    },
+    "relations": [],
+    "expected_effects": [],
+    "linking": {
+      "how": "alias",
+      "alias": "Ounasvaara hop",
+      "device": "MW-412"
+    },
+    "notes": "No device ID; 'Ounasvaara hop' is MW-412's nickname in data/inventory/aliases.csv."
   }
 ]

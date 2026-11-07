@@ -4,7 +4,7 @@ Python backend: the **capture pipeline** (conversations → knowledge graph), th
 **FastAPI** service the frontend talks to. Run every command from this `backend/` folder.
 
 ```
-1. DATA        data/            inventory, event stream, 33 conversations, answer key, generator
+1. DATA        data/            inventory (+ device nicknames), event stream, 36 conversations, answer key, generator
 2. CAPTURE     pipeline/        conversation → Gemini (filter + extract) → link to devices → Neo4j,
                                 then update older knowledge (reinforce / narrow / supersede / conflict)
 3. RETRIEVE    pipeline/retrieve.py   what applies to a device (graph rules, no LLM)
@@ -24,6 +24,7 @@ Python backend: the **capture pipeline** (conversations → knowledge graph), th
 | `pipeline/graph.py` | All Neo4j queries used by the pipeline |
 | `pipeline/prompts.py`, `schema.py` | Gemini prompts and output schemas for capture |
 | `pipeline/vocabulary.py` | Growing vocabulary of symptoms/actions/events; near-duplicates merged |
+| `pipeline/linking.py` | Finds devices in messy text: IDs ("trn042"), nicknames (`data/inventory/aliases.csv`), places ("Kolarissa") |
 | `pipeline/extract.py`, `cache.py` | Gemini calls + disk cache |
 | `pipeline/threads.py` | Reads Teams/call JSON and email files |
 | `pipeline/prefilter.py`, `prefilter_data.py` | Local pre-filter (rule score + small classifier) that skips noise before Gemini |
@@ -54,7 +55,7 @@ Fill in `.env`: `GEMINI_API_KEY`, `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD`.
 python scripts/reset_graph.py           # empty the database (asks for confirmation)
 python scripts/load_inventory.py        # devices + event stream
 python scripts/ingest.py data/threads   # capture all conversations (cached: ~0 Gemini calls)
-python tests/evaluate.py --details    # accuracy against the answer key + 15 demo checks
+python tests/evaluate.py --details    # accuracy against the answer key + 21 demo checks
 ```
 
 `ingest.py` options: `--dry-run` (print Gemini output, no Neo4j), `--force` (re-process everything),
@@ -115,16 +116,22 @@ python scripts/retrieve.py TRN-077 --json                            # machine-r
 - **Knowledge changes over time.** "Fixed in firmware 3.4" narrows older tips to firmware < 3.4 (still valid
   for older devices); "the gate code changed" ends the old code (`valid_to`); contradicting experts → both
   `disputed`. Repeats are merged into one result with all sources; confidence grows with confirmations.
+- **Messy chats still get linked.** Devices are found by ID (also "trn042", "TRN 042"), by nickname
+  (`aliases.csv`: "Ounasvaara hop" = MW-412) or by place ("Kolarin siirtolaite" = the only transmission node
+  in Kolari). If a place has several possible devices, the tip is linked to the `Site` instead of guessing,
+  and reaches every device there as "reported at the site, not confirmed for this device". Every link
+  stores how it was made and how sure it is (ID 1.0, nickname 0.9, place 0.8, site 0.5); retrieval lowers
+  a tip's confidence accordingly. The chat resolves "the Kolari box" the same way, in code.
 - **Failed attempts are knowledge too.** "Rebooting didn't help on TRN-015" warns the next engineer.
 - **Feedback closes the loop.** 👍 +0.1, 👎 −0.2, disputed after repeated failures; an engineer's comment is
   captured as new knowledge through the same pipeline.
 - **Growing vocabulary.** Symptoms/actions are mapped to shared terms in any language; new terms are added
   automatically and near-duplicates are merged with embeddings.
 
-## Evaluation (synthetic dataset, 33 conversations)
+## Evaluation (synthetic dataset, 36 conversations)
 
 Useful/noise decision 100% · devices linked 100% · scope 90% · outcome 100% · actions 100% · symptoms 97% ·
-9/9 expected knowledge updates · 15/15 demo retrieval checks (`python tests/evaluate.py --details`).
+9/9 expected knowledge updates · 15 demo retrieval checks + 6 linking checks (place, site, nickname) (`python tests/evaluate.py --details`).
 
 ## Limitations and path to production
 

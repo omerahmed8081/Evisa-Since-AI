@@ -27,7 +27,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from pipeline import DATA_DIR, extract, threads
+from pipeline import DATA_DIR, extract, linking, threads
 from pipeline.vocabulary import Vocabulary
 
 BASE_CONFIDENCE = {"worked": 0.7, "unknown": 0.5, "failed": 0.3}
@@ -109,16 +109,24 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
         from pipeline import reconcile
 
     text = threads.thread_to_prompt_text(thread)
-    mentioned_ids = threads.find_device_ids(thread)
+    # Which devices is this about? IDs (also messy forms like "trn042"), nicknames, places: see linking.py
+    inv = linking.Inventory.from_csv(Path(INVENTORY_CSV)) if dry_run else linking.Inventory.from_graph()
+    raw = (thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])
+    match = inv.resolve(raw)
+    mentioned_ids = threads.find_device_ids(thread) | match.ids | set(match.aliases)
 
     if dry_run:
         devices = [d for d in csv_inventory(INVENTORY_CSV) if d["node_id"] in mentioned_ids]
     else:
         devices = graph.get_devices(list(mentioned_ids))
     known_ids = {d["node_id"] for d in devices}
-    unknown = mentioned_ids - known_ids
+    unknown = (mentioned_ids | match.unknown_ids) - known_ids
     if unknown and not dry_run:
         print(f"  warning: devices not in inventory: {sorted(unknown)}")
+    if match.aliases:
+        print(f"  nicknames: {', '.join(f'{a!r} = {n}' for n, a in match.aliases.items())}")
+    if not known_ids and match.locations:
+        print(f"  no device named; places mentioned: {', '.join(match.locations)}")
 
     result = extract.extract(text, device_context(devices), vocab.prompt_text())
     print(f"[{thread['thread_id']}] useful={result.useful} - {result.reason}")
@@ -146,11 +154,27 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
         # Link only to devices that really exist in the inventory. If Gemini named none, general
         # knowledge stays unlinked (its scope rule applies it); device-specific knowledge and access
         # info fall back to the devices named in the conversation so they are not orphaned.
-        observed = sorted(set(k.device_mentions) & known_ids)
+        mentions = {inv.aliases.get(m.strip().lower(), m.strip().upper()) for m in k.device_mentions}
+        observed = sorted(mentions & known_ids)
         if not observed and (k.knowledge_type == "access_info" or k.scope_hint == "this_device_only"):
             observed = sorted(known_ids)
-        observed_devices = [d for d in devices if d["node_id"] in observed]
-        node_type = k.node_type or (observed_devices[0]["node_type"] if observed_devices else None)
+        links = [{"node_id": n, "linked_by": "alias" if n in match.aliases and n not in match.ids else "id",
+                  "link_confidence": linking.LINK_CONFIDENCE["alias" if n in match.aliases and n not in match.ids else "id"],
+                  "via": f"called '{match.aliases[n]}' in the conversation" if n in match.aliases and n not in match.ids else None}
+                 for n in observed]
+        site_links = []
+        if not known_ids and match.locations:
+            # No device named at all, only a place: link by location (one device fits) or to the site.
+            loc = linking.location_links(match, inv, k.node_type)
+            links, site_links = loc["devices"], loc["sites"]
+            observed = [l["node_id"] for l in links]
+            print(f"  {loc['note']}")
+        observed_devices = [inv.devices[n] for n in observed if n in inv.devices]
+        if not dry_run:
+            observed_devices = graph.get_devices(observed) if observed else []
+        site_types = {inv.devices[c]["node_type"] for s in site_links for c in s["candidates"]}
+        node_type = k.node_type or (observed_devices[0]["node_type"] if observed_devices else None) \
+            or (next(iter(site_types)) if len(site_types) == 1 else None)
         scope = compute_scope(k, observed_devices, node_type)
 
         assertion = {
@@ -166,6 +190,8 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
             "details": k.details,
             "author": threads.full_name(k.author, thread.get("participants", [])),
             "observed_on": observed,
+            "links": links,
+            "site_links": site_links,
             "scope_node_type": scope["node_type"],
             "scope_installed_before": scope["installed_before"],
             "scope_firmware_below": scope["firmware_below"],

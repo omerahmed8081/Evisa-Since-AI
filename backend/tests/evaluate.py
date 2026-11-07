@@ -166,6 +166,9 @@ def retrieval_section():
             cache[node] = res(node)
         return cache[node]
 
+    def tip_from(r, thread_id):
+        return any(k.startswith(thread_id + "-") for k in r["knowledge_ids"])
+
     def bounce_sources(node):
         for r in R(node):
             if "BOUNCE_INTERFACE" in (r["actions"] or []) and r["outcome"] != "failed":
@@ -189,6 +192,20 @@ def retrieval_section():
         ("BTS-210 does NOT get the OLD gate code 4471 as current", lambda: not any("4471" in r["summary"] and "9035" not in r["summary"] + " ".join(r["details"]) for r in R("BTS-210"))),
         ("AGG-003 gets the patch cable fix learned on AGG-012", lambda: has_action(R("AGG-003"), "REPLACE_PATCH_CABLE", "worked")),
         ("MW-405 shows the ice/PSU advice as disputed", lambda: any(r["disputed"] for r in R("MW-405"))),
+        # Linking without a device ID (T024-T026): place, site, nickname
+        ("TRN-042 gets the Kolari battery-alarm tip, linked by place (no ID written)",
+         lambda: any(tip_from(r, "T024") and r["link"].get("how") == "location" for r in R("TRN-042"))),
+        ("BTS-233 (also in Kolari, but a base station) does NOT get it as its own",
+         lambda: not any(tip_from(r, "T024") and r["link"].get("how") in ("location", "site") for r in R("BTS-233"))),
+        ("Kittilä winter access tip reaches all 3 Kittilä devices via the site",
+         lambda: all(any(tip_from(r, "T025") and r["link"].get("how") == "site" for r in R(n))
+                     for n in ("TRN-015", "BTS-261", "MW-405"))),
+        ("Site-linked tip counts for less (confidence below the same tip with an ID)",
+         lambda: all(r["confidence"] < 0.5 for r in R("TRN-015") if tip_from(r, "T025"))),
+        ("Kittilä tip does NOT reach devices elsewhere (TRN-042 in Kolari)",
+         lambda: not any(tip_from(r, "T025") for r in R("TRN-042"))),
+        ("MW-412 gets the CRC tip via its nickname 'Ounasvaara hop'",
+         lambda: any(tip_from(r, "T026") and r["link"].get("how") == "alias" for r in R("MW-412"))),
     ]
     passed = 0
     for name, fn in checks:

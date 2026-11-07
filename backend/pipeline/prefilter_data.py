@@ -10,7 +10,7 @@ import itertools
 import os
 from pathlib import Path
 
-from pipeline import DATA_DIR, cache, threads
+from pipeline import DATA_DIR, cache, linking, threads
 from pipeline.ingest import device_context
 from pipeline.prompts import FEW_SHOT_EXAMPLES, SYSTEM_INSTRUCTION
 
@@ -23,7 +23,11 @@ def _inventory() -> dict[str, dict]:
 def gemini_label(thread: dict, inventory: dict, model: str) -> bool | None:
     """Gemini's cached useful/noise decision for this conversation, or None if never extracted."""
     text = threads.thread_to_prompt_text(thread)
-    devices = [inventory[i] for i in threads.find_device_ids(thread) if i in inventory]
+    # Same devices ingest.py puts in the prompt: IDs (also messy forms) + nicknames
+    raw = (thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])
+    match = linking.csv_inventory().resolve(raw)
+    ids = threads.find_device_ids(thread) | match.ids | set(match.aliases)
+    devices = [inventory[i] for i in ids if i in inventory]
     orders = itertools.permutations(devices) if len(devices) <= 4 else [devices]  # Neo4j returns them in any order
     for order in orders:
         key = cache.make_key(model, SYSTEM_INSTRUCTION, FEW_SHOT_EXAMPLES, text, device_context(list(order)))

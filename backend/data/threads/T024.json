@@ -1,0 +1,43 @@
+{
+  "thread_id": "T024",
+  "channel": "teams",
+  "date": "2026-04-14",
+  "language": "fi",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative. Tests linking WITHOUT a device ID (place / nickname).",
+  "participants": [
+    {
+      "name": "Jari Järvinen",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "07:52",
+      "timestamp": "2026-04-14T07:52:00+03:00",
+      "author": "Jari Järvinen",
+      "role": "Field Engineer",
+      "text": "Kolarin siirtolaitteella taas akkuhälytys sähkökatkon jälkeen, vaikka verkkovirta on jo palannut. Lähdenkö paikalle?"
+    },
+    {
+      "seq": 2,
+      "time": "07:55",
+      "timestamp": "2026-04-14T07:55:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Ei tarvitse lähteä. Siinä Kolarin laitteessa akkuhälytys jää lukkoon jokaisen katkon jälkeen. Kuittaa se etänä (clear alarm latch) ja katso että akkujännite on yli 52 V."
+    },
+    {
+      "seq": 3,
+      "time": "08:04",
+      "timestamp": "2026-04-14T08:04:00+03:00",
+      "author": "Jari Järvinen",
+      "role": "Field Engineer",
+      "text": "Kuittasin, hälytys poistui ja jännite 53,1 V. Kiitos, säästyi reissu!"
+    }
+  ]
+}

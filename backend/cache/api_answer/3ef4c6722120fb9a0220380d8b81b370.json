@@ -1,0 +1,3 @@
+{
+ "text": "The likely cause is that the battery alarm on TRN-042 stays latched even after mains power returns. This was confirmed to work on 1 device by 1 source (Erkki Expert, teams, 2026-04-14, confidence 0.56; device identified by place: the only transmission in Kolari).\n\n1. No site visit needed.\n2. Clear the alarm latch remotely.\n3. Verify that battery voltage exceeds 52 V (details: verify battery voltage is above 52 V after clearing the alarm latch)."
+}

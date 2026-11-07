@@ -1,0 +1,3 @@
+{
+ "text": "Syynä on vanhemmissa siirtolaitteissa esiintyvä ongelma, jossa liikenteen välitys jää jumiin SFP-moduulin vaihdon jälkeen.\n\n1. Tarkista, kasvavatko liikennelaskurit.\n2. Ota rajapinta pois käytöstä (disable) ja kytke se uudelleen päälle (enable).\n\n**Älä tee näin:**\n- Älä käynnistä koko laitetta uudelleen.\n- Älä vaihda SFP-moduulia uudelleen.\n\n**Kokeiltu, ei toiminut:**\nLaitteen uudelleenkäynnistys ei ratkaissut ongelmaa laitteella TRN-015, eikä SFP:n vaihtaminen korjannut liikennettä laitteella TRN-031. Huomaa, että korjaus sisältyy ohjelmistoversioon 3.4, mutta laitteessa TRN-042 on vielä versio 3.2.4.\n\n**Luotettavuus:** Vahvistettu 3 laitteella (Erkki Expert, Teams/sähköposti 2025–2026)."
+}

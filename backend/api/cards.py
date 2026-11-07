@@ -64,8 +64,11 @@ def avoid_text(code: str) -> str:
 
 
 # ---------- scope / status ----------
-def scope_text(scope: dict, observed_on: list[str]) -> str:
+def scope_text(scope: dict, observed_on: list[str], link: dict | None = None) -> str:
     if not scope.get("node_type"):
+        if (link or {}).get("how") == "site" and not observed_on:
+            cands = link.get("candidates") or []
+            return f"Devices at the {link.get('site')} site" + (f": {', '.join(cands)}" if cands else "")
         if observed_on:
             return "Only the device" + ("s" if len(observed_on) > 1 else "") + " it was seen on: " + ", ".join(observed_on)
         return "Specific devices only"

@@ -1,0 +1,13 @@
+{
+ "node_ids": [
+  "MW-412"
+ ],
+ "node_type": "microwave_link",
+ "symptoms": [
+  "CRC_ERRORS"
+ ],
+ "events": [],
+ "wants_access_info": false,
+ "is_follow_up": false,
+ "language": "en"
+}

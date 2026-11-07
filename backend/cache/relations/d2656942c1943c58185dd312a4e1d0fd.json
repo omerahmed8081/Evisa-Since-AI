@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T008-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "They address different problems and symptoms for microwave link issues."
+  },
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "They describe completely different root causes and fixes."
+  }
+ ]
+}

@@ -3,7 +3,8 @@ Local pre-filter: decide CHEAPLY, before any LLM call, whether a conversation co
 reusable knowledge. Runs fully locally (no API, no data leaves the machine).
 
   Layer 1 · RULE SCORE (transparent, no training)
-      +2  a device ID that exists in the inventory
+      +2  a device ID that exists in the inventory (or a device nickname from aliases.csv)
+      +1  no device named, but an inventory place ("Kolarissa"): could be about a device there
       +1  per technical term (Finnish + English), max +3
       +2  resolution phrase   ("works now", "traffic is back", "toimii", "kulkee taas")
       +2  failure phrase      ("didn't help", "same problem", "ei auttanut")
@@ -22,13 +23,12 @@ reusable knowledge. Runs fully locally (no API, no data leaves the machine).
 Tuned for RECALL: dropping real knowledge loses it forever, letting noise through only costs
 one Gemini call (which then rejects it).
 """
-import csv
 import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from pipeline import DATA_DIR, BACKEND_DIR, threads
+from pipeline import DATA_DIR, BACKEND_DIR, linking, threads
 
 MODEL_PATH = BACKEND_DIR / "models" / "prefilter.joblib"
 MIN_SCORE = 3
@@ -77,8 +77,9 @@ def _found(text: str, phrases: list[str]) -> list[str]:
 
 class Prefilter:
     def __init__(self, data_dir: Path = DATA_DIR, model_path: Path = MODEL_PATH, use_classifier: bool = True):
-        with open(data_dir / "inventory" / "nodes.csv", encoding="utf-8") as f:
-            self.inventory = {r["node_id"] for r in csv.DictReader(f)}
+        self.inv = linking.Inventory.from_csv(data_dir / "inventory" / "nodes.csv",
+                                              data_dir / "inventory" / "aliases.csv")
+        self.inventory = set(self.inv.devices)
         events_file = data_dir / "events" / "events.json"
         self.events: dict[str, list[datetime]] = {}
         if events_file.exists():
@@ -96,10 +97,15 @@ class Prefilter:
         text = ((thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])).lower()
         reasons, score = [], 0
 
-        devices = sorted(d for d in threads.find_device_ids(thread) if d in self.inventory)
+        raw = (thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])
+        match = self.inv.resolve(raw)
+        devices = sorted({d for d in threads.find_device_ids(thread) if d in self.inventory} | match.named)
         if devices:
             score += 2
             reasons.append(f"device {', '.join(devices)} (+2)")
+        elif match.locations:
+            score += 1
+            reasons.append(f"place {', '.join(match.locations)} (+1)")
 
         tech = _found(text, TECH_TERMS)
         if tech:
@@ -155,7 +161,8 @@ class Prefilter:
         if score < MIN_SCORE:
             return {"keep": False, "stage": "rules", "score": score, "reasons": reasons, "p_useful": None}
         p = self.probability(thread)
-        if p is not None and p < self.threshold:
+        protected = any(r.startswith("access info") for r in reasons)  # codes/keys: rare, never auto-skip
+        if p is not None and p < self.threshold and not protected:
             return {"keep": False, "stage": "classifier", "score": score, "reasons": reasons, "p_useful": round(p, 3)}
         return {"keep": True, "stage": "passed", "score": score, "reasons": reasons,
                 "p_useful": None if p is None else round(p, 3)}

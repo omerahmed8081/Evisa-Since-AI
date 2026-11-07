@@ -35,6 +35,10 @@ CHAT_MODEL = os.environ.get("API_GEMINI_MODEL", "").strip()
 # Newer models may reject it: llm.py then retries without it automatically.
 # Set to an empty string to leave the model default.
 THINKING_BUDGET = os.environ.get("API_THINKING_BUDGET", "0")
+# Gemini rate limits (429) / overload (503): keep retrying with growing waits before using the
+# template fallback. Wait = the delay Gemini asks for, else 5, 10, 20, 30, 30... seconds.
+GEMINI_RETRIES = int(os.environ.get("API_GEMINI_RETRIES", "8"))
+GEMINI_MAX_WAIT = float(os.environ.get("API_GEMINI_MAX_WAIT", "30"))
 # Cache chat answers on disk (cache/api_answer): same question + same knowledge = no API call.
 CACHE_ANSWERS = os.environ.get("API_CACHE_ANSWERS", "true").lower() == "true"
 

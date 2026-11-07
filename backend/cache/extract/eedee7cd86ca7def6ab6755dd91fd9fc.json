@@ -1,0 +1,32 @@
+{
+ "useful": true,
+ "reason": "Expert explains a firmware fix for traffic getting stuck after SFP replacement on transmission nodes, specifying that firmware 3.4 and later resolve the issue so the interface bounce workaround is only needed on older software.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On transmission nodes running firmware 3.4 or later, traffic does not get stuck after an SFP replacement; the interface disable/enable workaround is only needed on older software below version 3.4.",
+   "device_mentions": [
+    "TRN-077",
+    "TRN-015"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": "3.4",
+   "events": [
+    "SFP_REPLACEMENT",
+    "FIRMWARE_UPGRADE"
+   ],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Fixed in firmware 3.4 regarding forwarding state after optics changes."
+  }
+ ]
+}

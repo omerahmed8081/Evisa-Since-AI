@@ -10,10 +10,11 @@ All names, node IDs, codes and part numbers are fictional. The dataset contains 
 |---|---|---|
 | `inventory/nodes.csv` | Network inventory: **current state on 2026-10-31** | 25 devices: 10 transmission, 4 aggregation router, 7 base station, 4 microwave link |
 | `events/events.json` | Machine event stream (Elisa's "as-observed" layer) | 82 events: 33 `alarm_raised`, 18 `alarm_cleared`, 9 `work_order`, 8 `firmware_upgrade`, 8 `hw_replacement`, 6 `dispatch`; 15 not tied to any conversation |
-| `threads/T001–T023.json` | Teams chats | 23 |
+| `threads/T001–T026.json` | Teams chats (T024–T026: no device ID, only a place or nickname) | 26 |
 | `threads/E001–E008.txt` | Emails | 8 |
 | `threads/C001–C002.json` | Phone call transcripts | 2 |
-| `ground_truth.json` | Answer key: the correct extraction for each thread | 33 entries |
+| `inventory/aliases.csv` | Device nicknames used in chats ("Ounasvaara hop" = MW-412) | 6 |
+| `ground_truth.json` | Answer key: the correct extraction for each thread (+ `linking` for T024–T026) | 36 entries |
 | `validate.py` | Quality checks | - |
 | `generator/scenarios.py`, `generator/build.py` | Source content and the build script | - |
 
@@ -95,6 +96,9 @@ We used the starting vocabulary from brief section 8.1 unchanged. **No terms wer
 | Conflict | T017 vs T003 | Both kept and marked `disputed` |
 | Time-based superseding | T022 → T023 | T022 gets `valid_to` = T023's `valid_from`. T023 restates the padlock tip, so nothing true is lost |
 | Noise rejection | T019, T020, T021, C002 | `useful: false` |
+| Linked by place, one device fits | T024 ("Kolarin siirtolaite", no ID) | Linked to TRN-042 (`linked_by: location`); BTS-233, also in Kolari, does not get it |
+| Linked by place, several devices | T025 ("the Kittilä mast site") | Linked to `Site` Kittilä; reaches TRN-015, BTS-261, MW-405 with lower confidence |
+| Linked by nickname | T026 ("the Ounasvaara hop") | Linked to MW-412 (`linked_by: alias`) |
 | Vague entity references | T013 ("old transmission boxes"), E005 (no device ID), T002 ("Kolarissa keväällä") | Resolved through scope rules |
 
 ## Known limitations

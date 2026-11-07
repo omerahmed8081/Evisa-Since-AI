@@ -33,6 +33,9 @@ How to answer:
 - Mention how sure we are in plain words (e.g. "confirmed on 3 devices by 2 sources") and name the source
   briefly: author, channel and date.
 - If a tip applies by symptom only (no device named), say it may not apply to every device.
+- If "how_it_applies" says the device was identified by place or nickname, or that a tip was only
+  reported at the site without naming the device, say so in a few words (e.g. "reported at the Kolari
+  site, device not confirmed"). Follow DEVICE RESOLUTION when it is given.
 - Include "details" (codes, part numbers, values) exactly when they are relevant.
 - If there are no tips: say "No captured expert knowledge for this yet." and suggest asking an expert,
   in one or two sentences. Do not give generic advice from your own knowledge.
@@ -45,6 +48,8 @@ def build_prompt(message: str, history: list[tuple[str, str]], u: Understood, k:
     tips = [C.compact_for_llm(c) for c in k.cards]
     hist = "\n".join(f"{role}: {text[:600]}" for role, text in history) or "(none)"
     unknown = f"\nDevice IDs not found in the inventory: {', '.join(u.unknown_nodes)}" if u.unknown_nodes else ""
+    if getattr(u, "resolution_note", None):
+        unknown += f"\nDEVICE RESOLUTION: {u.resolution_note}"
     notes = "\n".join(k.notes)
     return (f"PREVIOUS TURNS\n{hist}\n\nDEVICES\n{C.dumps(devices)}{unknown}\n\n"
             f"RETRIEVAL NOTES\n{notes or '(none)'}\n\nTIPS\n{C.dumps(tips)}\n\nUSER MESSAGE\n{message}")

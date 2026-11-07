@@ -3,12 +3,13 @@ Small Gemini helpers for the chat (re-uses the client and model name from extrac
 Both helpers use the disk cache (cache.py), so a repeated demo question costs no API calls.
 """
 import logging
+import re
 import time
 
 from google.genai import types
 
 from pipeline import cache
-from api.config import CACHE_ANSWERS, CHAT_MODEL, THINKING_BUDGET
+from api.config import CACHE_ANSWERS, CHAT_MODEL, GEMINI_MAX_WAIT, GEMINI_RETRIES, THINKING_BUDGET
 from pipeline.extract import _model, client
 
 log = logging.getLogger("api.llm")
@@ -42,27 +43,51 @@ def _call(fn):
         raise
 
 
-def generate_json(prompt: str, system: str, schema, namespace: str, retries: int = 2):
+_NO_RETRY_CODES = {400, 401, 403, 404}   # bad request / bad key / unknown model: retrying can't help
+
+
+def _retryable(e: Exception) -> bool:
+    code = getattr(e, "code", None) or getattr(e, "status_code", None)
+    return not (isinstance(code, int) and code in _NO_RETRY_CODES)
+
+
+def _wait_for(e: Exception, attempt: int) -> float:
+    """Seconds to wait: Gemini's own retryDelay if it gives one (429), else 5, 10, 20, 30, 30..."""
+    m = re.search(r"retry(?:Delay)?['\"]?\s*[:=]?\s*['\"]?(?:in\s+)?(\d+(?:\.\d+)?)\s*s", str(e), re.IGNORECASE)
+    if m:
+        return min(GEMINI_MAX_WAIT, float(m.group(1)) + 1)
+    return min(GEMINI_MAX_WAIT, 5 * 2 ** attempt)
+
+
+def with_retries(fn, what: str):
+    """Run fn() until it works: rate limits and overloads are waited out, not given up on."""
+    for attempt in range(GEMINI_RETRIES):
+        try:
+            return _call(fn)
+        except Exception as e:
+            if not _retryable(e) or attempt == GEMINI_RETRIES - 1:
+                raise
+            wait = _wait_for(e, attempt)
+            log.warning("%s: Gemini %s: %s - retry %d/%d in %.0fs", what, e.__class__.__name__,
+                        str(e)[:160], attempt + 1, GEMINI_RETRIES - 1, wait)
+            time.sleep(wait)
+
+
+def generate_json(prompt: str, system: str, schema, namespace: str):
     """Structured output (Step A). Returns an instance of `schema`."""
     key = cache.make_key(_chat_model(), system, prompt)
     hit = cache.get(namespace, key)
     if hit is not None:
         return schema.model_validate(hit)
-    last = None
-    for attempt in range(retries):
-        try:
-            resp = _call(lambda: client().models.generate_content(
-                model=_chat_model(), contents=prompt,
-                config=_config(system, response_mime_type="application/json",
-                               response_schema=schema, temperature=0)))
-            result = resp.parsed if resp.parsed is not None else schema.model_validate_json(resp.text)
-            cache.put(namespace, key, result.model_dump())
-            return result
-        except Exception as e:  # rate limits etc.
-            last = e
-            log.warning("Gemini JSON call failed (%s: %s)", e.__class__.__name__, e)
-            time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"Gemini call failed: {last}")
+    def call():
+        resp = client().models.generate_content(
+            model=_chat_model(), contents=prompt,
+            config=_config(system, response_mime_type="application/json", response_schema=schema, temperature=0))
+        return resp.parsed if resp.parsed is not None else schema.model_validate_json(resp.text)
+
+    result = with_retries(call, "Step A")
+    cache.put(namespace, key, result.model_dump())
+    return result
 
 
 def stream_text(prompt: str, system: str, namespace: str = "api_answer"):
@@ -79,14 +104,19 @@ def stream_text(prompt: str, system: str, namespace: str = "api_answer"):
 
     parts: list[str] = []
 
-    def start():
-        return client().models.generate_content_stream(
-            model=_chat_model(), contents=prompt, config=_config(system, temperature=0.2))
+    def first_chunk():
+        """Open the stream and read its first chunk: most rate-limit errors arrive here, before any
+        text was shown, so the whole call can be retried safely."""
+        stream = iter(client().models.generate_content_stream(
+            model=_chat_model(), contents=prompt, config=_config(system, temperature=0.2)))
+        return stream, next(stream, None)
 
-    for chunk in _call(start):
+    stream, chunk = with_retries(first_chunk, "Step C")
+    while chunk is not None:
         text = chunk.text or ""
         if text:
             parts.append(text)
             yield text
+        chunk = next(stream, None)
     if CACHE_ANSWERS and parts:
         cache.put(namespace, key, {"text": "".join(parts)})

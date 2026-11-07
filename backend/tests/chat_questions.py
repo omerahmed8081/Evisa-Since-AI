@@ -1,11 +1,12 @@
 """
-End-to-end chat test: sends the 4 demo questions to the RUNNING API and checks the answers.
+End-to-end chat test: sends the 7 demo questions (4 with a device ID, 3 with only a place or nickname) to the RUNNING API and checks the answers.
 
   1. start the API in another terminal:   uvicorn api.main:app --port 8000
   2. python tests/chat_questions.py                  # all 4 questions
      python tests/chat_questions.py --show           # also print the full answers
      python tests/chat_questions.py --url http://localhost:8001
 
+Run scripts/load_inventory.py + ingest first (the place/nickname questions need T024-T026 in the graph).
 Uses only the Python standard library. Costs at most 2 Gemini calls per question
 (understand + answer), 0 when the same question was asked before (cache/api_*).
 
@@ -22,27 +23,14 @@ import urllib.error
 import urllib.request
 
 QUESTIONS = [
+
+    # No device ID in the question: the device is found from a place or a nickname
     {
-        "name": "TRN-042 · Finnish · SFP swapped, no traffic",
-        "message": "TRN-042: vaihdoin SFP:n, linkki on ylhäällä ja hälytykset poistuivat, "
-                   "mutta liikennelaskurit ovat nollassa. Mitä teen?",
-        "device": "TRN-042",
+        "name": "No ID · 'the Kolari transmission box' (place -> one device)",
+        "message": "The Kolari transmission box has a battery alarm again after the power cut. Do I need to drive there?",
+        "device": "TRN-042", "resolved_by": "location", "tip": "T024", "answer_has": ["latch", "52"],
     },
-    {
-        "name": "TRN-077 · newer firmware, same symptom",
-        "message": "TRN-077: replaced the SFP, link is up and alarms cleared but traffic counters stay at zero. What should I do?",
-        "device": "TRN-077",
-    },
-    {
-        "name": "BTS-210 · site access",
-        "message": "How do I get into the BTS-210 site? What is the gate code?",
-        "device": "BTS-210",
-    },
-    {
-        "name": "MW-405 · cold weather link flapping",
-        "message": "MW-405 keeps flapping since the cold weather started. Any known fix?",
-        "device": "MW-405",
-    },
+
 ]
 
 
@@ -77,12 +65,22 @@ def checks_for(q, meta, cards, answer):
     """[(description, passed)] for one question."""
     ids = meta.get("resolved_nodes") or []
     gemini_answer = bool(answer.strip()) and not (cards and answer.startswith(f"**{cards[0]['summary']}**"))
+    want = sorted(q.get("devices") or [q["device"]])
     common = [
-        (f"device understood as {q['device']}", ids == [q["device"]]),
+        (f"device(s) understood as {', '.join(want)}", sorted(ids) == want),
         ("Step A done by Gemini (not regex fallback)", meta.get("understood_by") == "gemini"),
         ("at least one knowledge card", len(cards) > 0),
         ("Step C answer written by Gemini (not template)", gemini_answer),
     ]
+    if q.get("resolved_by"):
+        common.append((f"device found by {q['resolved_by']} (no ID written)", meta.get("resolved_by") == q["resolved_by"]))
+    if q.get("tip"):
+        common.append((f"the {q['tip']} tip is in the cards",
+                       any(k.startswith(q["tip"] + "-") for c in all_cards(cards) for k in c.get("knowledge_ids") or [])))
+    for word in q.get("answer_has") or []:
+        common.append((f"answer mentions '{word}'", word.lower() in answer.lower()))
+    if q.get("tip"):
+        return common
     d = q["device"]
     if d == "TRN-042":
         failed = failed_actions(cards)
@@ -121,7 +119,7 @@ def ask(url, message):
                                  headers={"content-type": "application/json", "accept": "text/event-stream"})
     meta, cards, tokens, error = {}, [], [], None
     t0 = time.time()
-    with urllib.request.urlopen(req, timeout=120) as r:
+    with urllib.request.urlopen(req, timeout=600) as r:
         event = None
         for raw in r:
             line = raw.decode("utf-8").rstrip("\r\n")
@@ -144,6 +142,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:8000")
     ap.add_argument("--show", action="store_true", help="print the full answers")
+    ap.add_argument("--pause", type=float, default=0, help="optional seconds between questions")
     args = ap.parse_args()
     url = args.url.rstrip("/")
 
@@ -157,6 +156,8 @@ def main():
 
     total_ok = total = 0
     for i, q in enumerate(QUESTIONS, 1):
+        if i > 1:
+            time.sleep(args.pause)
         print(f"[{i}/{len(QUESTIONS)}] {q['name']}")
         try:
             meta, answer, cards, error, secs = ask(url, q["message"])

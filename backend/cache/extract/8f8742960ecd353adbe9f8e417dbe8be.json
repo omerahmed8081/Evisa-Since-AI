@@ -1,0 +1,27 @@
+{
+ "useful": true,
+ "reason": "Provides practical access information for reaching a winter-blocked mast site, including parking location and equipment container details.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "The last 500 m to the Kittilä mast site is unploughed in winter; park at the snowmobile track sign, walk the rest, and use the snowshoes inside the equipment container with padlock code 6142.",
+   "device_mentions": [],
+   "node_type": null,
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    2,
+    3
+   ],
+   "confirmed_at_seq": 3,
+   "details": "Park at the snowmobile track sign and walk the last 500 m. Snowshoes are on the left wall inside the equipment container, padlock code 6142."
+  }
+ ]
+}

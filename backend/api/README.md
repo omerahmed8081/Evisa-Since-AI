@@ -49,8 +49,11 @@ curl -X POST 'localhost:8000/api/chat?stream=false' -H 'content-type: applicatio
 | GET | `/api/health` | `?deep=true` also checks Neo4j and the Gemini key |
 
 Additions to the UI contract (all optional for the frontend):
-- every card has `knowledge_ids` (all merged assertions), `confidence`, `symptom_match`, `how_it_applies`;
-- `meta` also has `unknown_nodes`, `symptoms`, `events`, `retrieval` (`device`/`search`/`none`), `understood_by`;
+- every card has `knowledge_ids` (all merged assertions), `confidence`, `symptom_match`, `how_it_applies`,
+  and `link` = how the tip reaches the device: `{how: id|alias|location|site|scope, via, site, candidates}`;
+- `meta` also has `unknown_nodes`, `symptoms`, `events`, `retrieval` (`device`/`search`/`none`), `understood_by`,
+  `resolved_by` (`id`/`alias`/`location`/`site`/`selected`/`gemini`) and `resolution_note`
+  ("the Kolari box" -> TRN-042; "the Kittilä site" -> its 3 devices);
 - a source `channel` can also be `feedback` (knowledge that came from a feedback comment);
 - verdict `skipped` is accepted (Full_pipeline.txt ⏭ button).
 
@@ -72,6 +75,8 @@ Additions to the UI contract (all optional for the frontend):
 | `API_MAX_CARDS` | 6 | cards per chat answer |
 | `API_GEMINI_MODEL` | (empty) | model for chat answers; empty = `GEMINI_MODEL`. Use a non-lite Flash model for better answers |
 | `API_THINKING_BUDGET` | 0 | Gemini thinking off for fast replies; empty = model default. Retried without it automatically if the model rejects it |
+| `API_GEMINI_RETRIES` | 8 | Gemini rate limit (429) / overload (503): retry this many times before the template fallback |
+| `API_GEMINI_MAX_WAIT` | 30 | max seconds between retries (Gemini's own `retryDelay` is used when it gives one) |
 | `API_CACHE_ANSWERS` | true | repeated question + same knowledge = no Gemini call (`cache/api_answer`) |
 | `FEEDBACK_DISPUTE_AFTER` | 2 | failed reports (and more failed than worked) before a tip becomes disputed |
 

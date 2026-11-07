@@ -34,7 +34,7 @@ CATEGORIES = {"correct_fix", "reinforcing", "wrong_advice", "narrows_scope", "su
 EVENT_TYPES = {"alarm_raised", "alarm_cleared", "work_order", "dispatch", "firmware_upgrade", "hw_replacement"}
 RELATION_TYPES = {"same_knowledge_as", "reinforces", "narrows_scope", "supersedes", "conflicts_with"}
 
-EXPECTED_IDS = (["T%03d" % i for i in range(1, 24)] + ["E%03d" % i for i in range(1, 9)] + ["C001", "C002"])
+EXPECTED_IDS = (["T%03d" % i for i in range(1, 27)] + ["E%03d" % i for i in range(1, 9)] + ["C001", "C002"])
 
 # Required firmware histories (section 3.1); extra devices may add their own.
 REQUIRED_FW = {
@@ -82,6 +82,10 @@ EXPECTED_SCOPE = {
     "E008": (["TRN-042", "BTS-233"], None, None, None, None),
     "T022": (["BTS-210"], None, None, None, None),
     "T023": (["BTS-210"], None, None, None, None),
+    # linking without a device ID: by place, by site, by nickname
+    "T024": (["TRN-042"], None, None, None, None),
+    "T025": ([], None, None, None, None),
+    "T026": (["MW-412"], None, None, None, None),
     "T019": None, "T020": None, "T021": None, "C002": None,
 }
 

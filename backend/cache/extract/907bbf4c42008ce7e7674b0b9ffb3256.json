@@ -1,0 +1,35 @@
+{
+ "useful": true,
+ "reason": "Expert provides a successful troubleshooting fix for CRC errors caused by water in the IF cable connector.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "On microwave links experiencing CRC errors with normal alignment and RX levels, check and clean the indoor unit IF cable connector as moisture often enters in spring.",
+   "device_mentions": [
+    "MW-412"
+   ],
+   "node_type": "microwave_link",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "CRC_ERRORS",
+    "ALIGNMENT_LOST",
+    "OPTICAL_LEVELS_NORMAL"
+   ],
+   "actions": [
+    "CLEAN_CONNECTOR"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Sanna Saari",
+   "source_message_seqs": [
+    2,
+    3
+   ],
+   "confirmed_at_seq": 3,
+   "details": "Cleaned and re-taped the IF cable connector at the indoor unit."
+  }
+ ]
+}

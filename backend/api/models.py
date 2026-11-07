@@ -67,6 +67,8 @@ class KnowledgeCard(BaseModel):
     sources: list[Source]
     conflicts_with: list["KnowledgeCard"] = []
     related_failed: list[FailedRef] = []
+    link: Optional[dict] = Field(default=None, description="How the knowledge reaches this device: "
+                                 "{how: id|alias|location|site|scope, via, site, candidates}")
 
 
 KnowledgeCard.model_rebuild()

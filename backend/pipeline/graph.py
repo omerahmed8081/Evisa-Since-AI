@@ -2,12 +2,14 @@
 Everything that talks to Neo4j.
 
 Graph shape:
-  (:Device {node_id, node_type, install_date, firmware, location})      <- from inventory
+  (:Device {node_id, node_type, install_date, firmware, location, aliases})  <- from inventory
+  (:Site {name})   (Device)-[:AT]->(Site)                               <- the place, from inventory
   (:Assertion {...knowledge, scope_*, valid_from, valid_to, status})   <- from conversations
   (:Source {id, channel, timestamp, text})                             <- the raw chat/email
   (:Person {name, role})
 
-  (Assertion)-[:OBSERVED_ON]->(Device)
+  (Assertion)-[:OBSERVED_ON {linked_by: id|alias|location, link_confidence, via}]->(Device)
+  (Assertion)-[:OBSERVED_AT {link_confidence, candidates}]->(Site)    <- place known, device not
   (Assertion)-[:FROM]->(Source)
   (Assertion)-[:BY]->(Person)
 
@@ -49,11 +51,16 @@ def setup_constraints():
     run("CREATE CONSTRAINT source_id IF NOT EXISTS FOR (s:Source) REQUIRE s.id IS UNIQUE")
     run("CREATE CONSTRAINT person_name IF NOT EXISTS FOR (p:Person) REQUIRE p.name IS UNIQUE")
     run("CREATE CONSTRAINT term_key IF NOT EXISTS FOR (t:Term) REQUIRE t.key IS UNIQUE")
+    run("CREATE CONSTRAINT site_name IF NOT EXISTS FOR (s:Site) REQUIRE s.name IS UNIQUE")
 
 
 def load_inventory(csv_path: Path) -> int:
+    from pipeline.linking import load_aliases
     with open(csv_path, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    aliases = load_aliases(csv_path.parent / "aliases.csv")
+    for r in rows:
+        r["aliases"] = sorted(a for a, nid in aliases.items() if nid == r["node_id"])
     run(
         """
         UNWIND $rows AS r
@@ -63,7 +70,11 @@ def load_inventory(csv_path: Path) -> int:
             d.install_date = date(r.install_date),
             d.firmware = r.firmware,
             d.location = r.location,
-            d.status = r.status
+            d.status = r.status,
+            d.aliases = r.aliases
+        WITH d, r WHERE r.location IS NOT NULL AND r.location <> ''
+        MERGE (s:Site {name: r.location})
+        MERGE (d)-[:AT]->(s)
         """,
         rows=rows,
     )
@@ -158,13 +169,32 @@ def save_assertion(a: dict):
         WITH x
         MERGE (p:Person {name: $a.author})
         MERGE (x)-[:BY]->(p)
-        WITH x
-        UNWIND $a.observed_on AS dev_id
-        MATCH (d:Device {node_id: dev_id})
-        MERGE (x)-[:OBSERVED_ON]->(d)
         """,
         a=a,
     )
+    links = a.get("links") or [{"node_id": n, "linked_by": "id", "link_confidence": 1.0, "via": None}
+                               for n in a.get("observed_on") or []]
+    run(
+        """
+        MATCH (x:Assertion {id: $id})
+        UNWIND $links AS l
+        MATCH (d:Device {node_id: l.node_id})
+        MERGE (x)-[r:OBSERVED_ON]->(d)
+        SET r.linked_by = l.linked_by, r.link_confidence = l.link_confidence, r.via = l.via
+        """,
+        id=a["id"], links=links,
+    )
+    if a.get("site_links"):
+        run(
+            """
+            MATCH (x:Assertion {id: $id})
+            UNWIND $sites AS s
+            MERGE (site:Site {name: s.site})
+            MERGE (x)-[r:OBSERVED_AT]->(site)
+            SET r.link_confidence = s.link_confidence, r.candidates = s.candidates
+            """,
+            id=a["id"], sites=a["site_links"],
+        )
 
 
 TERM_LINKS = [

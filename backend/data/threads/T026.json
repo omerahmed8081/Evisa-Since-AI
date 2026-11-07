@@ -1,0 +1,43 @@
+{
+  "thread_id": "T026",
+  "channel": "teams",
+  "date": "2026-04-20",
+  "language": "en",
+  "note": "Synthetic, based on Elisa's example. Names and node IDs are illustrative. Tests linking WITHOUT a device ID (place / nickname).",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Saari",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "10:21",
+      "timestamp": "2026-04-20T10:21:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "The Ounasvaara hop is throwing CRC errors since this morning. Alignment and RX levels look fine."
+    },
+    {
+      "seq": 2,
+      "time": "10:24",
+      "timestamp": "2026-04-20T10:24:00+03:00",
+      "author": "Sanna Saari",
+      "role": "Network Expert",
+      "text": "Check the IF cable connector at the indoor unit first, water gets in there in spring. Clean it and re-tape it before you touch the radio."
+    },
+    {
+      "seq": 3,
+      "time": "10:58",
+      "timestamp": "2026-04-20T10:58:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Cleaned and re-taped the connector, CRC errors are gone. Thanks!"
+    }
+  ]
+}
