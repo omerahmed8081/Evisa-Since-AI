@@ -70,7 +70,8 @@ Additions to the UI contract (all optional for the frontend):
 |---|---|---|
 | `CORS_ORIGINS` | `*` | comma separated; Lovable domains are also allowed by `CORS_ORIGIN_REGEX` |
 | `API_MAX_CARDS` | 6 | cards per chat answer |
-| `API_THINKING_BUDGET` | 0 | Gemini thinking off for fast replies; empty = model default |
+| `API_GEMINI_MODEL` | (empty) | model for chat answers; empty = `GEMINI_MODEL`. Use a non-lite Flash model for better answers |
+| `API_THINKING_BUDGET` | 0 | Gemini thinking off for fast replies; empty = model default. Retried without it automatically if the model rejects it |
 | `API_CACHE_ANSWERS` | true | repeated question + same knowledge = no Gemini call (`cache/api_answer`) |
 | `FEEDBACK_DISPUTE_AFTER` | 2 | failed reports (and more failed than worked) before a tip becomes disputed |
 

@@ -1,0 +1,3 @@
+{
+ "text": "Todennäköinen syy on vanhemman laiteohjelmiston aiheuttama forwarding-jumiutuminen SFP-vaihdon jälkeen. Vika on varmistettu 3 laitteessa 2 lähteen toimesta (Erkki Expert, teams/email, 2025–2026). Aiemmin on yritetty tuloksetta käynnistää laite uudelleen (nähty laitteella TRN-015) sekä vaihtaa SFP (nähty laitteella TRN-031).\n\nToimi näin:\n1. Tarkista, että liikennelaskurit kasvavat.\n2. Poista li Käytöstä ja ota liitäntä uudelleen käyttöön.\n\nVältä näitä:\n- Älä käynnistä koko laitetta uudelleen.\n- Älä vaihda SFP:tä uudelleen."
+}

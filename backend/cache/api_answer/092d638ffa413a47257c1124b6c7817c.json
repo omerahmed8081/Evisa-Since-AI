@@ -1,0 +1,3 @@
+{
+ "text": "Experts disagree on whether cold weather drops on MW-405 are caused by ice accumulation on the radome or power supply failure.\n\nErkki Expert (teams, 2024-01-18) reported that ice accumulation on the radome causes fading and drops (outcome: worked on MW-405). However, another expert view notes that extreme cold can cause the power supply (PSU) to fail even if the radome is clear (never confirmed). \n\nSteps to take:\n1. Clear ice from the radome before touching the radio.\n2. Replace the PSU if drops continue while the radome is clear.\n3. Check and re-enable ATPC (automatic transmit power control), as upgrading to firmware 1.4.0 disables ATPC (confirmed on 3 devices by Jari Jänne, email, 2023-10-30)."
+}

@@ -1,0 +1,3 @@
+{
+ "text": "Experts disagree on the cause: one view attributes link drops in heavy snow and ice to ice accumulation on the antenna radome, while another view states that in extreme cold weather, microwave link power supplies can fail, causing the link to drop even if the radome is clear. \n\n1. Clear ice from the radome.\n2. If the issue persists, replace the PSU.\n\nThis is based on disputed expert knowledge (confidence 0.7, seen on MW-405, from Erkki Expert, teams, 2024-01-18)."
+}

@@ -8,10 +8,14 @@ This is the function the chatbot agent will call as a tool. It:
      firmware_below ("workaround only needed below 3.4") and firmware_at_least ("fixed from 3.4 on"),
   3. GROUPS duplicates: the same fix captured from several chats/emails/devices becomes ONE
      result with all its sources and devices, and a confidence that grows with confirmations,
-  4. optionally ranks by how well the stored symptoms match the symptoms in the question.
+  4. optionally ranks by how well the question's symptoms AND events match each tip:
+     exact term = 1 point, closely related term (vocabulary embeddings, e.g. LINK_FLAPPING ~
+     LINK_FADING) = 0.5, opposites (INTERFACE_UP vs INTERFACE_DOWN) never count as related.
+     The score is returned as "symptom_match" (0..1, kept under that name for the API).
 
-Command line: python scripts/retrieve.py TRN-077 [--symptoms ...] [--json]
+Command line: python scripts/retrieve.py TRN-077 [--symptoms ...] [--events ...] [--json]
 """
+import math
 
 
 from pipeline import graph
@@ -42,6 +46,59 @@ RETURN d {.node_id, .node_type, .firmware, install_date: toString(d.install_date
 
 CONFIRMATION_BONUS = 0.1   # per extra independent source
 MAX_CONFIDENCE = 0.95
+
+# Related-term matching. Measured on our vocabulary embeddings: related terms ~0.83
+# (LINK_FLAPPING~LINK_FADING 0.835, COLD_WEATHER~HEAVY_SNOW_ICE 0.840), unrelated ~0.72 (median).
+# Opposites score high too (INTERFACE_UP~INTERFACE_DOWN 0.864), hence the OPPOSITES guard.
+RELATED_TERM_THRESHOLD = 0.825
+RELATED_TERM_CREDIT = 0.5
+OPPOSITES = [{"UP", "DOWN"}, {"NORMAL", "LOW"}, {"NORMAL", "HIGH"}, {"LOW", "HIGH"}, {"ZERO", "NORMAL"}]
+_term_vectors: dict[tuple[str, str], list[float] | None] = {}
+
+
+def _vectors(category: str, names: set[str]) -> dict[str, list[float] | None]:
+    missing = [n for n in names if (category, n) not in _term_vectors]
+    if missing:
+        for r in graph.run("MATCH (t:Term) WHERE t.category = $cat AND t.name IN $names "
+                           "RETURN t.name AS name, t.embedding AS emb", cat=category, names=missing):
+            _term_vectors[(category, r["name"])] = r["emb"]
+        for n in missing:
+            _term_vectors.setdefault((category, n), None)
+    return {n: _term_vectors[(category, n)] for n in names}
+
+
+def _cosine(a: list[float], b: list[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    na, nb = math.sqrt(sum(x * x for x in a)), math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+
+def _opposites(a: str, b: str) -> bool:
+    ta, tb = set(a.split("_")), set(b.split("_"))
+    return any((pair & ta) and (pair & tb) and (pair & ta) != (pair & tb) for pair in OPPOSITES)
+
+
+def _term_credit(wanted: str, have: set[str], category: str) -> float:
+    if wanted in have:
+        return 1.0
+    candidates = [h for h in have if not _opposites(wanted, h)]
+    if not candidates:
+        return 0.0
+    vecs = _vectors(category, set(candidates) | {wanted})
+    w = vecs.get(wanted)
+    if not w:
+        return 0.0
+    best = max((_cosine(w, vecs[h]) for h in candidates if vecs.get(h)), default=0.0)
+    return RELATED_TERM_CREDIT if best >= RELATED_TERM_THRESHOLD else 0.0
+
+
+def match_score(symptoms: set[str], events: set[str], tip_symptoms: set[str], tip_events: set[str]):
+    """0..1 how well a tip matches the question's terms. None = nothing to compare
+    (no terms in the question, or a tip without any symptom/event terms)."""
+    wanted = [(s, "symptom", tip_symptoms) for s in symptoms] + [(e, "event", tip_events) for e in events]
+    if not wanted or not (tip_symptoms or tip_events):
+        return None
+    return sum(_term_credit(t, have, cat) for t, cat, have in wanted) / len(wanted)
 
 
 def version_tuple(v: str | None) -> tuple:
@@ -87,7 +144,7 @@ def same_knowledge(a: dict, b: dict) -> bool:
     return x <= y or y <= x or len(x & y) / len(x | y) >= 0.5
 
 
-def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
+def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list[str] | None = None) -> dict:
     rows = graph.run(QUERY, node_id=node_id)
     if not rows:
         exists = graph.run("MATCH (d:Device {node_id: $id}) RETURN d.node_id", id=node_id)
@@ -112,7 +169,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
             "events": set(), "symptoms": set(), "actions": a["actions"], "avoid": set(),
             "outcome": a["outcome"], "details": [], "status": set(), "base_confidence": 0.0,
             "sources": {}, "authors": set(), "seen_on_devices": set(), "observed_on_this_device": False,
-            "age_limited": False, "latest": a["valid_from"],
+            "age_limited": False, "firmware_limited": False, "latest": a["valid_from"],
         })
         g["knowledge_ids"].append(a["id"])
         g["members"].append(a)
@@ -124,6 +181,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
         if a.get("details") and a["details"] not in g["details"]:
             g["details"].append(a["details"])
         g["age_limited"] |= a.get("scope_installed_before") not in (None, "", "null")
+        g["firmware_limited"] |= bool(a.get("scope_firmware_below") or a.get("scope_firmware_at_least"))
         g["status"].add(a.get("status") or "auto_captured")
         g["base_confidence"] = max(g["base_confidence"], a["confidence"] or 0)
         if a["outcome"] == "worked":
@@ -138,13 +196,14 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
             g["latest"], g["summary"] = a["valid_from"], a["summary"]  # newest wording wins
 
     results = []
-    wanted = set(symptoms or [])
+    wanted_symptoms, wanted_events = set(symptoms or []), set(events or [])
+    wanted = wanted_symptoms | wanted_events
     for g in groups.values():
         n_sources = len(g["sources"])
         confidence = min(MAX_CONFIDENCE, g["base_confidence"] + CONFIRMATION_BONUS * max(0, n_sources - 1))
         if g["outcome"] == "failed":
             confidence = g["base_confidence"]  # repeated failures don't make a fix more trustworthy
-        match = len(wanted & g["symptoms"]) / len(wanted) if wanted else None
+        match = match_score(wanted_symptoms, wanted_events, g["symptoms"], g["events"])
         results.append({
             "summary": g["summary"],
             "knowledge_type": g["knowledge_type"],
@@ -164,6 +223,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
             "authors": sorted(x for x in g["authors"] if x),
             "disputed": "disputed" in g["status"],
             "knowledge_ids": g["knowledge_ids"],
+            "_keep_unmatched": g["firmware_limited"],
         })
 
     results.sort(key=lambda r: (
@@ -173,8 +233,15 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None) -> dict:
         not r["how_it_applies"].startswith("applies to similar"),
         -r["confidence"],
     ))
-    if wanted:  # with symptoms given, drop knowledge that shares none of them (access info is kept)
-        results = [r for r in results if r["symptom_match"] or r["knowledge_type"] == "access_info"]
+    if wanted:
+        # Drop tips whose symptoms/events don't fit the question. Always keep access info. Tips without
+        # any symptom/event terms can't be judged: keep them only if they carry a firmware limit
+        # (e.g. "fixed in firmware 3.4"), which is worth showing for any problem on that device.
+        results = [r for r in results if r["knowledge_type"] == "access_info"
+                   or (r["symptom_match"] or 0) > 0
+                   or (r["symptom_match"] is None and r["_keep_unmatched"])]
+    for r in results:
+        r.pop("_keep_unmatched", None)
     return {"device": device, "results": results, "excluded_by_firmware": excluded}
 
 
@@ -189,7 +256,7 @@ def print_readable(res: dict):
     for i, r in enumerate(res["results"], 1):
         flag = "  ⚠ DISPUTED" if r["disputed"] else ""
         print(f"\n[{i}] {r['knowledge_type']} · outcome {r['outcome']} · confidence {r['confidence']}"
-              + (f" · symptom match {r['symptom_match']}" if r["symptom_match"] is not None else "") + flag)
+              + (f" · match {r['symptom_match']}" if r["symptom_match"] is not None else "") + flag)
         print(f"    {r['summary']}")
         if r["actions"] and r["outcome"] == "failed":
             print(f"    tried: {' -> '.join(r['actions'])}   (did NOT work)")

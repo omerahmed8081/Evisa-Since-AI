@@ -1,0 +1,3 @@
+{
+ "text": "Syy on liikenteenohjauksen jumiutuminen SFP:n vaihdon jälkeen vanhemmilla siirtolaitteilla, vaikka optiset tasot ovat kunnossa ja portti on UP-tilassa.\n\n1. Tarkista, kasvavatko liikennelaskurit.\n2. Ota liityntä pois käytöstä ja kytke se uudelleen käyttöön (disable/enable).\n\nÄlä käynnistä koko laitetta uudelleen äläkä vaihda SFP-moduulia.\n\nKoko laitteen uudelleenkäynnistys (laitteella TRN-015) sekä SFP:n vaihtaminen uudestaan (laitteella TRN-031) eivät korjanneet ongelmaa. Firmware-versiossa 3.4 julkaistu korjaus ei pätde vielä laitteelle TRN-042, koska sen firmware on 3.2.4.\n\nRatkaisu on vahvistettu 3 laitteella (Erkki Expert, Teams/sähköposti 2025–2026)."
+}

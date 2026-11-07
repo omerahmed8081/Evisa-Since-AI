@@ -1,0 +1,3 @@
+{
+ "text": "The known fix of disabling and re-enabling the port does NOT apply to TRN-077 because the firmware already fixes it (device runs 3.4.0, and the rule only applies below firmware 3.4). Since your device runs firmware version 3.4 or higher, traffic does not get stuck after an SFP replacement and the interface disable/enable workaround is no longer needed (confirmed on 2 devices by 1 source: Erkki Expert, email, 2026-04-08).\n\nTried and failed:\n- Mikko Mäkelä (teams, 2025-06-30) noted that rebooting the whole unit did not resolve zero traffic counters on TRN-015.\n- Tiina Tuominen (teams, 2025-07-15) noted that replacing the SFP did not restore traffic on TRN-031."
+}

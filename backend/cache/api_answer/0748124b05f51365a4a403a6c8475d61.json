@@ -1,0 +1,3 @@
+{
+ "text": "Syyksi epäillään vanhemman transmission-laitteen forwarding-jumiutumista SFP-vaihdon jälkeen. \n\n1. Tarkista, että liikennelaskurit kasvavat.\n2. Poista liインターフェース (rajapinta) käytöstä ja ota se uudelleen käyttöön liikenteen palauttamiseksi.\n\nÄlä käynnistä koko laitetta uudelleen äläkä vaihda SFP:tä, sillä nämä yritykset eivät ratkaisseet ongelmaa (testattu TRN-031). \n\nTämä tieto on erittäin varma (vahvistettu 3 laitteella 2 lähteestä: Erkki Expert, 2025-03-12 / 2026-02-16). Uudempi firmware 3.4 ei koske laitetta TRN-042, koska siinä on versio 3.2.4."
+}

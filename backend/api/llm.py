@@ -8,11 +8,16 @@ import time
 from google.genai import types
 
 from pipeline import cache
-from api.config import CACHE_ANSWERS, THINKING_BUDGET
+from api.config import CACHE_ANSWERS, CHAT_MODEL, THINKING_BUDGET
 from pipeline.extract import _model, client
 
 log = logging.getLogger("api.llm")
 _thinking_ok = True  # switched off automatically if the model rejects a thinking budget
+
+
+def _chat_model() -> str:
+    """API_GEMINI_MODEL if set, else the capture model (GEMINI_MODEL)."""
+    return CHAT_MODEL or _model()
 
 
 def _config(system: str, **kw) -> types.GenerateContentConfig:
@@ -27,7 +32,10 @@ def _call(fn):
     try:
         return fn()
     except Exception as e:
-        if _thinking_ok and "thinking" in str(e).lower():
+        msg = str(e).lower()
+        # Some models reject the thinking budget with a generic 400 INVALID_ARGUMENT that doesn't
+        # mention "thinking", so retry without it on any invalid-argument error too.
+        if _thinking_ok and ("thinking" in msg or "invalid_argument" in msg or getattr(e, "code", None) == 400):
             log.warning("Model rejected thinking_budget; continuing without it")
             _thinking_ok = False
             return fn()
@@ -36,7 +44,7 @@ def _call(fn):
 
 def generate_json(prompt: str, system: str, schema, namespace: str, retries: int = 2):
     """Structured output (Step A). Returns an instance of `schema`."""
-    key = cache.make_key(_model(), system, prompt)
+    key = cache.make_key(_chat_model(), system, prompt)
     hit = cache.get(namespace, key)
     if hit is not None:
         return schema.model_validate(hit)
@@ -44,7 +52,7 @@ def generate_json(prompt: str, system: str, schema, namespace: str, retries: int
     for attempt in range(retries):
         try:
             resp = _call(lambda: client().models.generate_content(
-                model=_model(), contents=prompt,
+                model=_chat_model(), contents=prompt,
                 config=_config(system, response_mime_type="application/json",
                                response_schema=schema, temperature=0)))
             result = resp.parsed if resp.parsed is not None else schema.model_validate_json(resp.text)
@@ -59,7 +67,7 @@ def generate_json(prompt: str, system: str, schema, namespace: str, retries: int
 
 def stream_text(prompt: str, system: str, namespace: str = "api_answer"):
     """Streams the answer text (Step C) chunk by chunk."""
-    key = cache.make_key(_model(), system, prompt)
+    key = cache.make_key(_chat_model(), system, prompt)
     if CACHE_ANSWERS:
         hit = cache.get(namespace, key)
         if hit is not None:
@@ -73,7 +81,7 @@ def stream_text(prompt: str, system: str, namespace: str = "api_answer"):
 
     def start():
         return client().models.generate_content_stream(
-            model=_model(), contents=prompt, config=_config(system, temperature=0.2))
+            model=_chat_model(), contents=prompt, config=_config(system, temperature=0.2))
 
     for chunk in _call(start):
         text = chunk.text or ""

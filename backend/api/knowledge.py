@@ -181,7 +181,8 @@ def build_card(group: dict, infos: dict, scope_note: str | None = None, force_st
 
 def _failed_ref(card: dict) -> dict:
     return {"assertion_id": card["assertion_id"], "knowledge_ids": card["knowledge_ids"],
-            "summary": card["summary"], "actions_text": card["actions_text"], "sources": card["sources"]}
+            "summary": card["summary"], "actions_text": card["actions_text"], "sources": card["sources"],
+            "observed_on": card["observed_on"]}
 
 
 def _attach_failed(main: list[dict], failed: list[dict]) -> list[dict]:
@@ -259,8 +260,8 @@ def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wan
     groups, seen = [], set()
     excluded: list[tuple[str, dict, dict]] = []  # (node_id, excluded entry, device)
     for nid in node_ids:
-        out = retrieve.find_knowledge(nid, symptoms or None)
-        if symptoms and not out["results"] and isinstance(out.get("device"), dict):
+        out = retrieve.find_knowledge(nid, symptoms or None, events or None)
+        if (symptoms or events) and not out["results"] and isinstance(out.get("device"), dict):
             out = retrieve.find_knowledge(nid, None)
             res.notes.append(f"No tip for {nid} matched the symptoms exactly; showing everything that applies to it.")
         dev = out.get("device")

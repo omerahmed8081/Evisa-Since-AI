@@ -145,7 +145,9 @@ def compact_for_llm(card: dict) -> dict:
     if card.get("scope_note"):
         out["not_applicable_because"] = card["scope_note"]
     if card.get("related_failed"):
-        out["tried_and_failed"] = [f["summary"] for f in card["related_failed"]]
+        out["tried_and_failed"] = [
+            f["summary"] + (f" (seen on {', '.join(f['observed_on'])})" if f.get("observed_on") else "")
+            for f in card["related_failed"]]
     if card.get("conflicts_with"):
         out["experts_disagree_with"] = [c["summary"] for c in card["conflicts_with"]]
     return out
