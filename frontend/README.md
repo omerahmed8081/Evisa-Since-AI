@@ -81,7 +81,7 @@ It is the user interface of the Elisa × Since AI 2026 project; the API it talks
 
 | Tool | Required version | Check | Why |
 |---|---|---|---|
-| **Node.js** | **22.12.0 or newer** (22 LTS or 24 LTS recommended) | `node -v` | TanStack Start requires `>=22.12.0` (Vite 8 alone would accept 20.19) |
+| **Node.js** | **22.12.0 or newer**; **24 LTS recommended** (it ships with npm 11) | `node -v` | TanStack Start requires `>=22.12.0` (Vite 8 alone would accept 20.19) |
 | **npm** | **11 or newer** | `npm -v` | npm **10 fails** on this project with `Cannot read properties of null (reading 'edgesOut')` (an npm 10 dependency-resolution bug); npm 11.21 and 12.2 were verified to install it |
 | *or* **Bun** | 1.x | `bun --version` | Alternative to npm; what Lovable uses |
 
@@ -92,22 +92,19 @@ For live mode you also need the backend running on `http://localhost:8000` (see 
 **Node.js** (with [nvm](https://github.com/nvm-sh/nvm); this folder has an `.nvmrc`):
 
 ```bash
-nvm install          # installs the version in .nvmrc (22)
+nvm install          # installs the version in .nvmrc (24 LTS, comes with npm 11)
 nvm use              # switches this terminal to it
-node -v              # v22.12.0 or newer
+nvm alias default 24 # optional: use it in every new terminal
+node -v && npm -v    # v24.x and 11.x
 ```
 
-On Windows use [nvm-windows](https://github.com/coreybutler/nvm-windows) (`nvm install 22` then `nvm use 22`) or the
-installer from [nodejs.org](https://nodejs.org) (LTS).
+On Windows use [nvm-windows](https://github.com/coreybutler/nvm-windows) (`nvm install 24` then `nvm use 24`) or the
+LTS installer from [nodejs.org](https://nodejs.org).
 
-**npm** (Node 22 ships with npm 10, so upgrade it once):
-
-```bash
-npm install -g npm@11
-npm -v               # 11.x
-```
-
-npm 12 also works but needs Node `^22.22.2 || ^24.15.0 || >=26`; npm 11 works with any Node 22.12+.
+**npm**: Node 24 already includes npm 11, so nothing else is needed. If you stay on **Node 22** (which ships with
+npm 10), upgrade npm once with `npm install -g npm@11`. If that self-upgrade fails with
+`Cannot find module 'promise-retry'`, npm has damaged itself: don't retry, install Node 24 instead
+(`nvm install 24`), which brings a working npm 11. npm 12 also works but needs Node `^22.22.2 || ^24.15.0 || >=26`.
 
 **Bun** (optional, instead of npm):
 
@@ -336,7 +333,8 @@ TanStack Start builds with Nitro (Cloudflare target by default, see `vite.config
 | Symptom | Cause and fix |
 |---|---|
 | `npm install` → `Cannot read properties of null (reading 'edgesOut')` | You are on npm 10. Upgrade: `npm install -g npm@11`, then `rm -rf node_modules package-lock.json && npm install`. Or use `bun install`. |
-| `npm install` / `npm run dev` complains about the Node version (`EBADENGINE`, `Unsupported engine`) | Node is older than 22.12. Run `nvm install && nvm use` in `frontend/` (or install Node 22 LTS). |
+| `npm install` / `npm run dev` complains about the Node version (`EBADENGINE`, `Unsupported engine`) | Node is older than 22.12. Run `nvm install && nvm use` in `frontend/` (or install Node 24 LTS). |
+| `npm install -g npm@11` → `Cannot find module 'promise-retry'` | npm broke while upgrading itself. Install Node 24 (`nvm install 24 && nvm alias default 24`), which ships with npm 11. |
 | Badge stays **Mock** | No API URL configured, or "Use mock data" is on. Set `VITE_API_BASE_URL` in `.env.local` and restart, or set it in ⚙ Settings (saved values win; use "Reset to defaults"). |
 | Badge **Offline** / "Can't reach the knowledge service" | Backend not running or wrong URL. Check `curl http://localhost:8000/api/health`. |
 | Answers look like templates, `meta.understood_by` is `fallback` | The backend can't reach Gemini (key, model or quota). See the backend log and `/api/health?deep=true`. |
