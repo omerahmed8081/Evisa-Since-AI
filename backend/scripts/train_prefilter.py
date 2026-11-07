@@ -1,21 +1,11 @@
-"""
-Train the pre-filter's small local classifier (seconds, no GPU, no API calls).
+"""Trains the pre-filter classifier and saves models/prefilter.joblib (seconds, no API calls).
 
-  python scripts/train_prefilter.py
-
-- Labels: Gemini's past useful/noise decisions from cache/extract (distillation) + template noise
-  (data/noise_threads, create with: python data/generator/noise.py).
-- Model: TF-IDF over 2-4 character snippets + logistic regression (scikit-learn), C=10
-  (chosen by cross-validation; the default C=1 squeezes all probabilities together on small data).
-- Threshold: 5-fold cross-validation repeated with 5 different splits; take the LOWEST probability
-  any useful conversation got in any split, and use 80% of it. So no useful conversation would have
-  been skipped even in the worst split. Saved to models/prefilter.joblib together with the model.
-"""
+    python scripts/train_prefilter.py"""
 import sys
 from datetime import datetime
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import joblib
 import numpy as np
@@ -27,7 +17,7 @@ from sklearn.pipeline import make_pipeline
 from pipeline.prefilter import MODEL_PATH, Prefilter
 from pipeline.prefilter_data import load_examples
 
-SAFETY_MARGIN = 0.8      # threshold = margin x lowest cross-validated probability of a useful conversation
+SAFETY_MARGIN = 0.8
 MAX_THRESHOLD = 0.5
 CV_REPEATS = 5
 
@@ -68,7 +58,7 @@ def main():
     runs = cross_validated_probabilities(texts, labels)
     lowest_useful = float(runs[:, labels == 1].min())
     threshold = round(min(MAX_THRESHOLD, SAFETY_MARGIN * lowest_useful), 3)
-    worst_noise = runs.max(axis=0)   # noise counted as skipped only if skipped in EVERY split
+    worst_noise = runs.max(axis=0)
     print(f"Cross-validated ({CV_REPEATS} splits): lowest probability of a useful conversation = {lowest_useful:.3f}")
     print(f"Threshold = {threshold} -> useful wrongly skipped: 0, "
           f"noise skipped in every split: {int(((worst_noise < threshold) & (labels == 0)).sum())}/{int((labels == 0).sum())}")

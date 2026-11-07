@@ -1,14 +1,11 @@
-"""
-Pure helpers (no database, no Gemini) that turn stored knowledge into the KnowledgeCard
-shape the frontend expects: readable steps, scope in plain words, status, source excerpts.
-"""
+"""Helpers that turn stored assertions into the KnowledgeCard shape used by the frontend
+(steps, scope text, status, source excerpts). No database or LLM calls."""
 import json
 from functools import lru_cache
 
 from pipeline import threads
 from api.config import THREADS_DIR
 
-# ---------- vocabulary codes -> readable text ----------
 ACTION_TEXT = {
     "CHECK_TRAFFIC_COUNTERS": "Check that the traffic counters are increasing",
     "BOUNCE_INTERFACE": "Disable and re-enable the interface",
@@ -63,7 +60,6 @@ def avoid_text(code: str) -> str:
     return f"Don't {t}"
 
 
-# ---------- scope / status ----------
 def scope_text(scope: dict, observed_on: list[str], link: dict | None = None) -> str:
     if not scope.get("node_type"):
         if (link or {}).get("how") == "site" and not observed_on:
@@ -93,11 +89,10 @@ def card_status(statuses: set[str], outcome: str, valid_to: str | None, knowledg
     if outcome == "worked":
         return "confirmed"
     if knowledge_type == "access_info":
-        return "confirmed"  # a gate code / key location is a stated fact, not an untested fix (until superseded)
+        return "confirmed"
     return "unconfirmed"
 
 
-# ---------- source excerpts ----------
 @lru_cache(maxsize=512)
 def _thread(thread_id: str) -> dict | None:
     for suffix in (".json", ".txt"):
@@ -144,7 +139,6 @@ def compact_for_llm(card: dict) -> dict:
         "seen_on": card["observed_on"],
         "sources": [f"{s.get('author') or 'unknown'} ({s['channel']}, {short_date(s.get('timestamp'))})"
                     for s in card["sources"]],
-        # Exact numbers, so the answer never has to count (it used to say "2 sources" for 4)
         "source_count": len({s.get("thread_id") or i for i, s in enumerate(card["sources"])}),
         "device_count": len(card["observed_on"]),
         "authors": sorted({s["author"] for s in card["sources"] if s.get("author")}),
@@ -152,13 +146,11 @@ def compact_for_llm(card: dict) -> dict:
     if card.get("details"):
         out["details"] = card["details"]
     if card.get("valid_to"):
-        out["valid_until"] = short_date(card["valid_to"])   # replaced: history, not a current instruction
+        out["valid_until"] = short_date(card["valid_to"])
         out["valid_from"] = short_date(card.get("valid_from"))
         if card.get("scope_note"):
             out["history"] = card["scope_note"]
     elif card.get("scope_note"):
-        # Two opposite firmware cases (see knowledge._outdated_cards); they used to share one field, so
-        # "fixed from 3.4" on a 3.3.0 device was read as "doesn't apply" instead of "upgrade fixes it".
         note = card["scope_note"]
         key = "upgrade_fixes_this" if note.startswith("Not yet") else "not_needed_on_this_device"
         out[key] = note

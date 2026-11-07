@@ -1,15 +1,6 @@
-"""
-Generate synthetic NOISE conversations (no reusable knowledge) for testing the pre-filter.
+"""Generates the template noise conversations in data/noise_threads (pre-filter training/testing).
 
-Real chat channels are mostly noise; our main dataset is 88% useful, so it cannot show what a
-pre-filter saves. These 60 template-generated conversations are deliberately hard as well as easy:
-many mention real device IDs, technical words and dates right after real events on that device,
-but contain no fix, rule, failure or access information.
-
-No LLM is used. Output: data/noise_threads/N001.json ... N060.json (same format as data/threads).
-
-  python data/generator/noise.py
-"""
+    python data/generator/noise.py"""
 import csv
 import json
 import random
@@ -17,7 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-ROOT = Path(__file__).resolve().parent.parent          # backend/data
+ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "noise_threads"
 TZ = ZoneInfo("Europe/Helsinki")
 random.seed(2026)
@@ -31,9 +22,7 @@ DEVICES = [r["node_id"] for r in csv.DictReader(open(ROOT / "inventory" / "nodes
 LOCATION = {r["node_id"]: r["location"] for r in csv.DictReader(open(ROOT / "inventory" / "nodes.csv", encoding="utf-8"))}
 EVENTS = json.loads((ROOT / "events" / "events.json").read_text(encoding="utf-8"))
 
-# Each template: (category, language, list of message texts). {dev} {loc} {wo} {day} {time} are filled in.
 TEMPLATES = [
-    # --- easy: no device, no technical content ---
     ("social", "fi", ["Lounas klo 11:30?", "joo, mennään siihen uuteen paikkaan", "sopii 👍"]),
     ("social", "en", ["Anyone up for pizza on Friday?", "count me in", "same 🍕"]),
     ("social", "mixed", ["Pikkujoulut on 12.12, ilmoittautuminen perjantaihin mennessä", "ok, I'll sign up", "kiitos!"]),
@@ -44,13 +33,11 @@ TEMPLATES = [
     ("smalltalk", "fi", ["Huhhuh mikä pakkanen tänään, -28 Kittilässä", "täällä -31 😅", "kahvia lisää"]),
     ("smalltalk", "en", ["Congrats on the new car!", "thanks! finally something with seat heating 😄"]),
     ("training", "en", ["The safety training is on Thursday at 9 in the Oulu office", "Is it mandatory?", "yes for all field staff"]),
-    # --- hard: technical words, but logistics / scheduling only ---
     ("logistics", "en", ["Do we have SFPs in stock in the Oulu warehouse?", "I think 4 left", "ok I'll order more"]),
     ("logistics", "fi", ["Tuleeko ne uudet patch-kaapelit huomenna?", "Pitäisi tulla aamulla", "hyvä"]),
     ("planning", "en", ["Firmware upgrade window for the routers is next Tuesday 01-04", "noted", "I'll be on call"]),
     ("planning", "mixed", ["Huoltoikkuna ensi yönä klo 02, firmware upgrade parille laitteelle", "ok, I'll inform NOC", "kiitos"]),
     ("question", "en", ["Does anyone know when the new laptops arrive?", "no idea, ask IT", "ok"]),
-    # --- hard: real device IDs, often right after a real event on that device ---
     ("status", "en", ["All done at {dev}, heading back", "ok thanks", "drive safe"]),
     ("status", "fi", ["Valmista tuli {dev}:llä, lähden takaisin", "ok, kiitos"]),
     ("status", "mixed", ["{dev} done, ajan nyt {loc}sta Rovaniemelle", "ok 👍"]),
@@ -87,7 +74,6 @@ def build(i: int, template) -> dict:
     category, lang, texts = template
     dev = random.choice(DEVICES)
     uses_device = any("{dev}" in t or "{loc}" in t for t in texts)
-    # Half of the device-mentioning chats happen right after a real event on that device (hard cases)
     start = (event_time_for(dev) if uses_device and random.random() < 0.5 else None) or random_time()
     start = start.astimezone(TZ).replace(second=0, microsecond=0)
     people = random.sample(PEOPLE, 3)

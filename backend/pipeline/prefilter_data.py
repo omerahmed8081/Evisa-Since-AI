@@ -1,10 +1,4 @@
-"""
-Training data for the pre-filter classifier.
-
-Labels come from GEMINI'S OWN PAST DECISIONS, read from the extraction cache (cache/extract):
-this is distillation, the cheap local model learns to imitate the expensive one. No API calls.
-Conversations Gemini never saw (the template noise in data/noise_threads) are labelled noise.
-"""
+"""Training data for the pre-filter: labels from cached Gemini decisions plus template noise."""
 import csv
 import itertools
 import os
@@ -23,12 +17,11 @@ def _inventory() -> dict[str, dict]:
 def gemini_label(thread: dict, inventory: dict, model: str) -> bool | None:
     """Gemini's cached useful/noise decision for this conversation, or None if never extracted."""
     text = threads.thread_to_prompt_text(thread)
-    # Same devices ingest.py puts in the prompt: IDs (also messy forms) + nicknames
     raw = (thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])
     match = linking.csv_inventory().resolve(raw)
     ids = threads.find_device_ids(thread) | match.ids | set(match.aliases)
     devices = [inventory[i] for i in ids if i in inventory]
-    orders = itertools.permutations(devices) if len(devices) <= 4 else [devices]  # Neo4j returns them in any order
+    orders = itertools.permutations(devices) if len(devices) <= 4 else [devices]
     for order in orders:
         key = cache.make_key(model, SYSTEM_INSTRUCTION, FEW_SHOT_EXAMPLES, text, device_context(list(order)))
         hit = cache.get("extract", key)

@@ -1,0 +1,28 @@
+{
+ "useful": true,
+ "reason": "Corrects physical site access gate code for BTS-210.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "The gate code for the BTS-210 site is 1111 (the previously suggested code 00000 did not work).",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Jash",
+   "source_message_seqs": [
+    2
+   ],
+   "confirmed_at_seq": 2,
+   "details": "Gate code is 1111"
+  }
+ ]
+}

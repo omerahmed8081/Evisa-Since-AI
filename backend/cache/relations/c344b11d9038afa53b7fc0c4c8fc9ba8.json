@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip deals with storm-induced loose mounts, whereas the existing tip deals with firmware upgrade issues."
+  },
+  {
+   "existing_id": "T003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip is about post-storm loose mount bolts, while the existing tip is about ice accumulation on the radome."
+  }
+ ]
+}

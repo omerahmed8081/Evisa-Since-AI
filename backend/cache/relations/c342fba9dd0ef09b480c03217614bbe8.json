@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T008-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "T008-1 deals with storm-induced mount bolt issues and low signal, whereas the new tip deals with spring moisture in indoor IF cable connectors causing CRC errors with normal RX levels."
+  },
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "E003-1 deals with firmware upgrade resetting ATPC leading to link fading, whereas the new tip addresses spring moisture causing CRC errors on the IF cable."
+  }
+ ]
+}

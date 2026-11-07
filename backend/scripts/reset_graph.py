@@ -1,12 +1,10 @@
-"""
-Delete everything in the Neo4j database.
+"""Deletes everything in the Neo4j database.
 
-  python scripts/reset_graph.py
-"""
+    python scripts/reset_graph.py"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import graph
 

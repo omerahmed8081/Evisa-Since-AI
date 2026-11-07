@@ -1,12 +1,4 @@
-"""Source of truth for the synthetic dataset (brief v4).
-
-Everything here is hand-written: inventory rows, events, the text of every
-conversation and its ground-truth entry. build.py turns this into the files in
-data/ and computes every timestamp with zoneinfo (Europe/Helsinki), so no UTC
-offset is ever typed by hand.
-
-Times are local Finnish wall-clock times "HH:MM" on the thread's date.
-"""
+"""Hand-written source of the synthetic dataset: inventory, events, conversations and ground truth."""
 
 # --------------------------------------------------------------------------
 # People (section 6)

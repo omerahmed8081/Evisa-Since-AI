@@ -1,22 +1,5 @@
-"""
-Device linking for messy conversations: which device(s) is a conversation about, and how sure are we?
-
-Real chats rarely write a clean device ID. This module finds devices in four ways, from most to
-least certain, and the graph stores HOW each link was made and with what confidence:
-
-  1. id        "TRN-042", also messy forms: "trn042", "TRN 042", "trn_042"        link confidence 1.0
-  2. alias     a nickname from data/inventory/aliases.csv ("Ounasvaara hop")       link confidence 0.9
-  3. location  a place from the inventory ("Kolarissa", "the Kolari box") narrowed
-               to ONE device by the device type ("siirtolaite" = transmission)      link confidence 0.8
-  4. site      the place matches several devices and nothing narrows it down:
-               the knowledge is linked to the (:Site) instead of guessing a device  link confidence 0.5
-
-Location names are matched with Finnish case endings (Kolari, Kolarissa, Kolarin, Kolariin;
-Rovaniemi, Rovaniemellä, Rovaniemen; Tampere, Tampereella ...) using an explicit ending list, so
-English words that merely start the same ("tampered") never match.
-
-Everything here is plain code (no LLM): device facts come from the inventory, never from Gemini.
-"""
+"""Finds the devices a text is about: device IDs (also messy forms), nicknames (aliases.csv)
+and places from the inventory. Each link carries how it was made and a confidence."""
 import csv
 import re
 from dataclasses import dataclass, field
@@ -28,7 +11,6 @@ ID_RE = re.compile(r"(?<![A-Za-z0-9])(TRN|AGG|BTS|MW)[-\s_]?(\d{2,4})(?![0-9])",
 
 LINK_CONFIDENCE = {"id": 1.0, "alias": 0.9, "location": 0.8, "site": 0.5}
 
-# Words that tell the device type when no ID is written (English + Finnish, matched at word start).
 TYPE_WORDS = {
     "transmission": ["transmission", "siirtolaite", "siirtolaitte", "siirtoyhteys", "siirtosolmu", "siirron",
                      "optical node", "trn"],
@@ -40,7 +22,6 @@ TYPE_WORDS = {
                        "mw link", "mw-link"],
 }
 
-# Finnish case endings added to a place name (or to its e-stem: Rovaniemi -> Rovanieme-llä).
 ENDINGS = ["", "n", "ssa", "ssä", "sta", "stä", "lla", "llä", "lta", "ltä", "lle", "ksi", "na", "nä",
            "in", "iin", "un", "uun", "yn", "yyn", "on", "oon", "ön", "an", "än", "en", "een", "hen",
            "lla", "ella", "ellä", "elle", "elta", "eltä", "en", "s", "'s"]
@@ -53,11 +34,11 @@ def _word_start(phrase: str) -> re.Pattern:
 @dataclass
 class Match:
     """Result of resolving one piece of text against the inventory."""
-    ids: set[str] = field(default_factory=set)              # written IDs that exist in the inventory
-    unknown_ids: set[str] = field(default_factory=set)      # written IDs that don't
-    aliases: dict[str, str] = field(default_factory=dict)   # node_id -> nickname used
-    locations: list[str] = field(default_factory=list)      # inventory places mentioned
-    type_hints: set[str] = field(default_factory=set)       # device types the words point to
+    ids: set[str] = field(default_factory=set)
+    unknown_ids: set[str] = field(default_factory=set)
+    aliases: dict[str, str] = field(default_factory=dict)
+    locations: list[str] = field(default_factory=list)
+    type_hints: set[str] = field(default_factory=set)
 
     @property
     def named(self) -> set[str]:
@@ -76,11 +57,10 @@ class Inventory:
                 self.by_location.setdefault(d["location"], []).append(d)
         self.aliases = {a.strip().lower(): nid for a, nid in (aliases or {}).items()
                         if a.strip() and nid in self.devices}
-        self.alias_names = {a.strip().lower(): a.strip() for a in (aliases or {})}  # original spelling
+        self.alias_names = {a.strip().lower(): a.strip() for a in (aliases or {})}
         self._alias_res = [(a, nid, _word_start(a)) for a, nid in sorted(self.aliases.items(), key=lambda x: -len(x[0]))]
         self._place_forms = {loc: self._forms(loc) for loc in self.by_location}
 
-    # ---------- loading ----------
     @classmethod
     def from_csv(cls, nodes_csv: Path = DATA_DIR / "inventory" / "nodes.csv",
                  aliases_csv: Path = DATA_DIR / "inventory" / "aliases.csv") -> "Inventory":
@@ -98,13 +78,12 @@ class Inventory:
         aliases = {a: d["node_id"] for d in devices for a in d.get("aliases") or []}
         return cls(devices, aliases)
 
-    # ---------- matching ----------
     @staticmethod
     def _forms(place: str) -> set[str]:
         p = place.lower()
         stems = {p}
         if p.endswith("i"):
-            stems.add(p[:-1] + "e")      # Rovaniemi -> Rovanieme-llä, Kemijärvi -> Kemijärve-n
+            stems.add(p[:-1] + "e")
         return {s + e for s in stems for e in ENDINGS}
 
     def find_ids(self, text: str) -> tuple[set[str], set[str]]:
@@ -138,7 +117,7 @@ class Inventory:
         at = [d for loc in locations for d in self.by_location.get(loc, [])]
         if node_types:
             typed = [d for d in at if d.get("node_type") in node_types]
-            return typed  # may be empty: the type rules every device at that place out
+            return typed
         return at
 
 

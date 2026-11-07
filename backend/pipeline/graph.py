@@ -1,24 +1,8 @@
-"""
-Everything that talks to Neo4j.
+"""Neo4j access: schema, inventory loading, storing sources/assertions and relations.
 
-Graph shape:
-  (:Device {node_id, node_type, install_date, firmware, location, aliases})  <- from inventory
-  (:Site {name})   (Device)-[:AT]->(Site)                               <- the place, from inventory
-  (:Assertion {...knowledge, scope_*, valid_from, valid_to, status})   <- from conversations
-  (:Source {id, channel, timestamp, text})                             <- the raw chat/email
-  (:Person {name, role})
-
-  (Assertion)-[:OBSERVED_ON {linked_by: id|alias|location, link_confidence, via}]->(Device)
-  (Assertion)-[:OBSERVED_AT {link_confidence, candidates}]->(Site)    <- place known, device not
-  (Assertion)-[:FROM]->(Source)
-  (Assertion)-[:BY]->(Person)
-
-  (:Term {key, name, category, status: seed|new, aliases, embedding})  <- the growing vocabulary
-  (Assertion)-[:AFTER_EVENT]->(Term)
-  (Assertion)-[:HAS_SYMPTOM]->(Term)
-  (Assertion)-[:RECOMMENDS {order}]->(Term)
-  (Assertion)-[:AVOIDS]->(Term)
-"""
+    (:Device)-[:AT]->(:Site)
+    (:Assertion)-[:FROM]->(:Source), -[:BY]->(:Person), -[:OBSERVED_ON]->(:Device), -[:OBSERVED_AT]->(:Site)
+    (:Assertion)-[:REINFORCES|NARROWS_SCOPE|SUPERSEDES|CONFLICTS_WITH]->(:Assertion)"""
 import csv
 import os
 from pathlib import Path
@@ -34,7 +18,6 @@ def driver():
         _driver = GraphDatabase.driver(
             os.environ["NEO4J_URI"],
             auth=(os.environ.get("NEO4J_USER", "neo4j"), os.environ["NEO4J_PASSWORD"]),
-            # hide informational warnings such as "property valid_to does not exist yet"
             notifications_min_severity="OFF",
         )
     return _driver
@@ -85,7 +68,7 @@ def load_events(json_path: Path) -> int:
     """Event stream (alarms, work orders, firmware upgrades) as (:Event)-[:ON]->(:Device)."""
     import json
     events = json.loads(Path(json_path).read_text(encoding="utf-8"))
-    for e in events:  # make optional keys explicit so Cypher gets nulls
+    for e in events:
         for key in ("from_firmware", "to_firmware", "detail", "related_thread"):
             e.setdefault(key, None)
     run(
@@ -304,7 +287,6 @@ def apply_relation(new_id: str, existing_id: str, relation: str, firmware_below:
         run("""MATCH (n:Assertion {id: $n}), (c:Assertion {id: $c})
                SET c.status = 'disputed', n.status = 'disputed'
                MERGE (n)-[r:CONFLICTS_WITH]->(c) SET r.reason = $reason""", n=new_id, c=existing_id, reason=reason)
-
 
 
 def same_knowledge_cluster(assertion_id: str) -> list[str]:

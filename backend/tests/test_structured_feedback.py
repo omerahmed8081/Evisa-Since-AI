@@ -1,7 +1,6 @@
-"""
-Structured feedback (vocabulary codes instead of free text) and the UI-language hint.
-No Neo4j or Gemini needed. Run from backend/:  python -m pytest tests -q
-"""
+"""Tests for structured feedback and the UI-language hint (no Neo4j or Gemini needed).
+
+    python -m pytest tests -q"""
 import pytest
 from fastapi.testclient import TestClient
 
@@ -13,14 +12,12 @@ from api.models import FeedbackRequest
 from api.understand import Understood
 
 
-# ---------- request model ----------
 def test_feedback_request_accepts_codes():
     r = FeedbackRequest(assertion_id="T001-1", verdict="failed",
                         tried_actions=["BOUNCE_INTERFACE"], resolved_by_action="REPLACE_PATCH_CABLE")
     assert r.tried_actions == ["BOUNCE_INTERFACE"] and r.resolved_by_action == "REPLACE_PATCH_CABLE"
 
 
-# ---------- route: which capture path is used ----------
 @pytest.fixture
 def route(monkeypatch):
     calls = {"record": [], "structured": [], "text": []}
@@ -47,8 +44,8 @@ def test_codes_are_captured_without_gemini(route):
                                            "resolved_by_action": "REPLACE_PATCH_CABLE",
                                            "comment": "the new cable fixed it right away"})
     assert r.status_code == 200 and r.json()["structured_queued"] is True
-    assert r.json()["comment_queued"] is False            # the note is kept, but not sent through Gemini
-    assert calls["record"][0]["tried"] == ["BOUNCE_INTERFACE"]          # unknown codes dropped
+    assert r.json()["comment_queued"] is False
+    assert calls["record"][0]["tried"] == ["BOUNCE_INTERFACE"]
     assert calls["record"][0]["resolved"] == "REPLACE_PATCH_CABLE"
     assert len(calls["structured"]) == 1 and not calls["text"]
 
@@ -74,7 +71,6 @@ def test_thumbs_up_one_tap_needs_no_codes(route):
     assert r.status_code == 200 and r.json()["structured_queued"] is False and not calls["text"]
 
 
-# ---------- record() stores the codes on the Feedback node ----------
 def test_record_stores_codes(monkeypatch):
     params = []
 
@@ -82,7 +78,7 @@ def test_record_stores_codes(monkeypatch):
         params.append((q, p))
         if "RETURN a.id" in q:
             return [{"a.id": p["aid"]}]
-        if "f.replaced IS NULL" in q:      # no earlier vote
+        if "f.replaced IS NULL" in q:
             return []
         return [{"id": p.get("aid"), "confidence": 0.5, "status": "auto_captured", "worked": 0, "failed": 1}]
 
@@ -110,11 +106,10 @@ def test_record_attaches_codes_to_the_earlier_click(monkeypatch):
                                   resolved_by_action="REPLACE_PATCH_CABLE")
     upd = [p for q, p in params if "f.tried_actions" in q and "SET" in q and "CREATE" not in q]
     assert upd and upd[0]["id"] == "FB-old" and upd[0]["resolved_by_action"] == "REPLACE_PATCH_CABLE"
-    assert "FB-old" in note_ids                       # linked to the tips it becomes
-    assert not [q for q, p in params if "CREATE (f:Feedback" in q]   # not counted twice
+    assert "FB-old" in note_ids
+    assert not [q for q, p in params if "CREATE (f:Feedback" in q]
 
 
-# ---------- capture_structured() builds tips from the codes ----------
 def test_structured_capture_builds_tips_from_codes(monkeypatch):
     saved, sources, linked, reconciled = [], [], [], []
     monkeypatch.setattr(feedback.graph, "save_source", lambda t, text: sources.append((t, text)))
@@ -123,7 +118,7 @@ def test_structured_capture_builds_tips_from_codes(monkeypatch):
     monkeypatch.setattr(feedback.graph, "mark_source_done", lambda sid: None)
 
     def run(q, **p):
-        if "a.id IN $ids" in q and "symptoms" in q:     # the card's context
+        if "a.id IN $ids" in q and "symptoms" in q:
             return [{"symptoms": ["INTERFACE_UP", "TRAFFIC_COUNTERS_ZERO"], "events": ["SFP_REPLACEMENT"],
                      "knowledge_type": "troubleshooting_rule"}]
         return []
@@ -160,7 +155,6 @@ def test_structured_capture_without_fix_only_records_failed_attempt(monkeypatch)
     assert [a["outcome"] for a in saved] == ["failed"]
 
 
-# ---------- UI-language hint ----------
 def _chat(monkeypatch, message, understood, ui_language):
     from api.routes import chat as chat_route
     seen = {}

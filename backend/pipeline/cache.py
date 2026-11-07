@@ -1,15 +1,5 @@
-"""
-Disk cache for Gemini results (extractions, relation decisions, embeddings).
-
-Why: the Gemini free tier is limited. With the cache, changing OUR rules (scope, merging,
-linking) and re-running costs no API calls; only new or changed conversations go to Gemini.
-
-  cache/extract/<hash>.json     one file per conversation (+ prompt version)
-  cache/relations/<hash>.json   one file per "how does this new tip relate to older ones" decision
-  cache/embed/<hash>.json       one file per embedded vocabulary term
-
-Delete the cache/ folder, or run ingest.py with --refresh, to force fresh Gemini calls.
-"""
+"""Disk cache for Gemini results (extractions, relation decisions, embeddings), keyed by a hash
+of the model and the full prompt. Re-running the pipeline only calls Gemini for new input."""
 import hashlib
 import json
 import os
@@ -18,7 +8,7 @@ from pathlib import Path
 from pipeline import BACKEND_DIR
 
 CACHE_DIR = Path(os.environ.get("CACHE_DIR", BACKEND_DIR / "cache"))
-ENABLED = True  # ingest.py --refresh sets this to False
+ENABLED = True
 
 
 def make_key(*parts) -> str:

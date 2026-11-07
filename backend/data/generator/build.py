@@ -1,11 +1,6 @@
-"""Build the synthetic dataset in data/ from scenarios.py.
+"""Builds the synthetic dataset in data/ from scenarios.py.
 
-Usage (from anywhere):  python3 data/generator/build.py
-
-All timestamps are produced with zoneinfo Europe/Helsinki, so daylight-saving
-offsets are always correct. T001 / E001 are read word for word from Elisa's
-original files; only our metadata fields are added.
-"""
+    python data/generator/build.py"""
 import csv
 import json
 import sys
@@ -39,7 +34,6 @@ def write_json(path, obj):
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-# --------------------------------------------------------------------------
 def build_inventory():
     out = DATA / "inventory" / "nodes.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -67,7 +61,6 @@ def build_events():
     return len(events)
 
 
-# --------------------------------------------------------------------------
 def chat_from_elisa(th):
     src = json.loads((ELISA / "teams_chat.json").read_text(encoding="utf-8"))
     msgs = []
@@ -122,7 +115,6 @@ def build_threads():
     return built
 
 
-# --------------------------------------------------------------------------
 KNOWLEDGE_ORDER = ["knowledge_type", "summary", "observed_on", "scope", "events", "symptoms", "actions",
                    "avoid", "outcome", "details", "author", "source_message_seqs", "valid_from"]
 
@@ -147,7 +139,6 @@ def build_ground_truth(built):
         entries.append({"thread_id": tid, "category": gt["category"], "useful": k is not None,
                         "language": lang[tid], "knowledge": k, "relations": gt["relations"],
                         "expected_effects": gt["expected_effects"], "notes": gt["notes"]})
-    # resolve "<Txxx.valid_from>" placeholders
     for e in entries:
         for eff in e["expected_effects"]:
             v = eff.get("valid_to")

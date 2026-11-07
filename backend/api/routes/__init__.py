@@ -1,1 +1,1 @@
-"""API route modules: chat, nodes, feedback, system."""
+"""API routes: chat, nodes, feedback, system."""

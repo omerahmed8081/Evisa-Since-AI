@@ -1,10 +1,4 @@
-"""
-Gemini calls for the capture pipeline, with a disk cache (cache.py) so nothing is paid for twice.
-(The chat API's own Gemini helpers are in api/llm.py and reuse client() and _model() from here.)
-
-  extract()            conversation -> structured knowledge (filter + extraction)
-  classify_relations() new tip + older similar tips -> how they relate (same / narrows / supersedes / conflicts)
-"""
+"""Gemini calls used by the capture pipeline: extraction, relation classification, embeddings."""
 import os
 import time
 
@@ -45,7 +39,7 @@ def _generate(prompt: str, system_instruction: str, schema, retries: int = 4):
             if response.parsed is not None:
                 return response.parsed
             return schema.model_validate_json(response.text)
-        except Exception as e:  # free tier rate limits are common: wait and retry
+        except Exception as e:
             wait = 2 ** attempt * 5
             print(f"  Gemini error ({e.__class__.__name__}: {e}); retrying in {wait}s")
             time.sleep(wait)
@@ -53,8 +47,6 @@ def _generate(prompt: str, system_instruction: str, schema, retries: int = 4):
 
 
 def extract(conversation_text: str, device_context: str, vocabulary_text: str) -> ExtractionResult:
-    # The cache key ignores the vocabulary list (it grows during a run) but includes the
-    # instructions, so editing the prompt automatically invalidates old answers.
     key = cache.make_key(_model(), SYSTEM_INSTRUCTION, FEW_SHOT_EXAMPLES, conversation_text, device_context)
     hit = cache.get("extract", key)
     if hit is not None:

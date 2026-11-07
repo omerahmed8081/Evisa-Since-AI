@@ -1,8 +1,6 @@
-"""Quality checks for the synthetic dataset (brief section 10 + v4 amendments).
+"""Consistency checks for the synthetic dataset.
 
-Usage:  python3 data/validate.py      (exit code 0 = all checks pass)
-Self-contained: reads only the files in data/, not the generator.
-"""
+    python data/validate.py      (exit code 0 = all checks pass)"""
 import csv
 import json
 import re
@@ -36,7 +34,6 @@ RELATION_TYPES = {"same_knowledge_as", "reinforces", "narrows_scope", "supersede
 
 EXPECTED_IDS = (["T%03d" % i for i in range(1, 27)] + ["E%03d" % i for i in range(1, 9)] + ["C001", "C002"])
 
-# Required firmware histories (section 3.1); extra devices may add their own.
 REQUIRED_FW = {
     "TRN-042": [], "TRN-031": [], "TRN-101": [], "TRN-112": [], "TRN-118": [], "AGG-003": [], "AGG-012": [],
     "BTS-233": [], "BTS-250": [], "BTS-261": [],
@@ -49,8 +46,6 @@ REQUIRED_FW = {
     "MW-412": [("1.3.4", "1.4.0", "2023-10-19")],
 }
 
-# Section 8.3 (+ v4 firmware_at_least). (observed_on, node_type, installed_before, firmware_below, firmware_at_least)
-# node_type None => scope must be null.  Whole tuple None => useful: false.
 O = "2020-01-01"
 EXPECTED_SCOPE = {
     "T001": (["TRN-042"], "transmission", O, None, None),
@@ -82,14 +77,12 @@ EXPECTED_SCOPE = {
     "E008": (["TRN-042", "BTS-233"], None, None, None, None),
     "T022": (["BTS-210"], None, None, None, None),
     "T023": (["BTS-210"], None, None, None, None),
-    # linking without a device ID: by place, by site, by nickname
     "T024": (["TRN-042"], None, None, None, None),
     "T025": ([], None, None, None, None),
     "T026": (["MW-412"], None, None, None, None),
     "T019": None, "T020": None, "T021": None, "C002": None,
 }
 
-# thread ids, or ("FW", node_id) for that node's firmware upgrade
 ORDER_CHAINS = [
     ["T001", "T002", "E006", "E007"],
     ["T004", "C001", "T016"],
@@ -132,7 +125,6 @@ def check_ts(value, where):
     return dt
 
 
-# --------------------------------------------------------------------------
 def load_nodes():
     with (DATA / "inventory" / "nodes.csv").open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -195,21 +187,18 @@ def load_threads():
     return threads
 
 
-# --------------------------------------------------------------------------
 def main():
     nodes = load_nodes()
     events = json.loads((DATA / "events" / "events.json").read_text(encoding="utf-8"))
     threads = load_threads()
     gt = json.loads((DATA / "ground_truth.json").read_text(encoding="utf-8"))
 
-    # 1. ids
     gt_ids = [e["thread_id"] for e in gt]
     if sorted(gt_ids) != sorted(EXPECTED_IDS) or len(set(gt_ids)) != len(gt_ids):
         err("ground_truth ids mismatch: %s" % sorted(set(gt_ids) ^ set(EXPECTED_IDS)))
     if sorted(threads) != sorted(EXPECTED_IDS):
         err("thread files mismatch: %s" % sorted(set(threads) ^ set(EXPECTED_IDS)))
 
-    # 2. events + node references
     fw_events = {}
     prev_id = None
     for ev in events:
@@ -230,7 +219,6 @@ def main():
             err("%s: event ids not increasing" % where)
         prev_id = ev["event_id"]
 
-    # 3. firmware consistency
     for node, evs in fw_events.items():
         evs.sort(key=lambda e: e["_dt"])
         for a, b in zip(evs, evs[1:]):
@@ -246,8 +234,6 @@ def main():
         if got != hist:
             err("%s: firmware history %s != required %s" % (node, got, hist))
 
-    # 4. a thread's first related event happens before the thread starts
-    #    (later ones, e.g. alarm_cleared when the fix works, may fall inside it)
     first_ev = {}
     for ev in events:
         rt = ev.get("related_thread")
@@ -257,13 +243,11 @@ def main():
         if rt in threads and threads[rt]["start"] and ev["_dt"] > threads[rt]["start"]:
             err("%s: first related event %s is after the conversation starts" % (rt, ev["event_id"]))
 
-    # 5. node ids mentioned in text exist
     for tid, t in threads.items():
         for nid in NODE_RE.findall(t["text"]):
             if nid not in nodes:
                 err("%s: mentions unknown node %s" % (tid, nid))
 
-    # 6. ordering
     def when(x):
         if isinstance(x, tuple):
             return fw_events[x[1]][0]["_dt"]
@@ -273,14 +257,12 @@ def main():
             if not when(a) < when(b):
                 err("ordering: %s should be before %s" % (a, b))
 
-    # 7. label leak
     terms = VOCAB["events"] | VOCAB["symptoms"] | VOCAB["actions"]
     for tid, t in threads.items():
         for term in terms:
             if re.search(r"(?<![A-Z0-9_])%s(?![A-Z0-9_])" % re.escape(term), t["text"]):
                 err("%s: label leak %s" % (tid, term))
 
-    # 8. ground truth content
     by_id = {e["thread_id"]: e for e in gt}
     for e in gt:
         tid = e["thread_id"]
@@ -326,7 +308,6 @@ def main():
             if k["valid_from"] not in t["ts_by_seq"].values():
                 err("%s: valid_from is not the timestamp of any message" % tid)
         check_ts(k["valid_from"], "%s valid_from" % tid)
-        # scope vs 8.3
         obs, ntype, ib, fb, fal = exp
         if sorted(k["observed_on"]) != sorted(obs):
             err("%s: observed_on %s != expected %s" % (tid, k["observed_on"], obs))
@@ -342,7 +323,6 @@ def main():
                 if nodes[nid]["node_type"] != ntype:
                     err("%s: %s is not a %s" % (tid, nid, ntype))
 
-    # 9. language ratio
     fi = sum(1 for e in gt if e["language"] in ("fi", "mixed"))
     if not (0.28 <= fi / len(gt) <= 0.40):
         err("language: %d/%d fi/mixed, want about a third" % (fi, len(gt)))

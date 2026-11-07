@@ -1,28 +1,6 @@
-"""
-Local pre-filter: decide CHEAPLY, before any LLM call, whether a conversation could contain
-reusable knowledge. Runs fully locally (no API, no data leaves the machine).
+"""Local pre-filter that skips obvious noise before any LLM call.
 
-  Layer 1 · RULE SCORE (transparent, no training)
-      +2  a device ID that exists in the inventory (or a device nickname from aliases.csv)
-      +1  no device named, but an inventory place ("Kolarissa"): could be about a device there
-      +1  per technical term (Finnish + English), max +3
-      +2  resolution phrase   ("works now", "traffic is back", "toimii", "kulkee taas")
-      +2  failure phrase      ("didn't help", "same problem", "ei auttanut")
-      +2  access information  (a 4-digit code near "code/koodi/gate", key, lockbox, barrier)
-      +1  advice phrase       ("usually", "don't", "check", "älä", "yleensä", "tarkista")
-      +1  someone asks, and a Network Expert / NOC operator answers
-      +3  an event (alarm, work order, dispatch...) on a mentioned device within 48 hours
-      -> below MIN_SCORE (3): skipped, never sent to Gemini.
-
-  Layer 2 · SMALL CLASSIFIER (scikit-learn, trained in seconds, see scripts/train_prefilter.py)
-      TF-IDF over 2-4 character snippets (works for Finnish endings and typos without any
-      language setup) + logistic regression -> probability "contains knowledge".
-      Trained on Gemini's own past decisions (distillation) + known noise.
-      -> only conversations it is fairly sure are noise (p < threshold) are skipped.
-
-Tuned for RECALL: dropping real knowledge loses it forever, letting noise through only costs
-one Gemini call (which then rejects it).
-"""
+Rule score first, then a small TF-IDF + logistic regression classifier (models/prefilter.joblib)."""
 import json
 import re
 from datetime import datetime, timedelta
@@ -92,7 +70,6 @@ class Prefilter:
             bundle = joblib.load(model_path)
             self.model, self.threshold = bundle["pipeline"], bundle["threshold"]
 
-    # ---------- layer 1 ----------
     def score(self, thread: dict) -> tuple[int, list[str]]:
         text = ((thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])).lower()
         reasons, score = [], 0
@@ -142,7 +119,6 @@ class Prefilter:
                 reasons.append(f"event on {near[0]} within 48 h (+3)")
         return score, reasons
 
-    # ---------- layer 2 ----------
     @staticmethod
     def model_text(thread: dict) -> str:
         """Text the classifier sees: device IDs and numbers masked so it learns wording, not IDs."""
@@ -155,13 +131,12 @@ class Prefilter:
             return None
         return float(self.model.predict_proba([self.model_text(thread)])[0][1])
 
-    # ---------- decision ----------
     def decide(self, thread: dict) -> dict:
         score, reasons = self.score(thread)
         if score < MIN_SCORE:
             return {"keep": False, "stage": "rules", "score": score, "reasons": reasons, "p_useful": None}
         p = self.probability(thread)
-        protected = any(r.startswith("access info") for r in reasons)  # codes/keys: rare, never auto-skip
+        protected = any(r.startswith("access info") for r in reasons)
         if p is not None and p < self.threshold and not protected:
             return {"keep": False, "stage": "classifier", "score": score, "reasons": reasons, "p_useful": round(p, 3)}
         return {"keep": True, "stage": "passed", "score": score, "reasons": reasons,

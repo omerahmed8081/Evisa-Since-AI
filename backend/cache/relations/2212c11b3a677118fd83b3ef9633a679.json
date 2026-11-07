@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip is about ice on the radome during snow while the existing tip is about ATPC settings after firmware upgrades."
+  }
+ ]
+}

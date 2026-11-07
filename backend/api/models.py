@@ -1,10 +1,9 @@
-"""Request/response shapes. They follow section 4 of UI_PROMPT.md (the frontend contract)."""
+"""Request and response models for the API (the frontend contract)."""
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
 
-# ---------- requests ----------
 class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None
     message: str = Field(min_length=1, max_length=4000)
@@ -20,15 +19,13 @@ class FeedbackRequest(BaseModel):
     comment: Optional[str] = Field(default=None, max_length=2000)
     user_name: Optional[str] = Field(default=None, max_length=120, description="Logged-in user (e.g. 'Erkki Expert')")
     user_role: Optional[str] = Field(default=None, max_length=60, description="e.g. 'Network Expert', 'Field Engineer', 'NOC Operator'")
-    # Structured outcome (vocabulary action codes), so the graph learns without Gemini guessing from text
     tried_actions: Optional[list[str]] = Field(default=None, max_length=10, description="Action codes the engineer tried that did NOT fix it, e.g. ['BOUNCE_INTERFACE']")
     resolved_by_action: Optional[str] = Field(default=None, max_length=64, description="Action code that DID fix it, e.g. 'REPLACE_PATCH_CABLE'")
 
 
-# ---------- knowledge cards ----------
 class Source(BaseModel):
     thread_id: str
-    channel: str  # teams | email | call | feedback
+    channel: str
     author: Optional[str] = None
     timestamp: Optional[str] = None
     excerpt: Optional[str] = None
@@ -82,7 +79,6 @@ class KnowledgeCard(BaseModel):
 KnowledgeCard.model_rebuild()
 
 
-# ---------- other responses ----------
 class ChatResponse(BaseModel):
     """Plain JSON form of /api/chat (when called with ?stream=false or Accept: application/json)."""
     conversation_id: str
@@ -129,5 +125,5 @@ class Stats(BaseModel):
 class FeedbackResponse(BaseModel):
     ok: bool
     updated: list[dict]
-    comment_queued: bool                       # free-text note sent through the capture pipeline (Gemini)
-    structured_queued: bool = False            # tips created directly from the action codes (no Gemini)
+    comment_queued: bool
+    structured_queued: bool = False

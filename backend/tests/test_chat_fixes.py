@@ -1,15 +1,13 @@
-"""
-Regression tests for the chat bugs found on 7 Nov 2026 (no Neo4j or Gemini needed).
+"""Regression tests for the chat (no Neo4j or Gemini needed).
 
-Run from backend/:   python -m pytest tests/test_chat_fixes.py -q
-"""
+    python -m pytest tests -q"""
 import csv
 from pathlib import Path
 
 import pytest
 from pydantic import BaseModel, Field
 
-import api  # noqa: F401  (sets up paths)
+import api  # noqa: F401
 from api import answer, cards, llm, understand
 from api.knowledge import KnowledgeResult
 from api.understand import Understood
@@ -18,7 +16,6 @@ from pipeline import cache, linking
 BACKEND = Path(__file__).resolve().parents[1]
 
 
-# ---------- helpers ----------
 def bounce_card(**over):
     """The TRN-031 bounce-fix card as the API builds it (4 sources, seen on 3 devices)."""
     card = {
@@ -69,7 +66,6 @@ def fake_client(result, calls):
     return lambda: Client()
 
 
-# ---------- Bug 1: Step A cache ignores the schema ----------
 class OldSchema(BaseModel):
     node_ids: list[str]
 
@@ -81,7 +77,6 @@ class NewSchema(BaseModel):
 
 def test_schema_change_does_not_reuse_old_cached_understanding(tmp_cache, monkeypatch):
     prompt, system = "MESSAGE\nwhat are possible faults related to TRN-031", "SYSTEM"
-    # an entry written by the code BEFORE wants_overview existed, under the old key format
     cache.put("api_understand", cache.make_key(llm._chat_model(), system, prompt), {"node_ids": ["TRN-031"]})
     calls = []
     monkeypatch.setattr(llm, "client", fake_client(NewSchema(node_ids=["TRN-031"], wants_overview=True), calls))
@@ -100,7 +95,6 @@ def test_same_schema_is_still_cached(tmp_cache, monkeypatch):
     assert len(calls) == 1
 
 
-# ---------- Bug 2: one answer format for every question type ----------
 def captured_system(monkeypatch, u):
     seen = {}
 
@@ -133,7 +127,6 @@ def test_history_instructions_ask_for_current_value_first(monkeypatch):
     assert "likely cause" not in system.lower()
 
 
-# ---------- Bug 4: firmware notes sent to Gemini as "doesn't apply" in both directions ----------
 def test_below_fixed_firmware_note_says_upgrade_fixes_it():
     c = bounce_card(knowledge_type="troubleshooting_rule",
                     scope_note="Not yet on TRN-031: only applies from firmware 3.4 upward, device has 3.3.0")
@@ -156,7 +149,6 @@ def test_answer_rules_explain_both_firmware_notes(monkeypatch):
     assert "not_applicable_because" not in system
 
 
-# ---------- Bug 3: wrong source / device counts ----------
 def test_tip_carries_exact_counts():
     out = cards.compact_for_llm(bounce_card())
     assert out["source_count"] == 4
@@ -171,7 +163,6 @@ def test_answer_rules_contain_no_numeric_example_to_copy(monkeypatch):
         assert "source_count" in system
 
 
-# ---------- Bug 6: no overview/history detection when Gemini is down ----------
 @pytest.fixture
 def gemini_down(monkeypatch):
     with open(BACKEND / "data" / "inventory" / "nodes.csv", encoding="utf-8") as f:
@@ -220,7 +211,6 @@ def test_fallback_keeps_normal_questions_normal(gemini_down, msg):
     assert u.wants_overview is False and u.wants_history is False
 
 
-# ---------- Cards carry their symptom/event codes (device-specific example questions in the UI) ----------
 def test_cards_keep_symptom_and_event_codes():
     from api import knowledge
     from api.models import KnowledgeCard
@@ -234,5 +224,5 @@ def test_cards_keep_symptom_and_event_codes():
     card = knowledge._clean(knowledge.build_card(group, infos))
     assert card["symptoms"] == ["INTERFACE_UP", "TRAFFIC_COUNTERS_ZERO"]
     assert card["events"] == ["SFP_REPLACEMENT"]
-    dumped = KnowledgeCard.model_validate(card).model_dump()       # what /api/nodes/{id} and JSON chat return
+    dumped = KnowledgeCard.model_validate(card).model_dump()
     assert dumped["symptoms"] and dumped["events"] == ["SFP_REPLACEMENT"]

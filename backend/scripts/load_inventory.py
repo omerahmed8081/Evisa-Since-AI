@@ -1,13 +1,10 @@
-"""
-Load the inventory and the event stream into Neo4j.
+"""Loads the inventory (devices, sites, nicknames) and the event stream into Neo4j.
 
-  python scripts/load_inventory.py                       # data/inventory/nodes.csv + data/events/events.json
-  python scripts/load_inventory.py path/to/nodes.csv path/to/events.json
-"""
+    python scripts/load_inventory.py [nodes.csv events.json]"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import DATA_DIR, graph
 

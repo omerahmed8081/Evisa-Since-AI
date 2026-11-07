@@ -1,7 +1,5 @@
-"""
-Small Gemini helpers for the chat (re-uses the client and model name from extract.py).
-Both helpers use the disk cache (cache.py), so a repeated demo question costs no API calls.
-"""
+"""Gemini helpers for the chat (JSON and streamed text), with disk cache and retries on
+rate limits / overload. Reuses the client from pipeline/extract.py."""
 import logging
 import re
 import time
@@ -13,7 +11,7 @@ from api.config import CACHE_ANSWERS, CHAT_MODEL, GEMINI_MAX_WAIT, GEMINI_RETRIE
 from pipeline.extract import _model, client
 
 log = logging.getLogger("api.llm")
-_thinking_ok = True  # switched off automatically if the model rejects a thinking budget
+_thinking_ok = True
 
 
 def _chat_model() -> str:
@@ -34,8 +32,6 @@ def _call(fn):
         return fn()
     except Exception as e:
         msg = str(e).lower()
-        # Some models reject the thinking budget with a generic 400 INVALID_ARGUMENT that doesn't
-        # mention "thinking", so retry without it on any invalid-argument error too.
         if _thinking_ok and ("thinking" in msg or "invalid_argument" in msg or getattr(e, "code", None) == 400):
             log.warning("Model rejected thinking_budget; continuing without it")
             _thinking_ok = False
@@ -43,7 +39,7 @@ def _call(fn):
         raise
 
 
-_NO_RETRY_CODES = {400, 401, 403, 404}   # bad request / bad key / unknown model: retrying can't help
+_NO_RETRY_CODES = {400, 401, 403, 404}
 
 
 def _retryable(e: Exception) -> bool:
@@ -82,6 +78,7 @@ def generate_json(prompt: str, system: str, schema, namespace: str):
     hit = cache.get(namespace, key)
     if hit is not None:
         return schema.model_validate(hit)
+
     def call():
         resp = client().models.generate_content(
             model=_chat_model(), contents=prompt,
@@ -100,7 +97,7 @@ def stream_text(prompt: str, system: str, namespace: str = "api_answer"):
         hit = cache.get(namespace, key)
         if hit is not None:
             text = hit["text"]
-            for i in range(0, len(text), 24):  # replay in small pieces so the UI still "types"
+            for i in range(0, len(text), 24):
                 time.sleep(0.02)
                 yield text[i:i + 24]
             return

@@ -1,16 +1,5 @@
-"""
-The growing vocabulary.
-
-- Seed terms (schema.SEED_VOCABULARY) are loaded into Neo4j once as (:Term) nodes.
-- Before each Gemini call, the CURRENT vocabulary is read and put in the prompt.
-- Every term Gemini returns is normalised:
-    exact match                -> keep
-    very similar existing term -> map to it (and remember the alias), e.g. BOUNCE_PORT -> BOUNCE_INTERFACE
-    genuinely new              -> add as a new (:Term {status: "new"}) so later chats can reuse it
-
-Similarity uses Gemini embeddings. Tune VOCAB_MERGE_THRESHOLD in .env after looking at
-the printed similarity scores (too low = different things merged, too high = duplicates).
-"""
+"""Growing vocabulary of symptom/action/event terms stored as (:Term) nodes; new terms are
+normalised against existing ones with embeddings."""
 import math
 import os
 import re
@@ -39,7 +28,7 @@ def _cosine(a: list[float], b: list[float]) -> float:
 def embed(texts: list[str]) -> list[list[float]]:
     """Embeddings with a disk cache: each text is only ever sent to Gemini once."""
     from pipeline import cache
-    from pipeline.extract import client  # same Gemini client as extraction
+    from pipeline.extract import client
     keys = [cache.make_key(EMBED_MODEL, t) for t in texts]
     vectors = [cache.get("embed", k) for k in keys]
     missing = [i for i, v in enumerate(vectors) if v is None]
@@ -58,10 +47,8 @@ class Vocabulary:
     def __init__(self, use_graph: bool = True):
         self.use_graph = use_graph
         self.threshold = float(os.environ.get("VOCAB_MERGE_THRESHOLD", "0.88"))
-        # category -> {name: embedding or None}
         self.terms: dict[str, dict[str, list[float] | None]] = {}
 
-    # ---------- loading ----------
     def load(self):
         if self.use_graph:
             from pipeline import graph
@@ -92,11 +79,9 @@ class Vocabulary:
         )
         print(f"Seeded {len(missing)} vocabulary terms into Neo4j")
 
-    # ---------- prompt ----------
     def prompt_text(self) -> str:
         return "\n".join(f"{cat}: {', '.join(sorted(names))}" for cat, names in sorted(self.terms.items()))
 
-    # ---------- normalisation ----------
     def normalize_list(self, raw_terms: list[str], category: str, source_id: str) -> list[str]:
         result = []
         for raw in raw_terms:

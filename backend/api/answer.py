@@ -1,17 +1,11 @@
-"""
-Step C · ANSWER (Gemini, streamed).
+"""Step C of the chat: writes the answer with Gemini (streamed) from the retrieved cards only.
 
-Gemini gets ONLY the question, the recent turns and Step B's cards. Rule: answer only from these
-tips; if there are none, say there is no recorded knowledge. If Gemini is unavailable, a plain
-template answer is built from the cards so the demo never goes silent.
-"""
+Falls back to a plain template built from the cards if Gemini is unavailable."""
 from api import cards as C
 from api.knowledge import KnowledgeResult
 from api.llm import stream_text
 from api.understand import Understood
 
-# The instructions are built per question type, so a rule meant for one kind of question ("start with the
-# likely cause, then numbered steps") can never contradict another ("list every tip"). Shared rules first.
 COMMON = """You are the Network Knowledge Assistant for field engineers and NOC operators of a telecom
 operator. You answer ONLY from the captured expert tips given to you as JSON. Never invent steps,
 device IDs, codes, part numbers, dates or names that are not in the tips.
@@ -52,7 +46,6 @@ Always:
 """
 
 FORMATS = {
-    # one concrete problem: diagnose and give the fix
     "problem": """
 This question is about ONE problem. Format:
 - Start with one sentence: the likely cause or the direct answer.
@@ -60,7 +53,6 @@ This question is about ONE problem. Format:
   an explanation or a conclusion, and never repeat the opening sentence as a step. If the only step is
   "ask an expert", write it as a sentence, not a list. Then what NOT to do, if the tips say so.
 - At most about 150 words.""",
-    # "all possible faults on TRN-031", "what do we know about TRN-042"
     "overview": """
 This question asks for an OVERVIEW of everything known (for example all known faults of a device).
 Format:
@@ -70,7 +62,6 @@ Format:
 - Do not pick a single cause, do not merge tips into one list of steps and do not number steps.
 - End with one short question asking which of these problems the user is seeing.
 - At most about 250 words.""",
-    # "older gate codes", "what was the code before"
     "history": """
 This question is about the PAST (older values, what changed). Format:
 - Start with the current value first (the tip without "valid_until"), with its source.
@@ -90,7 +81,6 @@ def system_for(qtype: str) -> str:
     return COMMON + FORMATS.get(qtype, FORMATS["problem"])
 
 
-# Kept for anything that imported the old constant: the troubleshooting instructions.
 SYSTEM = system_for("problem")
 
 

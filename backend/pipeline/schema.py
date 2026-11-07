@@ -1,25 +1,12 @@
-"""
-Schema for extracted knowledge.
-
-STRUCTURE is fixed: Gemini must always return exactly these fields (structured output),
-so every chat, email or call produces the same shape no matter how messy it is.
-
-WORDS are open: symptoms/actions/events are free text terms. Gemini reuses existing
-vocabulary terms where they fit and creates new ones where they don't; vocabulary.py
-then merges near-duplicates and stores the growing vocabulary in Neo4j.
-"""
+"""Pydantic schema for extracted knowledge and the seed vocabulary."""
 from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
-# ---------- Fixed structure (these small lists are part of the design, not vocabulary) ----------
 KnowledgeType = Literal[
     "troubleshooting_rule", "known_false_alarm", "hardware_compatibility", "practical_tip", "access_info"
 ]
 NodeType = Literal["transmission", "aggregation_router", "base_station", "microwave_link"]
 
-# Starting vocabulary. Loaded into Neo4j once; after that the vocabulary lives in
-# Neo4j and GROWS automatically when Gemini needs a term that doesn't exist yet
-# (see vocabulary.py). These are suggestions, not hard limits.
 SEED_VOCABULARY: dict[str, list[str]] = {
     "event": [
         "SFP_REPLACEMENT", "PATCH_CABLE_CHANGE", "MODULE_HOT_SWAP", "FIRMWARE_UPGRADE",
@@ -45,7 +32,6 @@ Outcome = Literal["worked", "failed", "unknown"]
 ScopeHint = Literal["this_device_only", "older_devices_of_same_type", "all_devices_of_same_type"]
 
 
-# ---------- What Gemini must return ----------
 class Knowledge(BaseModel):
     knowledge_type: KnowledgeType
     summary: str = Field(description="One or two plain English sentences an engineer can act on: the situation, the cause if known, and what to do. Always English, even if the chat is Finnish. Keep codes, part numbers and values exactly as written.")
@@ -71,7 +57,6 @@ class ExtractionResult(BaseModel):
     knowledge: list[Knowledge] = Field(description="Empty list if useful is false.")
 
 
-# ---------- How a new tip relates to older, similar tips (used by reconcile.py) ----------
 Relation = Literal["same_knowledge", "narrows_scope", "supersedes", "conflicts", "unrelated"]
 
 

@@ -1,4 +1,4 @@
-"""Health and knowledge-base counters."""
+"""Health check and knowledge-base counters."""
 import os
 
 from fastapi import APIRouter

@@ -1,26 +1,9 @@
-"""
-Feedback loop (Full_pipeline.txt, last box):
+"""Feedback on knowledge cards.
 
-  ✅ worked  -> confidence +0.1 (max 0.95)
-  ❌ failed  -> confidence -0.2 (min 0.05); after repeated failures (more failed than worked,
-               at least FEEDBACK_DISPUTE_AFTER) the tip is marked 'disputed'
-  who        -> the logged-in user (name + role from the frontend, or X-User-Name / X-User-Role headers;
-               DEMO_USER_NAME / DEMO_USER_ROLE in .env until login exists). Notes are captured as written
-               by that person in the app (channel = APP_NAME, e.g. "Evisa"); their role sets the starting
-               confidence, and a first-hand report that a fact changed supersedes the old tip.
-  ⏭ skipped -> nothing is counted (an earlier vote on the same card is undone)
-  comment    -> runs through Flow 1 (ingest.process) as a new conversation, so "it was the patch
-               cable" becomes new knowledge, linked and reconciled like any chat. That is also how
-               valid_to gets set: "the code changed to 7731" supersedes the old tip.
-
-One vote per engineer, answer and card: the note arriving after the click does not count again, and
-changing the verdict undoes the earlier one.
-
-Graph:  (:Feedback {verdict, comment, message_id, created_at})-[:ABOUT]->(:Assertion)
-        (Feedback)-[:ON]->(:Device)                  the device(s) the question was about
-        (Feedback)-[:BY]->(:Person {name, role})     who voted / wrote the note
-        (Feedback)-[:CAPTURED_AS]->(:Source {channel: APP_NAME})<-[:FROM]-(:Assertion)  the note's new tips
-"""
+worked / failed adjust the assertion's confidence (+0.1 / -0.2) and repeated failures mark it
+disputed; skip counts nothing. One vote per user, answer and card. An optional note is captured as
+a new conversation through the normal ingest pipeline (channel = APP_NAME), so it can add, narrow
+or supersede knowledge."""
 import logging
 import threading
 import uuid
@@ -32,12 +15,9 @@ from api.config import (APP_NAME, FEEDBACK_DISPUTE_AFTER, FEEDBACK_FAILED_DELTA,
                         TIMEZONE)
 
 log = logging.getLogger("api.feedback")
-_ingest_lock = threading.Lock()  # one comment at a time through the pipeline
+_ingest_lock = threading.Lock()
 
-# One engineer, one answer, one card = ONE vote. The UI sends the verdict on click and the same verdict
-# again with the optional note; that second request only attaches the note. Changing the verdict
-# (worked -> didn't work) undoes the first vote; "skip" undoes it and counts nothing.
-SAME_VOTE_WINDOW_MIN = 30   # without a message id (device panel), same card + verdict within 30 min = same vote
+SAME_VOTE_WINDOW_MIN = 30
 
 PREVIOUS_QUERY = """
 MATCH (f:Feedback)-[:ABOUT]->(a:Assertion {id: $aid})
@@ -118,7 +98,6 @@ def record(ids: list[str], verdict: str, comment: str | None, message_id: str | 
         prev = dict(prev[0]) if prev else None
 
         if prev and prev["verdict"] == verdict:
-            # Same vote again (the note / chosen option arriving): attach it, don't count twice
             if comment:
                 graph.run("MATCH (f:Feedback {id: $id}) SET f.comment = $c", id=prev["id"], c=comment)
             if tried_actions or resolved_by_action:
@@ -132,12 +111,12 @@ def record(ids: list[str], verdict: str, comment: str | None, message_id: str | 
             updated.append(dict(state[0]))
             continue
 
-        if prev:  # changed their mind: undo the earlier vote
+        if prev:
             graph.run("MATCH (f:Feedback {id: $id}) SET f.replaced = true", id=prev["id"])
             _apply(aid, prev["verdict"], -1)
 
         if verdict == "skipped" and not comment:
-            state = graph.run(STATE_QUERY, aid=aid)   # skip: nothing is counted or stored
+            state = graph.run(STATE_QUERY, aid=aid)
             updated.append(dict(state[0]))
             continue
 
@@ -181,9 +160,6 @@ def ingest_comment(comment: str, verdict: str, ids: list[str], message: dict | N
         now = _now()
         who = (user or {}).get("name") or "Field Engineer"
         role = (user or {}).get("role") or "Field Engineer"
-        # Two messages: what the assistant showed (context, already in the graph) and the engineer's
-        # report. Only the report is new; keeping them apart stops the old tip from being captured again
-        # ("new code is 3000" must not come back as the old code 9035).
         thread = {
             "thread_id": f"FB-{uuid.uuid4().hex[:8].upper()}",
             "channel": APP_NAME,
@@ -204,7 +180,6 @@ def ingest_comment(comment: str, verdict: str, ids: list[str], message: dict | N
             vocab = Vocabulary(use_graph=True).load()
             ingest.process(thread, dry_run=False, vocab=vocab)
         graph.run("MERGE (p:Person {name: $n}) SET p.role = $r", n=who, r=role)
-        # Trace: the click/note -> the conversation it was captured as -> the tips that came out of it
         graph.run("UNWIND $fids AS fid MATCH (f:Feedback {id: fid}) MATCH (s:Source {id: $sid}) "
                   "MERGE (f)-[:CAPTURED_AS]->(s)", fids=list(feedback_ids or []), sid=thread["thread_id"])
         log.info("Feedback comment ingested as %s", thread["thread_id"])
@@ -212,7 +187,6 @@ def ingest_comment(comment: str, verdict: str, ids: list[str], message: dict | N
         log.exception("Could not ingest feedback comment")
 
 
-# ---------- structured outcomes: tips straight from vocabulary codes (no Gemini extraction) ----------
 def valid_action_codes(codes: list[str] | None) -> list[str]:
     """Keep only codes that exist as action terms in the vocabulary (the UI offers only those)."""
     codes = [c for c in dict.fromkeys(codes or []) if c]

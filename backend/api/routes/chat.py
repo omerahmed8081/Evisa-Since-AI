@@ -1,4 +1,4 @@
-"""POST /api/chat: Step A (understand) -> Step B (retrieve) -> Step C (answer), streamed as SSE."""
+"""POST /api/chat: understand -> retrieve -> answer, streamed as server-sent events."""
 import json
 import logging
 
@@ -17,13 +17,9 @@ def chat_events(req: ChatRequest):
     cid = store.ensure_conversation(req.conversation_id)
     hist = store.history(cid)
 
-    # Step A
     u = understand.understand(req.message, req.node_id, hist, store.last_nodes(cid))
-    # Answers follow the question's language. Only when that can't be told (Gemini down, or a message like
-    # "TRN-031?") the UI's language decides.
     if req.ui_language and (u.by == "fallback" or u.language not in ("en", "fi") or len(req.message.split()) <= 2):
         u.language = req.ui_language
-    # Step B
     if u.node_ids:
         k = knowledge.for_devices(u.node_ids, u.symptoms, u.events, u.wants_access_info,
                                   overview=u.wants_overview, history=u.wants_history)
@@ -37,7 +33,6 @@ def chat_events(req: ChatRequest):
                    "ignored_selection": u.ignored_selection,
                    "question_type": "history" if u.wants_history else ("overview" if u.wants_overview else "problem")}
 
-    # Step C
     parts: list[str] = []
     try:
         for t in answer.stream_answer(req.message, hist, u, k):
@@ -61,7 +56,7 @@ def _sse(req: ChatRequest):
     try:
         for event, data in chat_events(req):
             yield f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
-    except Exception as e:  # e.g. Neo4j unreachable
+    except Exception as e:
         log.exception("chat failed")
         yield f"event: error\ndata: {json.dumps({'message': f'Knowledge service error: {e.__class__.__name__}'})}\n\n"
 

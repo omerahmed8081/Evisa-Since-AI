@@ -1,10 +1,4 @@
-"""
-FastAPI app. Start from the backend/ folder:
-
-    uvicorn api.main:app --reload --port 8000
-
-Interactive docs: http://localhost:8000/docs
-"""
+"""FastAPI app. Run from backend/: uvicorn api.main:app --reload --port 8000 (docs at /docs)."""
 import logging
 
 from fastapi import FastAPI, Request
@@ -49,7 +43,6 @@ SETTINGS = {"NEO4J_URI", "NEO4J_PASSWORD", "GEMINI_API_KEY"}
 
 @app.exception_handler(KeyError)
 async def missing_setting(_: Request, exc: KeyError):
-    # graph.py / extract.py read these with os.environ[...]: give a clear message instead of a bare 500
     if exc.args and exc.args[0] in SETTINGS:
         return JSONResponse(status_code=500, content={"detail": f"Missing setting {exc.args[0]}; check your .env"})
     raise exc

@@ -1,7 +1,5 @@
-"""
-In-memory conversation and message store (enough for a demo; restarts forget chats, not knowledge).
-Messages remember which cards were shown, so feedback can be applied to every merged assertion.
-"""
+"""In-memory conversations and messages (lost on restart; the knowledge itself is in Neo4j).
+Each message keeps the cards it showed, so feedback can be applied to all merged assertions."""
 import threading
 import uuid
 from collections import OrderedDict

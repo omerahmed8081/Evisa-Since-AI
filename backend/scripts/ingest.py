@@ -1,16 +1,13 @@
-"""
-Capture knowledge from conversation files into the graph.
+"""Captures conversations into the graph.
 
-  python scripts/ingest.py data/threads              # all conversations, oldest first (cached Gemini answers reused)
-  python scripts/ingest.py data/threads --dry-run    # only print Gemini's output (no Neo4j needed)
-  python scripts/ingest.py data/threads --force      # re-process threads already in Neo4j
-  python scripts/ingest.py data/threads --refresh    # ignore the Gemini cache (costs API calls)
-  python scripts/ingest.py data/threads --prefilter  # skip obvious noise locally, before Gemini
-"""
+    python scripts/ingest.py data/threads              # all, oldest first (cached Gemini answers reused)
+    python scripts/ingest.py data/threads --dry-run    # print extractions only, no Neo4j
+    python scripts/ingest.py data/threads --force      # re-process already captured conversations
+    python scripts/ingest.py data/threads --prefilter  # skip noise locally before Gemini"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline.ingest import main
 

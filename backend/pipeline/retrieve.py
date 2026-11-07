@@ -1,22 +1,9 @@
-"""
-Retrieval: "what do we know that applies to this device?"
+"""Retrieval: what applies to a device.
 
-This is the function the chatbot agent will call as a tool. It:
-  1. finds knowledge observed on the device itself, reported at the device's SITE without naming the
-     device, or whose scope rule covers it (same device type, installed before the cutoff), that is
-     still valid (valid_to is null). How the device was linked (ID, nickname, place) and its link
-     confidence are kept: a tip linked only by place counts for less than one with the device ID,
-  2. drops knowledge whose firmware limits exclude this device's firmware:
-     firmware_below ("workaround only needed below 3.4") and firmware_at_least ("fixed from 3.4 on"),
-  3. GROUPS duplicates: the same fix captured from several chats/emails/devices becomes ONE
-     result with all its sources and devices, and a confidence that grows with confirmations,
-  4. optionally ranks by how well the question's symptoms AND events match each tip:
-     exact term = 1 point, closely related term (vocabulary embeddings, e.g. LINK_FLAPPING ~
-     LINK_FADING) = 0.5, opposites (INTERFACE_UP vs INTERFACE_DOWN) never count as related.
-     The score is returned as "symptom_match" (0..1, kept under that name for the API).
+Direct observations, site-level tips and scope rules; only currently valid knowledge, firmware
+filter, duplicate merging, symptom ranking and confidence. No LLM calls.
 
-Command line: python scripts/retrieve.py TRN-077 [--symptoms ...] [--events ...] [--json]
-"""
+    python scripts/retrieve.py TRN-077"""
 import math
 
 
@@ -53,12 +40,9 @@ RETURN d {.node_id, .node_type, .firmware, install_date: toString(d.install_date
        collect(DISTINCT od.node_id) AS devices
 """
 
-CONFIRMATION_BONUS = 0.1   # per extra independent source
+CONFIRMATION_BONUS = 0.1
 MAX_CONFIDENCE = 0.95
 
-# Related-term matching. Measured on our vocabulary embeddings: related terms ~0.83
-# (LINK_FLAPPING~LINK_FADING 0.835, COLD_WEATHER~HEAVY_SNOW_ICE 0.840), unrelated ~0.72 (median).
-# Opposites score high too (INTERFACE_UP~INTERFACE_DOWN 0.864), hence the OPPOSITES guard.
 RELATED_TERM_THRESHOLD = 0.825
 RELATED_TERM_CREDIT = 0.5
 OPPOSITES = [{"UP", "DOWN"}, {"NORMAL", "LOW"}, {"NORMAL", "HIGH"}, {"LOW", "HIGH"}, {"ZERO", "NORMAL"}]
@@ -148,7 +132,7 @@ def same_knowledge(a: dict, b: dict) -> bool:
     if (a["knowledge_type"], a["scope_node_type"]) != (b["knowledge_type"], b["scope_node_type"]):
         return False
     if (a["outcome"] == "failed") != (b["outcome"] == "failed"):
-        return False  # "worked" and "unknown" can merge; a failed attempt never merges with a fix
+        return False
     x, y = set(a["actions"]), set(b["actions"])
     return x <= y or y <= x or len(x & y) / len(x | y) >= 0.5
 
@@ -202,7 +186,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         g["knowledge_ids"].append(a["id"])
         g["members"].append(a)
         if len(a["actions"] or []) > len(g["actions"] or []):
-            g["actions"] = a["actions"]  # keep the most complete list of steps
+            g["actions"] = a["actions"]
         g["events"].update(a["events"] or [])
         g["symptoms"].update(a["symptoms"] or [])
         g["avoid"].update(a["avoid"] or [])
@@ -213,15 +197,13 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         g["status"].add(a.get("status") or "auto_captured")
         g["base_confidence"] = max(g["base_confidence"], a["confidence"] or 0)
         if a["outcome"] == "worked":
-            g["outcome"] = "worked"  # one confirmed success is enough for the merged result
+            g["outcome"] = "worked"
         for s in r["sources"]:
             if s.get("id"):
                 g["sources"][s["id"]] = s
         g["authors"].update(r["authors"])
         g["seen_on_devices"].update(r["devices"])
         g["observed_on_this_device"] |= bool(r["direct"])
-        # How does this tip reach the device? Keep the most certain path (ID 1.0 > nickname 0.9 >
-        # place, one device fits 0.8 > scope rule 1.0 counts like a rule > site, device unknown 0.5).
         link, site = r.get("link"), r.get("site_link")
         if link:
             path = {"how": link["linked_by"], "factor": link["link_confidence"] or 1.0, "via": link.get("via")}
@@ -236,7 +218,7 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         if g["link"] is None or rank[path["how"]] > rank[g["link"]["how"]]:
             g["link"], g["link_factor"] = path, path["factor"]
         if a["valid_from"] and a["valid_from"] > (g["latest"] or ""):
-            g["latest"], g["summary"] = a["valid_from"], a["summary"]  # newest wording wins
+            g["latest"], g["summary"] = a["valid_from"], a["summary"]
 
     results = []
     wanted_symptoms, wanted_events = set(symptoms or []), set(events or [])
@@ -245,8 +227,8 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         n_sources = len(g["sources"])
         confidence = min(MAX_CONFIDENCE, g["base_confidence"] + CONFIRMATION_BONUS * max(0, n_sources - 1))
         if g["outcome"] == "failed":
-            confidence = g["base_confidence"]  # repeated failures don't make a fix more trustworthy
-        confidence *= g["link_factor"] or 1.0  # less sure it is about THIS device -> less confidence
+            confidence = g["base_confidence"]
+        confidence *= g["link_factor"] or 1.0
         match = match_score(wanted_symptoms, wanted_events, g["symptoms"], g["events"])
         results.append({
             "summary": g["summary"],
@@ -270,16 +252,13 @@ def find_knowledge(node_id: str, symptoms: list[str] | None = None, events: list
         })
 
     results.sort(key=lambda r: (
-        r["outcome"] == "failed",                      # what worked first, failed attempts last
+        r["outcome"] == "failed",
         -(r["symptom_match"] or 0),
         not r["how_it_applies"].startswith("observed on this"),
         not r["how_it_applies"].startswith("applies to similar"),
         -r["confidence"],
     ))
     if wanted:
-        # Drop tips whose symptoms/events don't fit the question. Always keep access info. Tips without
-        # any symptom/event terms can't be judged: keep them only if they carry a firmware limit
-        # (e.g. "fixed in firmware 3.4"), which is worth showing for any problem on that device.
         results = [r for r in results if r["knowledge_type"] == "access_info"
                    or (r["symptom_match"] or 0) > 0
                    or (r["symptom_match"] is None and r["_keep_unmatched"])]

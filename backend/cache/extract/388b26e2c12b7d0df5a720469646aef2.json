@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "Expert reports that a firmware upgrade resets ATPC on microwave links and advises checking it after upgrades.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "The 1.4 firmware upgrade resets ATPC to off on microwave links, leading to link fading in rainy weather; check and re-enable ATPC after upgrading.",
+   "device_mentions": [
+    "MW-401",
+    "MW-405",
+    "MW-412"
+   ],
+   "node_type": "microwave_link",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": "1.4",
+   "events": [
+    "FIRMWARE_UPGRADE"
+   ],
+   "symptoms": [
+    "LINK_FADING"
+   ],
+   "actions": [
+    "ENABLE_ATPC"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Jari Jänne",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Firmware 1.4 upgrade resets ATPC setting to off."
+  }
+ ]
+}

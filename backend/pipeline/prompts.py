@@ -1,7 +1,4 @@
-"""
-The instructions sent to Gemini. Written once, reused for every conversation.
-The examples are deliberately NOT from our dataset, so they don't inflate test scores.
-"""
+"""Prompts and few-shot examples for extraction and relation classification."""
 
 SYSTEM_INSTRUCTION = """You read conversations between telecom network engineers (Teams chats, emails,
 phone-call transcripts) and extract reusable operational knowledge for a knowledge graph.

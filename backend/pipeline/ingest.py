@@ -1,25 +1,6 @@
-"""
-Capture pipeline: conversation -> filter -> extract -> link -> store -> reconcile.
+"""Capture pipeline: conversation -> extract -> link to devices -> store -> reconcile.
 
-Command line (from the repository root):
-  python scripts/ingest.py data/threads              # process all, oldest conversation first
-  python scripts/ingest.py data/threads --dry-run    # only print Gemini's output (no Neo4j needed)
-  python scripts/ingest.py data/threads --force      # re-process threads that are already in Neo4j
-  python scripts/ingest.py data/threads --refresh    # ignore the Gemini cache (costs API calls)
-  python scripts/ingest.py data/threads --prefilter  # skip obvious noise locally before Gemini
-
-From code: process(thread, dry_run=False, vocab=...) returns what was captured
-(used by api/feedback.py to turn an engineer's comment into new knowledge).
-
-Gemini answers are cached in cache/, so re-running after a reset costs no API calls
-unless a conversation or the prompt changed.
-
-Threads already in Neo4j are skipped by default, so if the free-tier rate limit stops a run,
-just start it again and it continues where it stopped.
-
-Design rule: the LLM handles LANGUAGE (what was said), code handles FACTS
-(which devices exist, install dates, timestamps). That keeps the graph correct.
-"""
+    python scripts/ingest.py data/threads [--dry-run] [--force] [--refresh] [--prefilter]"""
 import argparse
 import csv
 import json
@@ -31,8 +12,7 @@ from pipeline import DATA_DIR, extract, linking, threads
 from pipeline.vocabulary import Vocabulary
 
 BASE_CONFIDENCE = {"worked": 0.7, "unknown": 0.5, "failed": 0.3}
-ACCESS_INFO_CONFIDENCE = 0.7  # a stated gate code / key location is a fact, not an untested fix
-# Starting confidence for reports from logged-in app users, by role (feedback notes)
+ACCESS_INFO_CONFIDENCE = 0.7
 ROLE_CONFIDENCE = {"network expert": 0.7, "noc operator": 0.7, "field engineer": 0.6}
 
 
@@ -40,6 +20,8 @@ def reporter_confidence(reporter: dict | None) -> float:
     if not reporter:
         return 0.0
     return ROLE_CONFIDENCE.get((reporter.get("role") or "").strip().lower(), 0.5)
+
+
 INVENTORY_CSV = DATA_DIR / "inventory" / "nodes.csv"
 
 
@@ -73,24 +55,20 @@ def compute_scope(k, observed_devices: list[dict], node_type: str | None) -> dic
              "firmware_below": k.firmware_below, "firmware_at_least": k.firmware_at_least}
 
     if k.knowledge_type == "access_info" or not node_type:
-        pass  # access info and unknown device types stay bound to the named devices only
+        pass
     elif k.scope_hint == "all_devices_of_same_type":
         scope["node_type"] = node_type
     elif k.scope_hint == "older_devices_of_same_type":
         scope["node_type"] = node_type
-        # Only keep the age limit if the observed devices really are older units
         if not observed_devices or all(is_older(d) for d in observed_devices):
             scope["installed_before"] = older_cutoff()
         else:
             print(f"  scope: 'older units' ignored, {[d['node_id'] for d in observed_devices]} are not older units")
     elif k.outcome == "failed" and observed_devices:
-        # A failed attempt is a warning for similar devices, not only for the one where it happened
         scope["node_type"] = node_type
         if all(is_older(d) for d in observed_devices):
             scope["installed_before"] = older_cutoff()
 
-    # Contradictory firmware limits (e.g. below 2.6 AND from 2.6). If the tip has actions it
-    # describes the WORKAROUND (only needed below the version); without actions it describes the FIX.
     below, at_least = scope["firmware_below"], scope["firmware_at_least"]
     if below and at_least:
         from pipeline.retrieve import compare_versions
@@ -114,11 +92,10 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
     """Run one conversation through the pipeline. Returns
     {"thread_id", "useful", "reason", "tips": [{"id", "summary", "devices", "knowledge_type", "outcome"}]}"""
     if not dry_run:
-        from pipeline import graph  # imported here so --dry-run works without Neo4j configured
+        from pipeline import graph
         from pipeline import reconcile
 
     text = threads.thread_to_prompt_text(thread)
-    # Which devices is this about? IDs (also messy forms like "trn042"), nicknames, places: see linking.py
     inv = linking.Inventory.from_csv(Path(INVENTORY_CSV)) if dry_run else linking.Inventory.from_graph()
     raw = (thread.get("subject") or "") + "\n" + "\n".join(m["text"] for m in thread["messages"])
     match = inv.resolve(raw)
@@ -140,7 +117,6 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
     result = extract.extract(text, device_context(devices), vocab.prompt_text())
     print(f"[{thread['thread_id']}] useful={result.useful} - {result.reason}")
 
-    # Normalise terms against the growing vocabulary (maps near-duplicates, adds new terms)
     for k in result.knowledge:
         k.events = vocab.normalize_list(k.events, "event", thread["thread_id"])
         k.symptoms = vocab.normalize_list(k.symptoms, "symptom", thread["thread_id"])
@@ -154,15 +130,12 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
                             "knowledge_type": k.knowledge_type, "outcome": k.outcome} for k in result.knowledge]
         return summary
 
-    graph.save_source(thread, text)  # keep the raw source even if not useful
+    graph.save_source(thread, text)
     if not result.useful:
         graph.mark_source_done(thread["thread_id"])
         return summary
 
     for i, k in enumerate(result.knowledge, start=1):
-        # Link only to devices that really exist in the inventory. If Gemini named none, general
-        # knowledge stays unlinked (its scope rule applies it); device-specific knowledge and access
-        # info fall back to the devices named in the conversation so they are not orphaned.
         mentions = {inv.aliases.get(m.strip().lower(), m.strip().upper()) for m in k.device_mentions}
         observed = sorted(mentions & known_ids)
         if not observed and (k.knowledge_type == "access_info" or k.scope_hint == "this_device_only"):
@@ -173,7 +146,6 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
                  for n in observed]
         site_links = []
         if not known_ids and match.locations:
-            # No device named at all, only a place: link by location (one device fits) or to the site.
             loc = linking.location_links(match, inv, k.node_type)
             links, site_links = loc["devices"], loc["sites"]
             observed = [l["node_id"] for l in links]
@@ -268,7 +240,6 @@ def main():
         except Exception as e:
             print(f"SKIP {f.name}: could not read ({e})")
 
-    # Oldest conversation first, so knowledge builds up in the order it happened
     loaded.sort(key=sort_key)
 
     if not args.dry_run and not args.force:

@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T003-1",
+   "relation": "conflicts",
+   "firmware_below": null,
+   "reason": "The new tip attributes extreme cold weather link drops to PSU failure instead of ice on the radome."
+  },
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The existing tip is about firmware upgrade and ATPC, while the new tip is about cold weather PSU failure."
+  }
+ ]
+}

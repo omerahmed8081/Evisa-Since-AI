@@ -1,0 +1,36 @@
+{
+ "useful": true,
+ "reason": "A suggested fix for LACP bundle down was tried and failed because it applies to a different firmware version.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Removing and re-adding port channel members did not fix an LACP bundle down issue on an aggregation router running firmware 7.2.0; that workaround is only for units on 7.4 or later.",
+   "device_mentions": [
+    "AGG-012"
+   ],
+   "node_type": "aggregation_router",
+   "scope_hint": "this_device_only",
+   "firmware_below": "7.4",
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [
+    "LACP_BUNDLE_DOWN",
+    "LINK_UP"
+   ],
+   "actions": [
+    "READD_PORT_CHANNEL_MEMBER"
+   ],
+   "avoid": [],
+   "outcome": "failed",
+   "author": "Antti Aalto",
+   "source_message_seqs": [
+    2,
+    3,
+    5,
+    6
+   ],
+   "confirmed_at_seq": 3,
+   "details": "Firmware was 7.2.0."
+  }
+ ]
+}

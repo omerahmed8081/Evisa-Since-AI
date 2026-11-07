@@ -1,7 +1,4 @@
-"""
-Load Teams/call JSON and email .txt files into one common format,
-and turn a thread into the text we send to Gemini.
-"""
+"""Loads Teams/call JSON and email .txt files into one thread format and renders prompt text."""
 import json
 import re
 from pathlib import Path

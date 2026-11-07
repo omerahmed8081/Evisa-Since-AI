@@ -1,0 +1,30 @@
+{
+ "useful": true,
+ "reason": "Expert shares firmware version dependency and a workaround for traffic getting stuck after SFP replacement.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Traffic getting stuck after SFP replacement on older transmission nodes is fixed in firmware 3.4; on units below 3.4, disable and enable the interface to recover traffic.",
+   "device_mentions": [],
+   "node_type": "transmission",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": "3.4",
+   "firmware_at_least": null,
+   "events": [
+    "SFP_REPLACEMENT"
+   ],
+   "symptoms": [],
+   "actions": [
+    "BOUNCE_INTERFACE"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Erkki Expert",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Fix for forwarding state after optics changes is included in firmware 3.4."
+  }
+ ]
+}

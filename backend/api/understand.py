@@ -1,14 +1,7 @@
-"""
-Step A · UNDERSTAND (one Gemini call, structured output).
+"""Step A of the chat: parse the question with Gemini (structured output).
 
-  "At TRN-077, swapped the SFP, link is up but no traffic"
-    -> {node_ids: [TRN-077], symptoms: [INTERFACE_UP, TRAFFIC_COUNTERS_ZERO], events: [SFP_REPLACEMENT]}
-
-Gemini sees the SAME vocabulary as the stored tips (the (:Term) nodes in Neo4j), so the question and
-the knowledge speak the same language. Code then double-checks everything: device IDs must exist in the
-inventory, terms must exist in the vocabulary (aliases are mapped), and IDs written in the message are
-always picked up by regex even if Gemini is down.
-"""
+Returns devices, symptoms/events (mapped onto the graph vocabulary), language and question type.
+Devices are resolved in code: written ID / nickname / place first, then the UI selection."""
 import logging
 import re
 import time
@@ -55,22 +48,18 @@ class Understood:
     wants_overview: bool = False
     wants_history: bool = False
     language: str = "en"
-    by: str = "gemini"  # gemini | fallback
-    resolved_by: str | None = None   # id | alias | location | site | selected | previous_turn | gemini
+    by: str = "gemini"
+    resolved_by: str | None = None
     resolution_note: str | None = None
-    ignored_selection: str | None = None  # device picked in the UI but overruled by the message
+    ignored_selection: str | None = None
 
 
-# ---------- keyword fallback when Gemini is unavailable (English + Finnish) ----------
-# Overview: "all possible faults", "known issues", "what do we know about", "mitä vikoja", "kaikki ongelmat"
 OVERVIEW_RE = re.compile(
     r"\b(all|every|possible|known|common|typical)\s+(\w+\s+)?(faults|issues|problems|failures|tips)\b"
     r"|\bwhat\s+(do\s+we|does\s+\w+)\s+know\b|\blist\b.*\b(faults?|issues?|problems?|tips?)\b"
     r"|\boverview\b|\bmit(ä|a)\s+(vikoja|ongelmia|tiedet(ää|aan))\b"
     r"|\b(kaikki|tunnetut|mahdolliset)\s+(\w+\s+)?(viat|vikoja|ongelmat|ongelmia)\b",
     re.IGNORECASE)
-# History: "older/previous gate codes", "what was the code before", "used to be", "vanhat koodit", "aiempi".
-# Not "older units" / "old devices" (device age).
 HISTORY_RE = re.compile(
     r"\b(older|previous|old|earlier|former)\s+(gate\s+|lockbox\s+|access\s+)?(codes?|values?|keys?|passwords?)\b"
     r"|\bwhat\s+was\b.*\bbefore\b|\bused\s+to\s+be\b|\bwhat\s+changed\b"
@@ -83,7 +72,6 @@ def keyword_intent(message: str) -> tuple[bool, bool]:
     return bool(OVERVIEW_RE.search(message)), bool(HISTORY_RE.search(message))
 
 
-# ---------- inventory + vocabulary, cached for a minute ----------
 _cache: dict = {"at": 0.0}
 
 
@@ -130,13 +118,11 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
     types_by_id = {d["node_id"]: d["node_type"] for d in ctx["devices"]}
 
     inv: linking.Inventory = ctx["inventory"]
-    match = inv.resolve(message)          # IDs (also "trn042"), nicknames, places: done by code, not Gemini
+    match = inv.resolve(message)
     written = sorted(match.ids | match.unknown_ids)
     u = Understood(unknown_nodes=sorted(match.unknown_ids))
     named = sorted(match.ids) + sorted(set(match.aliases) - match.ids)
     selected = selected_node.upper() if selected_node and selected_node.upper() in known_ids else None
-    # What the message says beats the device picker: "TRN-077 ..." with TRN-031 still selected in the
-    # UI is a question about TRN-077. The picker only counts when the message names no device/place.
     message_names_device = bool(named or written or match.locations)
 
     follow_up = False
@@ -160,7 +146,6 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         u.wants_access_info = any(w in low for w in ("gate", "code", "access", "key", "lock", "portti", "koodi", "avain"))
         u.wants_overview, u.wants_history = keyword_intent(message)
 
-    # Which device(s)? Priority: written ID / nickname > place > device picker > Gemini's guess > previous turn
     nodes: list[str] = []
     if named:
         nodes = named
@@ -168,11 +153,8 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         if match.aliases:
             u.resolution_note = "; ".join(f"'{a}' is the nickname of {n}" for n, a in match.aliases.items())
     elif written:
-        pass  # only unknown IDs: say so, don't silently answer for another device
+        pass
     elif match.locations:
-        # A place ("the Kolari box"): decided from the inventory in code, not by trusting Gemini's guess.
-        # One device of the right type -> that device; several -> all of them, and the answer says which
-        # tip is for which device and asks which one is meant.
         types = {u.node_type} if u.node_type else match.type_hints
         cands = inv.candidates(match.locations, types or None) or inv.candidates(match.locations)
         if cands:
@@ -195,7 +177,7 @@ def understand(message: str, selected_node: str | None, history: list[tuple[str,
         nodes = gemini_nodes
         u.resolved_by = "gemini"
     if selected and message_names_device and selected not in nodes:
-        u.ignored_selection = selected  # shown in meta so the UI can update its picker
+        u.ignored_selection = selected
 
     u.node_ids = list(dict.fromkeys(nodes))
     if not u.node_ids and previous_nodes and (follow_up or u.by == "fallback") and not u.unknown_nodes:

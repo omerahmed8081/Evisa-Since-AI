@@ -1,0 +1,10 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T009-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip addresses traffic counters at zero with normal optical levels, whereas the existing tip addresses low optical RX levels."
+  }
+ ]
+}

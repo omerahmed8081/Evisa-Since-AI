@@ -1,67 +1,115 @@
-# Silent knowledge → machine-readable context (Elisa × Since AI 2026)
+# EVISA: silent knowledge → machine-readable context (Elisa × Since AI 2026)
 
-Engineers solve network problems with knowledge that lives in chats, emails and calls. This project
-captures that knowledge automatically, links it to the right equipment in a **time-aware Neo4j knowledge
-graph** (`valid_from` / `valid_to`), keeps it up to date as new messages arrive, and serves it to field
-engineers through a chatbot, with sources, confidence and feedback.
+Captures troubleshooting knowledge from Teams chats, emails and call notes, links it to network devices in a
+time-aware Neo4j knowledge graph (`valid_from` / `valid_to`) and serves it to field engineers through a chat UI,
+with sources, confidence and feedback.
 
 ```
-backend/   Python: capture pipeline + Neo4j graph + FastAPI (chat, devices, feedback)
-frontend/  Web app (chat UI) that talks to the backend API
+backend/    Python: capture pipeline, Neo4j graph, FastAPI service
+frontend/   Web app (chat UI)
+scripts/    dev.mjs: starts backend + frontend together
 ```
 
-## Quick start
+## Requirements
 
-**1. Backend** (Python 3.10+, a Neo4j database, a Gemini API key)
+- Python 3.10+
+- Node.js 22.12+ with npm 11+ (or Bun)
+- A Neo4j database: AuraDB Free or local Docker (`docker run -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password123 neo4j:5`)
+- A Gemini API key (https://aistudio.google.com)
+
+**The backend needs a Neo4j connection and a Gemini API key in `backend/.env` to run** (scripts and server).
+
+## Setup
+
 ```bash
+# backend
 cd backend
 python -m venv .venv
-.venv\Scripts\activate                 # Windows   (Mac/Linux: source .venv/bin/activate)
+.venv\Scripts\activate                 # Mac/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-copy .env.example .env                 # Mac/Linux: cp .env.example .env  -> then fill in your keys
+copy .env.example .env                 # Mac/Linux: cp .env.example .env
 
-python scripts/load_inventory.py       # devices + event stream into Neo4j
-python scripts/ingest.py data/threads  # capture all conversations (cached Gemini answers are reused)
-uvicorn api.main:app --reload --port 8000
-```
-API docs: http://localhost:8000/docs. Details: [backend/README.md](backend/README.md).
-
-**2. Frontend** (Node.js 22.12+, npm 11+ or Bun): see [frontend/README.md](frontend/README.md).
-```bash
-cd frontend
+# frontend
+cd ../frontend
 npm install
-cp .env.example .env.local             # Windows: copy .env.example .env.local
+copy .env.example .env.local           # Mac/Linux: cp .env.example .env.local
 ```
 
-**3. Run both with one command** (from the repository root, after steps 1 and 2 once):
+`backend/.env`:
+
+| Variable | Required | Notes |
+|---|---|---|
+| `GEMINI_API_KEY` | yes | |
+| `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD` | yes | AuraDB: `neo4j+s://xxxx.databases.neo4j.io`, Docker: `bolt://localhost:7687` |
+| `GEMINI_MODEL` | | model used for capture (default in `.env.example`) |
+| `API_GEMINI_MODEL` | | model used for chat answers (defaults to `GEMINI_MODEL`) |
+| `APP_NAME`, `DEMO_USER_NAME`, `DEMO_USER_ROLE` | | source label and user for feedback notes until login exists |
+
+`frontend/.env.local`: `VITE_API_BASE_URL=http://localhost:8000` and `VITE_USE_MOCK=false` (without a base URL
+the UI runs on mock data).
+
+## Data
+
+The data part is done and stored in the repository:
+
+- `backend/data/`: synthetic dataset (inventory, events, 36 conversations, answer key)
+- `backend/cache/`: Gemini results for every conversation (extractions, relation decisions, embeddings)
+- `backend/models/prefilter.joblib`: trained pre-filter
+
+The knowledge graph itself lives in Neo4j. To build it on a new database, or to start clean (e.g. after testing
+feedback), reset everything and rebuild from the stored data. Thanks to the cache this makes almost no Gemini
+calls, but the key is still required.
+
+```bash
+cd backend
+python scripts/reset_graph.py                       # delete everything in Neo4j
+python scripts/load_inventory.py                    # devices, sites, nicknames, events
+python scripts/ingest.py data/threads --prefilter   # capture all conversations
+python tests/evaluate.py                            # check the result against the answer key
+```
+
+Regenerating the data is only needed if you change it:
+
+```bash
+python data/generator/build.py          # dataset from data/generator/scenarios.py
+python data/generator/noise.py          # noise conversations for the pre-filter
+python data/validate.py                 # dataset checks
+python scripts/train_prefilter.py       # retrain the pre-filter
+```
+
+## Run
+
+From the repository root:
+
 ```bash
 npm run dev
 ```
-This starts the API on http://localhost:8000 and, as soon as it answers, the web app on http://localhost:8080.
-Output of both appears in one terminal, prefixed `[api]` and `[web]`. **Ctrl+C stops both**; if one crashes,
-the other is stopped too.
 
-| Command | What it starts |
-|---|---|
-| `npm run dev` | API + web app |
-| `npm run dev:backend` | only the API |
-| `npm run dev:frontend` | only the web app |
-| `npm run test:frontend` | frontend tests |
+Starts the API on http://localhost:8000 (docs at `/docs`) and the web app on http://localhost:8080. Ctrl+C stops
+both. `npm run dev:backend` / `npm run dev:frontend` start one side only. The launcher uses `PYTHON`,
+`backend/.venv` or `python` on the PATH; `API_PORT=8001 npm run dev` changes the API port.
 
-The launcher ([scripts/dev.mjs](scripts/dev.mjs), no extra packages) picks the Python in this order: the `PYTHON`
-environment variable, `backend/.venv`, then `python`/`python3` on your PATH (e.g. an activated conda environment).
-For the frontend it uses npm 11+, or Bun if npm is older. Examples:
+Separately:
+
 ```bash
-PYTHON=~/miniconda3/bin/python npm run dev     # a specific Python
-WEB_PM=bun npm run dev                         # force Bun for the frontend
-API_PORT=8001 npm run dev                      # API on another port (the web app is pointed at it,
-                                               # unless another address is saved in its ⚙ Settings)
+cd backend && uvicorn api.main:app --reload --port 8000
+cd frontend && npm run dev
 ```
 
-## Working together
+## Tests
 
-- Clone once, then work on a branch: `git checkout -b my-feature`, push, open a pull request.
-- Keep the structure: backend code in `backend/`, frontend code in `frontend/`.
-- Never commit `.env` files or credentials (they are in `.gitignore`).
-- `backend/cache/` **is** committed: it holds the Gemini answers, so anyone can rebuild the graph without
-  using API quota.
+```bash
+cd backend
+python -m pytest tests -q               # unit tests (no Neo4j / Gemini)
+python tests/evaluate.py --details      # graph vs. answer key
+python tests/evaluate_prefilter.py      # pre-filter, cross-validated
+python tests/chat_questions.py          # demo questions against the running API
+npm run test:frontend                   # from the repository root
+```
+
+## Notes
+
+- Never commit `.env` / `.env.local` or credentials. `backend/cache/` is committed on purpose.
+- More detail: [backend/README.md](backend/README.md), [backend/api/README.md](backend/api/README.md),
+  [frontend/README.md](frontend/README.md).
+- All data, devices and names are synthetic.

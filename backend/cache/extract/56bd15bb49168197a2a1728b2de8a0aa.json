@@ -1,0 +1,28 @@
+{
+ "useful": true,
+ "reason": "A field engineer reports that the previously documented gate code for BTS-210 is incorrect and provides the updated code.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "The correct gate code for the BTS-210 site is 00000.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Jash",
+   "source_message_seqs": [
+    2
+   ],
+   "confirmed_at_seq": 2,
+   "details": "Gate code is 00000."
+  }
+ ]
+}

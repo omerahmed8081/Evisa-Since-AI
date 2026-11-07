@@ -1,4 +1,4 @@
-"""Device endpoints for the selector and the device side panel."""
+"""Device endpoints: list for the selector, details for the side panel."""
 from fastapi import APIRouter, HTTPException
 
 from pipeline import graph

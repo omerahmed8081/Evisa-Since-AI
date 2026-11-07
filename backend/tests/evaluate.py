@@ -1,18 +1,11 @@
-"""
-Evaluate the graph against data/ground_truth.json. Uses NO Gemini calls.
+"""Evaluates the graph against data/ground_truth.json (capture, knowledge updates, demo
+retrieval checks). No LLM calls.
 
-  python tests/evaluate.py                 # full report
-  python tests/evaluate.py --details       # also list every mismatch per thread
-
-Sections:
-  1. Capture   - per conversation: useful/noise decision, devices linked, scope, outcome, actions
-  2. Change    - did later messages update earlier knowledge as expected (merge, narrow, supersede, conflict)
-  3. Retrieval - demo questions: does the right knowledge come back for the right device (PASS/FAIL)
-"""
+    python tests/evaluate.py [--details]"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import argparse
 import json
 from pathlib import Path
@@ -192,7 +185,6 @@ def retrieval_section():
         ("BTS-210 does NOT get the OLD gate code 4471 as current", lambda: not any("4471" in r["summary"] and "9035" not in r["summary"] + " ".join(r["details"]) for r in R("BTS-210"))),
         ("AGG-003 gets the patch cable fix learned on AGG-012", lambda: has_action(R("AGG-003"), "REPLACE_PATCH_CABLE", "worked")),
         ("MW-405 shows the ice/PSU advice as disputed", lambda: any(r["disputed"] for r in R("MW-405"))),
-        # Linking without a device ID (T024-T026): place, site, nickname
         ("TRN-042 gets the Kolari battery-alarm tip, linked by place (no ID written)",
          lambda: any(tip_from(r, "T024") and r["link"].get("how") == "location" for r in R("TRN-042"))),
         ("BTS-233 (also in Kolari, but a base station) does NOT get it as its own",

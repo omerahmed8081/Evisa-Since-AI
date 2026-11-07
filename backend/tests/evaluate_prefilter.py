@@ -1,22 +1,12 @@
-"""
-How well does the local pre-filter work? (no API calls, no Neo4j, ~1 minute)
+"""Cross-validated evaluation of the pre-filter (no API calls, no Neo4j).
 
-  python tests/evaluate_prefilter.py
-  python tests/evaluate_prefilter.py --show     # also list every decision with its reasons
-
-Honest test: the classifier is never scored on a conversation it was trained on.
-5-fold cross-validation, repeated with 5 different splits. In each fold the threshold is ALSO
-chosen only from the training part (exactly what train_prefilter.py does), then applied to the
-held-out conversations. Reported numbers are averages over the 5 splits, plus the worst split.
-
-The one number that must stay 0: useful conversations skipped (that knowledge would be lost).
-"""
+    python tests/evaluate_prefilter.py [--show]"""
 import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))  # reuse train_prefilter settings
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
@@ -40,13 +30,12 @@ def main():
     texts = np.array([Prefilter.model_text(t) for t in threads_])
     scored = [pf.score(t) for t in threads_]
     rule_keep = np.array([s >= MIN_SCORE for s, _ in scored])
-    protected = np.array([any(r.startswith("access info") for r in rs) for _, rs in scored])  # see Prefilter.decide
+    protected = np.array([any(r.startswith("access info") for r in rs) for _, rs in scored])
     n, n_useful = len(labels), int(labels.sum())
     n_noise = n - n_useful
 
     print(f"Conversations: {n}  ({n_useful} useful, {n_noise} noise; labels = Gemini's past decisions + template noise)\n")
 
-    # ---- Layer 1: rules (deterministic) ----
     rule_lost = int((~rule_keep & (labels == 1)).sum())
     rule_skipped_noise = int((~rule_keep & (labels == 0)).sum())
     print("LAYER 1 - rule score (keep if score >= %d)" % MIN_SCORE)
@@ -55,7 +44,6 @@ def main():
     low = sorted((scored[i][0], threads_[i]["thread_id"]) for i in range(n) if labels[i] == 1)[:3]
     print(f"  lowest-scoring useful conversations: {', '.join(f'{tid}={s}' for s, tid in low)}\n")
 
-    # ---- Layer 2: classifier, honest cross-validation ----
     skipped_noise_runs, lost_runs, thresholds = [], [], []
     clf_skip_ids: dict[str, int] = {}
     for seed in range(CV_REPEATS):
@@ -67,7 +55,7 @@ def main():
             model = make_model().fit(list(texts[train]), labels[train])
             p = model.predict_proba(list(texts[test]))[:, 1]
             clf_skip[test] = p < thr
-        clf_skip &= rule_keep & ~protected         # the classifier only sees what the rules let through
+        clf_skip &= rule_keep & ~protected
         skipped_noise_runs.append(int((clf_skip & (labels == 0)).sum()))
         lost_runs.append(int((clf_skip & (labels == 1)).sum()))
         for i in np.where(clf_skip)[0]:
@@ -81,7 +69,6 @@ def main():
           f"worst split {min(skipped_noise_runs)}/{passed_noise}")
     print(f"  useful skipped (LOST): avg {np.mean(lost_runs):.1f}/{n_useful}, worst split {max(lost_runs)}/{n_useful}\n")
 
-    # ---- Funnel ----
     total_skipped = rule_skipped_noise + np.mean(skipped_noise_runs)
     sent = n - rule_lost - rule_skipped_noise - np.mean(skipped_noise_runs) - np.mean(lost_runs)
     print("FUNNEL (what would be sent to Gemini)")

@@ -1,20 +1,6 @@
-"""
-End-to-end chat test: sends the 7 demo questions (4 with a device ID, 3 with only a place or nickname) to the RUNNING API and checks the answers.
+"""End-to-end check of the demo questions against the running API.
 
-  1. start the API in another terminal:   uvicorn api.main:app --port 8000
-  2. python tests/chat_questions.py                  # all 4 questions
-     python tests/chat_questions.py --show           # also print the full answers
-     python tests/chat_questions.py --url http://localhost:8001
-
-Run scripts/load_inventory.py + ingest first (the place/nickname questions need T024-T026 in the graph).
-Uses only the Python standard library. Costs at most 2 Gemini calls per question
-(understand + answer), 0 when the same question was asked before (cache/api_*).
-
-What is checked per question:
-  - the API understood the device (Step A, not the regex fallback)
-  - the right knowledge cards come back (Step B, from Neo4j)
-  - Gemini wrote the answer (Step C, not the template fallback) and it mentions the key fact
-"""
+    python tests/chat_questions.py [--show] [--url http://localhost:8000]"""
 import argparse
 import json
 import sys
@@ -24,7 +10,6 @@ import urllib.request
 
 QUESTIONS = [
 
-    # No device ID in the question: the device is found from a place or a nickname
     {
         "name": "No ID · 'the Kolari transmission box' (place -> one device)",
         "message": "The Kolari transmission box has a battery alarm again after the power cut. Do I need to drive there?",
@@ -34,7 +19,6 @@ QUESTIONS = [
 ]
 
 
-# ---------- helpers ----------
 def all_cards(cards):
     """Cards plus the ones nested under 'Experts disagree'."""
     for c in cards:

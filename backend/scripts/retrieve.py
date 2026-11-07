@@ -1,16 +1,12 @@
-"""
-What does the graph know that applies to a device? (no Gemini calls)
+"""Prints what the graph knows for a device (no LLM calls).
 
-  python scripts/retrieve.py TRN-077
-  python scripts/retrieve.py TRN-042 --symptoms TRAFFIC_COUNTERS_ZERO INTERFACE_UP --events SFP_REPLACEMENT
-  python scripts/retrieve.py TRN-077 --json
-"""
+    python scripts/retrieve.py TRN-042 [--symptoms ...] [--events ...] [--json]"""
 import argparse
 import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline.retrieve import find_knowledge, print_readable
 

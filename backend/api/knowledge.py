@@ -1,14 +1,7 @@
-"""
-Step B · RETRIEVE (Neo4j only, no Gemini).
+"""Step B of the chat: retrieval from Neo4j (no LLM).
 
-  - device(s) known  -> retrieve.find_knowledge() for each device (scope, validity, firmware filter,
-                        duplicate merging, symptom ranking: all from the existing pipeline code)
-  - no device        -> symptom/event search over all valid knowledge (optionally one device type)
-
-Then every result is enriched into a KnowledgeCard: authors and excerpts per source, plain-English
-scope, status, the conflicting tip ("Experts disagree"), failed attempts attached to the fix they
-relate to, and firmware-excluded knowledge as an "outdated" card with a scope_note.
-"""
+Device known -> retrieve.find_knowledge() per device; no device -> symptom/event search.
+Also builds the cards for overview and history questions and the device side panel."""
 from dataclasses import dataclass, field
 
 from pipeline import graph
@@ -33,8 +26,6 @@ RETURN a.id AS id,
        collect(DISTINCT d.node_id) AS devices
 """
 
-# History: knowledge that USED to apply to the device and was replaced (valid_to set), newest first,
-# with the tip that replaced it. Only asked for when the question is about the past ("older codes").
 HISTORY_QUERY = """
 MATCH (d:Device {node_id: $node_id})
 MATCH (a:Assertion)
@@ -65,12 +56,11 @@ RETURN a.id AS id
 @dataclass
 class KnowledgeResult:
     cards: list[dict] = field(default_factory=list)
-    devices: list[dict] = field(default_factory=list)   # facts of the resolved devices
-    mode: str = "none"                                   # device | search | none
-    notes: list[str] = field(default_factory=list)       # e.g. "symptom filter relaxed"
+    devices: list[dict] = field(default_factory=list)
+    mode: str = "none"
+    notes: list[str] = field(default_factory=list)
 
 
-# ---------- database access ----------
 def fetch_assertions(ids) -> dict[str, dict]:
     ids = sorted(set(ids))
     if not ids:
@@ -82,7 +72,6 @@ def fetch_assertions(ids) -> dict[str, dict]:
     return out
 
 
-# ---------- grouping (used when we don't go through retrieve.find_knowledge) ----------
 def _as_retrieve_shape(aid: str, info: dict) -> dict:
     a = info["a"]
     return {"id": aid, "knowledge_type": a["knowledge_type"], "actions": a.get("actions") or [],
@@ -132,7 +121,6 @@ def group_assertions(ids, infos: dict, symptoms: list[str] | None = None, how: s
     return results
 
 
-# ---------- card building ----------
 def build_card(group: dict, infos: dict, scope_note: str | None = None, force_status: str | None = None) -> dict:
     ids = group["knowledge_ids"]
     members = [infos[i] for i in ids if i in infos]
@@ -154,7 +142,6 @@ def build_card(group: dict, infos: dict, scope_note: str | None = None, force_st
     statuses = {m["a"].get("status") or "auto_captured" for m in members}
     if group.get("disputed"):
         statuses.add("disputed")
-    # firmware limits: take them from the member that has them (merged members share type and actions)
     lim = next((m["a"] for m in members if m["a"].get("scope_firmware_below") or m["a"].get("scope_firmware_at_least")), a0)
     scope = {
         "node_type": a0.get("scope_node_type"),
@@ -249,7 +236,6 @@ def _attach_conflicts(cards: list[dict], infos: dict) -> list[dict]:
 
 def _clean(card: dict) -> dict:
     card.pop("_conflict_ids", None)
-    # symptoms/events stay on the card: the UI turns them into device-specific example questions
     for c in card["conflicts_with"]:
         _clean(c)
     return card
@@ -265,7 +251,7 @@ def finish_cards(groups: list[dict], infos: dict, wants_access: bool, outdated: 
         access = [c for c in main if c["knowledge_type"] == "access_info"]
         main = access or main
         outdated = []
-    elif has_symptoms:  # a troubleshooting question: gate codes etc. are noise here
+    elif has_symptoms:
         main = [c for c in main if c["knowledge_type"] != "access_info"] or main
     cards = _attach_conflicts(main[:max_cards], infos)
     cards += leftover_failed[: max(0, max_cards - len(cards))]
@@ -273,7 +259,6 @@ def finish_cards(groups: list[dict], infos: dict, wants_access: bool, outdated: 
     return [_clean(c) for c in cards]
 
 
-# ---------- public entry points ----------
 def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wants_access: bool,
                 panel: bool = False, overview: bool = False, history: bool = False) -> KnowledgeResult:
     """panel: device side panel. overview: "all faults / what do we know about X" -> everything that applies,
@@ -281,7 +266,7 @@ def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wan
     panel = panel or overview
     res = KnowledgeResult(mode="device")
     groups, seen = [], set()
-    excluded: list[tuple[str, dict, dict]] = []  # (node_id, excluded entry, device)
+    excluded: list[tuple[str, dict, dict]] = []
     for nid in node_ids:
         out = retrieve.find_knowledge(nid, symptoms or None, events or None)
         if (symptoms or events) and not out["results"] and isinstance(out.get("device"), dict):
@@ -301,15 +286,12 @@ def for_devices(node_ids: list[str], symptoms: list[str], events: list[str], wan
             excluded.append((nid, e, dev))
 
     infos = fetch_assertions([i for g in groups for i in g["knowledge_ids"]] + [e["id"] for _, e, _ in excluded])
-    # Firmware-hidden knowledge is only worth showing for a concrete problem (or in the device panel)
     outdated = _outdated_cards(excluded, infos, symptoms, events) if (symptoms or events or panel) else []
     res.cards = finish_cards(groups, infos, wants_access, outdated, has_symptoms=bool(symptoms or events),
                              max_cards=20 if panel else MAX_CARDS)
     if history:
         past = history_cards(node_ids, wants_access)
         if past:
-            # Only show the current cards on the same subject as the history (asking for older gate
-            # codes shows the current code, not every troubleshooting tip for the device)
             kinds = {c["knowledge_type"] for c in past}
             res.cards = [c for c in res.cards if c["knowledge_type"] in kinds]
         res.cards += past
@@ -360,9 +342,9 @@ def _outdated_cards(excluded, infos: dict, symptoms: list[str], events: list[str
     for nid, ids in by_node.items():
         for g in group_assertions(ids, infos, how=f"hidden for {nid} by the firmware rule"):
             reason = reasons[g["knowledge_ids"][0]]
-            if reason.startswith("only applies below"):   # e.g. workaround no longer needed after an upgrade
+            if reason.startswith("only applies below"):
                 cards.append(build_card(g, infos, scope_note=f"Not needed on {nid}: {reason}", force_status="outdated"))
-            else:                                          # e.g. "fixed from 3.4": tells you an upgrade helps
+            else:
                 cards.append(build_card(g, infos, scope_note=f"Not yet on {nid}: {reason}"))
     return cards
 

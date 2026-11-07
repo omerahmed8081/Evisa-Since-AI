@@ -1,9 +1,5 @@
-"""
-pipeline: capture human operational knowledge from conversations into a time-aware Neo4j
-knowledge graph, keep it up to date, and retrieve what applies to a device.
-
-Used by the FastAPI layer (backend/api) and the command-line scripts (backend/scripts).
-"""
+"""Capture pipeline: conversations -> time-aware Neo4j knowledge graph, plus retrieval.
+Used by the API (backend/api) and the command-line scripts (backend/scripts)."""
 from pathlib import Path
 
 from dotenv import load_dotenv
