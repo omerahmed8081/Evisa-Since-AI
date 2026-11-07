@@ -1,0 +1,47 @@
+{
+  "thread_id": "N004",
+  "channel": "teams",
+  "date": "2026-01-15",
+  "language": "fi",
+  "note": "Synthetic NOISE (schedule) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:46",
+      "timestamp": "2026-01-15T08:46:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Voitko vaihtaa päivystysvuoron kanssani ensi viikolla?"
+    },
+    {
+      "seq": 2,
+      "time": "08:49",
+      "timestamp": "2026-01-15T08:49:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Joo käy, otan sun tiistain"
+    },
+    {
+      "seq": 3,
+      "time": "08:52",
+      "timestamp": "2026-01-15T08:52:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Kiitos paljon!"
+    }
+  ]
+}

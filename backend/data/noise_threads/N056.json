@@ -1,0 +1,47 @@
+{
+  "thread_id": "N056",
+  "channel": "teams",
+  "date": "2025-02-27",
+  "language": "en",
+  "note": "Synthetic NOISE (car) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:12",
+      "timestamp": "2025-02-27T14:12:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Is the 4WD free tomorrow? Need to go to Oulu"
+    },
+    {
+      "seq": 2,
+      "time": "14:15",
+      "timestamp": "2025-02-27T14:15:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "booked by Pekka until noon"
+    },
+    {
+      "seq": 3,
+      "time": "14:18",
+      "timestamp": "2025-02-27T14:18:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "ok I'll take it after"
+    }
+  ]
+}

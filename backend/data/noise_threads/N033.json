@@ -1,0 +1,47 @@
+{
+  "thread_id": "N033",
+  "channel": "teams",
+  "date": "2023-10-31",
+  "language": "mixed",
+  "note": "Synthetic NOISE (social) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "12:55",
+      "timestamp": "2023-10-31T12:55:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Pikkujoulut on 12.12, ilmoittautuminen perjantaihin mennessä"
+    },
+    {
+      "seq": 2,
+      "time": "12:58",
+      "timestamp": "2023-10-31T12:58:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "ok, I'll sign up"
+    },
+    {
+      "seq": 3,
+      "time": "12:59",
+      "timestamp": "2023-10-31T12:59:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "kiitos!"
+    }
+  ]
+}

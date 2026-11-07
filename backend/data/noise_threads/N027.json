@@ -1,0 +1,47 @@
+{
+  "thread_id": "N027",
+  "channel": "teams",
+  "date": "2026-03-07",
+  "language": "fi",
+  "note": "Synthetic NOISE (car) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "10:07",
+      "timestamp": "2026-03-07T10:07:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Onko pakettiauto vapaa torstaina Kemijärvin keikkaa varten?"
+    },
+    {
+      "seq": 2,
+      "time": "10:12",
+      "timestamp": "2026-03-07T10:12:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "on"
+    },
+    {
+      "seq": 3,
+      "time": "10:15",
+      "timestamp": "2026-03-07T10:15:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "varaan sen"
+    }
+  ]
+}

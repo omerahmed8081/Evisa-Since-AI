@@ -1,0 +1,47 @@
+{
+  "thread_id": "N014",
+  "channel": "teams",
+  "date": "2025-03-28",
+  "language": "mixed",
+  "note": "Synthetic NOISE (planning) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:12",
+      "timestamp": "2025-03-28T08:12:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Huoltoikkuna ensi yönä klo 02, firmware upgrade parille laitteelle"
+    },
+    {
+      "seq": 2,
+      "time": "08:13",
+      "timestamp": "2025-03-28T08:13:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "ok, I'll inform NOC"
+    },
+    {
+      "seq": 3,
+      "time": "08:14",
+      "timestamp": "2025-03-28T08:14:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "kiitos"
+    }
+  ]
+}

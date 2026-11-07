@@ -9,7 +9,7 @@ Python backend: the **capture pipeline** (conversations → knowledge graph), th
                                 then update older knowledge (reinforce / narrow / supersede / conflict)
 3. RETRIEVE    pipeline/retrieve.py   what applies to a device (graph rules, no LLM)
 4. API         api/             FastAPI: chat (understand → retrieve → answer), devices, feedback
-5. EVALUATE    scripts/evaluate.py    accuracy against the answer key + demo checks
+5. EVALUATE    tests/evaluate.py      accuracy against the answer key + demo checks
 ```
 
 ## Folder layout
@@ -26,7 +26,10 @@ Python backend: the **capture pipeline** (conversations → knowledge graph), th
 | `pipeline/vocabulary.py` | Growing vocabulary of symptoms/actions/events; near-duplicates merged |
 | `pipeline/extract.py`, `cache.py` | Gemini calls + disk cache |
 | `pipeline/threads.py` | Reads Teams/call JSON and email files |
-| `scripts/` | Command-line tools (below) |
+| `pipeline/prefilter.py`, `prefilter_data.py` | Local pre-filter (rule score + small classifier) that skips noise before Gemini |
+| `models/prefilter.joblib` | The trained pre-filter classifier (166 KB, rebuild with `scripts/train_prefilter.py`) |
+| `scripts/` | Command-line tools: build the graph, train the pre-filter, query (below) |
+| `tests/` | Evaluation: `evaluate.py` (capture + retrieval vs. the answer key), `evaluate_prefilter.py` (pre-filter recall / noise skipped), `chat_questions.py` (4 demo questions against the running API) |
 | `data/` | Synthetic dataset: `inventory/nodes.csv`, `events/events.json`, `threads/`, `ground_truth.json`, `generator/`, `DATA.md` |
 | `cache/` | Saved Gemini answers. Committed on purpose: rebuilding the graph costs no API quota |
 | `docs/queries.cypher` | Useful queries for Neo4j Browser |
@@ -51,12 +54,39 @@ Fill in `.env`: `GEMINI_API_KEY`, `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD`.
 python scripts/reset_graph.py           # empty the database (asks for confirmation)
 python scripts/load_inventory.py        # devices + event stream
 python scripts/ingest.py data/threads   # capture all conversations (cached: ~0 Gemini calls)
-python scripts/evaluate.py --details    # accuracy against the answer key + 15 demo checks
+python tests/evaluate.py --details    # accuracy against the answer key + 15 demo checks
 ```
 
 `ingest.py` options: `--dry-run` (print Gemini output, no Neo4j), `--force` (re-process everything),
-`--refresh` (ignore the cache, costs API calls). If a run stops (rate limit), run it again: finished
-conversations are skipped.
+`--refresh` (ignore the cache, costs API calls), `--prefilter` (skip obvious noise locally first). If a run
+stops (rate limit), run it again: finished conversations are skipped.
+
+## Local pre-filter (skip noise before any LLM call)
+
+Real chat is mostly noise (lunch, meetings, "thanks!"). Sending all of it to Gemini costs money and sends
+everything to a cloud API. The pre-filter runs **locally, in milliseconds, with no API**:
+
+1. **Rule score** (transparent): device ID from the inventory +2, technical terms +1 each (max 3),
+   resolution / failure phrase +2, access info +2, advice +1, question answered by an expert +1,
+   an alarm/work order on a mentioned device within 48 h +3. Below 3 → skipped.
+2. **Small classifier**: TF-IDF over 2-4 character snippets (handles Finnish endings and typos) + logistic
+   regression. Trained on **Gemini's own past decisions** from the cache (distillation: the cheap model learns
+   to imitate the expensive one) plus template noise. It only skips what it is very sure is noise.
+
+Tuned for recall: losing real knowledge is permanent, a noise message let through only costs one Gemini call.
+Skipped conversations are still saved as `Source` nodes with `prefiltered = true` so they can be audited.
+
+```bash
+python data/generator/noise.py          # 60 extra noise conversations -> data/noise_threads (already included)
+python scripts/train_prefilter.py       # trains in seconds -> models/prefilter.joblib
+python tests/evaluate_prefilter.py    # honest cross-validated test (--show lists every decision)
+python scripts/ingest.py data/threads --prefilter
+```
+
+Result (93 conversations: 29 useful, 64 noise; classifier scored only on conversations it never trained on):
+rules skip 41/64 noise, classifier skips on average 20.8 of the remaining 23 → **62/64 noise never sent to
+Gemini (97%), 0/29 useful lost** even in the worst split. Small, partly template-generated dataset, so this
+shows the mechanism; on real Elisa data it is retrained on their own labels (Gemini decisions + expert feedback).
 
 ## Run the API
 
@@ -94,11 +124,11 @@ python scripts/retrieve.py TRN-077 --json                            # machine-r
 ## Evaluation (synthetic dataset, 33 conversations)
 
 Useful/noise decision 100% · devices linked 100% · scope 90% · outcome 100% · actions 100% · symptoms 97% ·
-9/9 expected knowledge updates · 15/15 demo retrieval checks (`python scripts/evaluate.py --details`).
+9/9 expected knowledge updates · 15/15 demo retrieval checks (`python tests/evaluate.py --details`).
 
 ## Limitations and path to production
 
-Synthetic data (88% useful vs. mostly noise in reality) → cheap pre-filters (channels, device/keyword rules,
-event correlation, a small local classifier) before any LLM call; install date stands in for a real
+Synthetic data (88% useful vs. mostly noise in reality) → the local pre-filter above (plus channel opt-in)
+runs before any LLM call; install date stands in for a real
 hardware-generation field; real linking needs sites and aliases; privacy → self-hosted open model, opt-in
 channels, expert confirmation before storing, and storing the tip plus a link instead of the raw conversation.

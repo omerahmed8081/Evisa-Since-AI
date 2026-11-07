@@ -1,0 +1,47 @@
+{
+  "thread_id": "N005",
+  "channel": "teams",
+  "date": "2026-05-26",
+  "language": "en",
+  "note": "Synthetic NOISE (schedule) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:01",
+      "timestamp": "2026-05-26T11:01:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "I'm on call this weekend, who has next week?"
+    },
+    {
+      "seq": 2,
+      "time": "11:02",
+      "timestamp": "2026-05-26T11:02:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Me, from Monday"
+    },
+    {
+      "seq": 3,
+      "time": "11:06",
+      "timestamp": "2026-05-26T11:06:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "ok great"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+ "useful": true,
+ "reason": "Provides gate access information and lockbox code for a site that is missing from site records.",
+ "knowledge": [
+  {
+   "knowledge_type": "access_info",
+   "summary": "Access to the site near Kolari requires a key for the locked barrier at the start of the private road; the key is in a lockbox at the neighbouring red house with code 2580.",
+   "device_mentions": [
+    "TRN-042",
+    "BTS-233"
+   ],
+   "node_type": "transmission",
+   "scope_hint": "this_device_only",
+   "firmware_below": null,
+   "firmware_at_least": null,
+   "events": [],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "unknown",
+   "author": "Tiina Tuominen",
+   "source_message_seqs": [
+    1
+   ],
+   "confirmed_at_seq": 1,
+   "details": "Key is in a lockbox at the neighbouring farm (the red house right before the barrier). Lockbox code is 2580."
+  }
+ ]
+}

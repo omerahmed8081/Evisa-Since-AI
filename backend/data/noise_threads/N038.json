@@ -1,0 +1,47 @@
+{
+  "thread_id": "N038",
+  "channel": "teams",
+  "date": "2026-03-13",
+  "language": "fi",
+  "note": "Synthetic NOISE (smalltalk) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:25",
+      "timestamp": "2026-03-13T15:25:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Huhhuh mikä pakkanen tänään, -28 Kittilässä"
+    },
+    {
+      "seq": 2,
+      "time": "15:26",
+      "timestamp": "2026-03-13T15:26:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "täällä -31 😅"
+    },
+    {
+      "seq": 3,
+      "time": "15:29",
+      "timestamp": "2026-03-13T15:29:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "kahvia lisää"
+    }
+  ]
+}

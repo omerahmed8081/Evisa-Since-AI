@@ -1,0 +1,47 @@
+{
+  "thread_id": "N010",
+  "channel": "teams",
+  "date": "2025-11-05",
+  "language": "en",
+  "note": "Synthetic NOISE (training) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "13:27",
+      "timestamp": "2025-11-05T13:27:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "The safety training is on Thursday at 9 in the Oulu office"
+    },
+    {
+      "seq": 2,
+      "time": "13:28",
+      "timestamp": "2025-11-05T13:28:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Is it mandatory?"
+    },
+    {
+      "seq": 3,
+      "time": "13:29",
+      "timestamp": "2025-11-05T13:29:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "yes for all field staff"
+    }
+  ]
+}

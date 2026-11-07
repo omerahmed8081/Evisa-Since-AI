@@ -1,0 +1,39 @@
+{
+  "thread_id": "N019",
+  "channel": "teams",
+  "date": "2025-02-21",
+  "language": "en",
+  "note": "Synthetic NOISE (ticket) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "07:01",
+      "timestamp": "2025-02-21T07:01:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Closed WO-57487 for TRN-077"
+    },
+    {
+      "seq": 2,
+      "time": "07:05",
+      "timestamp": "2025-02-21T07:05:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "thanks, I'll update the report"
+    }
+  ]
+}

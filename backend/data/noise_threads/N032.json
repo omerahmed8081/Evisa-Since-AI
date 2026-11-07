@@ -1,0 +1,47 @@
+{
+  "thread_id": "N032",
+  "channel": "teams",
+  "date": "2026-08-11",
+  "language": "en",
+  "note": "Synthetic NOISE (social) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "07:59",
+      "timestamp": "2026-08-11T07:59:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Anyone up for pizza on Friday?"
+    },
+    {
+      "seq": 2,
+      "time": "08:04",
+      "timestamp": "2026-08-11T08:04:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "count me in"
+    },
+    {
+      "seq": 3,
+      "time": "08:08",
+      "timestamp": "2026-08-11T08:08:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "same 🍕"
+    }
+  ]
+}

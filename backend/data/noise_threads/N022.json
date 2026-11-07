@@ -1,0 +1,47 @@
+{
+  "thread_id": "N022",
+  "channel": "teams",
+  "date": "2023-06-07",
+  "language": "fi",
+  "note": "Synthetic NOISE (dispatch) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:55",
+      "timestamp": "2023-06-07T14:55:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Kuka ehtii AGG-015:lle huomenna?"
+    },
+    {
+      "seq": 2,
+      "time": "14:57",
+      "timestamp": "2023-06-07T14:57:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Mä voin mennä iltapäivällä"
+    },
+    {
+      "seq": 3,
+      "time": "15:03",
+      "timestamp": "2023-06-07T15:03:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "ok, laitan sulle"
+    }
+  ]
+}

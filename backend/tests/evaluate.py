@@ -1,8 +1,8 @@
 """
 Evaluate the graph against data/ground_truth.json. Uses NO Gemini calls.
 
-  python scripts/evaluate.py                 # full report
-  python scripts/evaluate.py --details       # also list every mismatch per thread
+  python tests/evaluate.py                 # full report
+  python tests/evaluate.py --details       # also list every mismatch per thread
 
 Sections:
   1. Capture   - per conversation: useful/noise decision, devices linked, scope, outcome, actions

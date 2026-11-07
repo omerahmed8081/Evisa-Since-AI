@@ -1,0 +1,47 @@
+{
+  "thread_id": "N026",
+  "channel": "teams",
+  "date": "2025-09-16",
+  "language": "en",
+  "note": "Synthetic NOISE (car) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "12:26",
+      "timestamp": "2025-09-16T12:26:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Is the 4WD free tomorrow? Need to go to Kolari"
+    },
+    {
+      "seq": 2,
+      "time": "12:28",
+      "timestamp": "2025-09-16T12:28:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "booked by Pekka until noon"
+    },
+    {
+      "seq": 3,
+      "time": "12:31",
+      "timestamp": "2025-09-16T12:31:00+03:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "ok I'll take it after"
+    }
+  ]
+}

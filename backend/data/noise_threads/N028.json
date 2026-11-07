@@ -1,0 +1,39 @@
+{
+  "thread_id": "N028",
+  "channel": "teams",
+  "date": "2024-05-03",
+  "language": "mixed",
+  "note": "Synthetic NOISE (photo) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:10",
+      "timestamp": "2024-05-03T14:10:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "Kuvat TRN-023:n kaapista liitteenä"
+    },
+    {
+      "seq": 2,
+      "time": "14:13",
+      "timestamp": "2024-05-03T14:13:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "thanks, got them"
+    }
+  ]
+}

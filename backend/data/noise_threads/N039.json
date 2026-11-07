@@ -1,0 +1,39 @@
+{
+  "thread_id": "N039",
+  "channel": "teams",
+  "date": "2025-07-03",
+  "language": "en",
+  "note": "Synthetic NOISE (smalltalk) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:20",
+      "timestamp": "2025-07-03T11:20:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Congrats on the new car!"
+    },
+    {
+      "seq": 2,
+      "time": "11:25",
+      "timestamp": "2025-07-03T11:25:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "thanks! finally something with seat heating 😄"
+    }
+  ]
+}

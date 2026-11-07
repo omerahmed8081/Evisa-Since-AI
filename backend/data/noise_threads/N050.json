@@ -1,0 +1,39 @@
+{
+  "thread_id": "N050",
+  "channel": "teams",
+  "date": "2023-03-05",
+  "language": "fi",
+  "note": "Synthetic NOISE (ticket) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "12:04",
+      "timestamp": "2023-03-05T12:04:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Suljin työmääräyksen WO-59359 (BTS-244)"
+    },
+    {
+      "seq": 2,
+      "time": "12:06",
+      "timestamp": "2023-03-05T12:06:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "selvä"
+    }
+  ]
+}

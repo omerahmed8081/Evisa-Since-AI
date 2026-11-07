@@ -1,0 +1,47 @@
+{
+  "thread_id": "N003",
+  "channel": "teams",
+  "date": "2023-03-24",
+  "language": "mixed",
+  "note": "Synthetic NOISE (social) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:43",
+      "timestamp": "2023-03-24T14:43:00+02:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "Pikkujoulut on 12.12, ilmoittautuminen perjantaihin mennessä"
+    },
+    {
+      "seq": 2,
+      "time": "14:46",
+      "timestamp": "2023-03-24T14:46:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "ok, I'll sign up"
+    },
+    {
+      "seq": 3,
+      "time": "14:49",
+      "timestamp": "2023-03-24T14:49:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "kiitos!"
+    }
+  ]
+}

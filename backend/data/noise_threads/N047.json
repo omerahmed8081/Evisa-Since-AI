@@ -1,0 +1,39 @@
+{
+  "thread_id": "N047",
+  "channel": "teams",
+  "date": "2024-03-23",
+  "language": "fi",
+  "note": "Synthetic NOISE (status) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:57",
+      "timestamp": "2024-03-23T09:57:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Valmista tuli TRN-056:llä, lähden takaisin"
+    },
+    {
+      "seq": 2,
+      "time": "10:00",
+      "timestamp": "2024-03-23T10:00:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "ok, kiitos"
+    }
+  ]
+}

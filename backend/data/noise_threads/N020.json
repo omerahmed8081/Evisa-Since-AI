@@ -1,0 +1,39 @@
+{
+  "thread_id": "N020",
+  "channel": "teams",
+  "date": "2026-02-13",
+  "language": "fi",
+  "note": "Synthetic NOISE (ticket) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "13:15",
+      "timestamp": "2026-02-13T13:15:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Suljin työmääräyksen WO-59256 (TRN-031)"
+    },
+    {
+      "seq": 2,
+      "time": "13:17",
+      "timestamp": "2026-02-13T13:17:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "selvä"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+{
+ "text": "The issue is likely caused by something else, as firmware 3.4.0 already prevents traffic from getting stuck after an SFP replacement (Erkki Expert, email, 2026-04-08).\n\nThe standard fix of toggling the port (disable/re-enable) does not apply to TRN-077 because it only applies to firmware versions below 3.4.\n\nWhat did not work:\n- Rebooting the whole unit failed on TRN-015 (Mikko Mäkelä, teams, 2025-06-30).\n- Replacing the SFP again failed on TRN-031 (Tiina Tuominen, teams, 2025-07-15).\n\nSteps to take:\n1. Ask an expert for further assistance, as no other captured fixes apply to firmware 3.4.0."
+}

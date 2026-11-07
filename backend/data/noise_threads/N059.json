@@ -1,0 +1,39 @@
+{
+  "thread_id": "N059",
+  "channel": "teams",
+  "date": "2025-12-08",
+  "language": "en",
+  "note": "Synthetic NOISE (handover) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:33",
+      "timestamp": "2025-12-08T15:33:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Handing over the BTS-205 case to the night shift"
+    },
+    {
+      "seq": 2,
+      "time": "15:34",
+      "timestamp": "2025-12-08T15:34:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "ok, got it"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "thread_id": "N042",
+  "channel": "teams",
+  "date": "2024-04-15",
+  "language": "fi",
+  "note": "Synthetic NOISE (logistics) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "12:22",
+      "timestamp": "2024-04-15T12:22:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Tuleeko ne uudet patch-kaapelit huomenna?"
+    },
+    {
+      "seq": 2,
+      "time": "12:28",
+      "timestamp": "2024-04-15T12:28:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Pitäisi tulla aamulla"
+    },
+    {
+      "seq": 3,
+      "time": "12:33",
+      "timestamp": "2024-04-15T12:33:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "hyvä"
+    }
+  ]
+}

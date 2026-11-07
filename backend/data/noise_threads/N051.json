@@ -1,0 +1,47 @@
+{
+  "thread_id": "N051",
+  "channel": "teams",
+  "date": "2026-05-19",
+  "language": "en",
+  "note": "Synthetic NOISE (dispatch) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "12:30",
+      "timestamp": "2026-05-19T12:30:00+03:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Who can go to TRN-125 in Tampere tomorrow?"
+    },
+    {
+      "seq": 2,
+      "time": "12:34",
+      "timestamp": "2026-05-19T12:34:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "I can, morning"
+    },
+    {
+      "seq": 3,
+      "time": "12:37",
+      "timestamp": "2026-05-19T12:37:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "great, I'll assign it"
+    }
+  ]
+}

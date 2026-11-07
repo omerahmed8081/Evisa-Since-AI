@@ -1,0 +1,57 @@
+{
+ "useful": true,
+ "reason": "Conversation contains firmware-specific behavior regarding baseband recovery after a power outage and a workaround for older units.",
+ "knowledge": [
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Base stations running firmware version 2.6 and later automatically recover baseband after a power outage, eliminating the need for cold restarts.",
+   "device_mentions": [
+    "BTS-210"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "all_devices_of_same_type",
+   "firmware_below": null,
+   "firmware_at_least": "2.6",
+   "events": [
+    "POWER_OUTAGE"
+   ],
+   "symptoms": [],
+   "actions": [],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    1,
+    2
+   ],
+   "confirmed_at_seq": 2,
+   "details": "Fixed in firmware 2.6."
+  },
+  {
+   "knowledge_type": "troubleshooting_rule",
+   "summary": "Base stations on firmware below 2.6 still require a cold restart to recover baseband after a power outage.",
+   "device_mentions": [
+    "BTS-233"
+   ],
+   "node_type": "base_station",
+   "scope_hint": "older_devices_of_same_type",
+   "firmware_below": "2.6",
+   "firmware_at_least": null,
+   "events": [
+    "POWER_OUTAGE"
+   ],
+   "symptoms": [],
+   "actions": [
+    "COLD_RESTART_BASEBAND"
+   ],
+   "avoid": [],
+   "outcome": "worked",
+   "author": "Sanna Siirto",
+   "source_message_seqs": [
+    4
+   ],
+   "confirmed_at_seq": 4,
+   "details": null
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+  "thread_id": "N029",
+  "channel": "teams",
+  "date": "2023-10-04",
+  "language": "en",
+  "note": "Synthetic NOISE (handover) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:20",
+      "timestamp": "2023-10-04T15:20:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Handing over the TRN-112 case to the night shift"
+    },
+    {
+      "seq": 2,
+      "time": "15:22",
+      "timestamp": "2023-10-04T15:22:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "ok, got it"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "thread_id": "N049",
+  "channel": "teams",
+  "date": "2023-10-27",
+  "language": "en",
+  "note": "Synthetic NOISE (ticket) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "22:05",
+      "timestamp": "2023-10-27T22:05:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Closed WO-55955 for MW-412"
+    },
+    {
+      "seq": 2,
+      "time": "22:10",
+      "timestamp": "2023-10-27T22:10:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "thanks, I'll update the report"
+    }
+  ]
+}

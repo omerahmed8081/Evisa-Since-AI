@@ -1,0 +1,47 @@
+{
+  "thread_id": "N057",
+  "channel": "teams",
+  "date": "2025-05-22",
+  "language": "fi",
+  "note": "Synthetic NOISE (car) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:26",
+      "timestamp": "2025-05-22T11:26:00+03:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Onko pakettiauto vapaa torstaina Rovaniemin keikkaa varten?"
+    },
+    {
+      "seq": 2,
+      "time": "11:27",
+      "timestamp": "2025-05-22T11:27:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "on"
+    },
+    {
+      "seq": 3,
+      "time": "11:30",
+      "timestamp": "2025-05-22T11:30:00+03:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "varaan sen"
+    }
+  ]
+}

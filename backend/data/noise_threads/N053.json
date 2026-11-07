@@ -1,0 +1,47 @@
+{
+  "thread_id": "N053",
+  "channel": "teams",
+  "date": "2025-02-04",
+  "language": "en",
+  "note": "Synthetic NOISE (alarm_no_answer) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:04",
+      "timestamp": "2025-02-04T08:04:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Anyone else seeing alarms on MW-401?"
+    },
+    {
+      "seq": 2,
+      "time": "08:07",
+      "timestamp": "2025-02-04T08:07:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "not me"
+    },
+    {
+      "seq": 3,
+      "time": "08:13",
+      "timestamp": "2025-02-04T08:13:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "I'll check tomorrow then"
+    }
+  ]
+}

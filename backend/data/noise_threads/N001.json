@@ -1,0 +1,47 @@
+{
+  "thread_id": "N001",
+  "channel": "teams",
+  "date": "2024-12-14",
+  "language": "fi",
+  "note": "Synthetic NOISE (social) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:32",
+      "timestamp": "2024-12-14T15:32:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Lounas klo 11:30?"
+    },
+    {
+      "seq": 2,
+      "time": "15:36",
+      "timestamp": "2024-12-14T15:36:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "joo, mennään siihen uuteen paikkaan"
+    },
+    {
+      "seq": 3,
+      "time": "15:41",
+      "timestamp": "2024-12-14T15:41:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "sopii 👍"
+    }
+  ]
+}

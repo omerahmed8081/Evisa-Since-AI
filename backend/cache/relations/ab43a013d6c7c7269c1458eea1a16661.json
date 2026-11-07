@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip deals with storm-related mechanical misalignment while the existing tip addresses firmware upgrade issues with ATPC."
+  },
+  {
+   "existing_id": "T003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip addresses storm-related loose mounts, whereas the existing tip is about snow and ice accumulation on the radome."
+  }
+ ]
+}

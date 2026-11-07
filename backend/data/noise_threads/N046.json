@@ -1,0 +1,47 @@
+{
+  "thread_id": "N046",
+  "channel": "teams",
+  "date": "2023-10-01",
+  "language": "en",
+  "note": "Synthetic NOISE (status) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:09",
+      "timestamp": "2023-10-01T08:09:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "All done at TRN-112, heading back"
+    },
+    {
+      "seq": 2,
+      "time": "08:12",
+      "timestamp": "2023-10-01T08:12:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "ok thanks"
+    },
+    {
+      "seq": 3,
+      "time": "08:13",
+      "timestamp": "2023-10-01T08:13:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "drive safe"
+    }
+  ]
+}

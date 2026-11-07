@@ -1,0 +1,39 @@
+{
+  "thread_id": "N018",
+  "channel": "teams",
+  "date": "2025-02-03",
+  "language": "mixed",
+  "note": "Synthetic NOISE (status) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:30",
+      "timestamp": "2025-02-03T09:30:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "BTS-261 done, ajan nyt Kittilästa Rovaniemelle"
+    },
+    {
+      "seq": 2,
+      "time": "09:34",
+      "timestamp": "2025-02-03T09:34:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "ok 👍"
+    }
+  ]
+}

@@ -102,6 +102,14 @@ def mark_source_done(source_id: str):
     run("MATCH (s:Source {id: $id}) SET s.processed = true", id=source_id)
 
 
+def mark_source_prefiltered(source_id: str, stage: str, score: int, p_useful: float | None):
+    """Skipped by the local pre-filter: never sent to Gemini, but kept so it can be audited."""
+    run("""MATCH (s:Source {id: $id})
+           SET s.processed = true, s.prefiltered = true, s.prefilter_stage = $stage,
+               s.prefilter_score = $score, s.prefilter_p_useful = $p""",
+        id=source_id, stage=stage, score=score, p=p_useful)
+
+
 def get_devices(node_ids: list[str]) -> list[dict]:
     records = run(
         "MATCH (d:Device) WHERE d.node_id IN $ids RETURN d",

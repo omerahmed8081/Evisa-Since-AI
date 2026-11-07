@@ -6,6 +6,7 @@ Command line (from the repository root):
   python scripts/ingest.py data/threads --dry-run    # only print Gemini's output (no Neo4j needed)
   python scripts/ingest.py data/threads --force      # re-process threads that are already in Neo4j
   python scripts/ingest.py data/threads --refresh    # ignore the Gemini cache (costs API calls)
+  python scripts/ingest.py data/threads --prefilter  # skip obvious noise locally before Gemini
 
 From code: process(thread, dry_run=False, vocab=...) returns what was captured
 (used by api/feedback.py to turn an engineer's comment into new knowledge).
@@ -182,6 +183,29 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
     return summary
 
 
+def run_prefilter(loaded: list[dict], dry_run: bool) -> list[dict]:
+    """Drop conversations the local pre-filter is sure are noise. Skipped ones are still saved as
+    Sources (marked prefiltered) so nothing disappears without a trace."""
+    from pipeline.prefilter import Prefilter
+    pf = Prefilter()
+    print(f"Pre-filter: rules{' + classifier (threshold %s)' % pf.threshold if pf.model else ' only (no trained model)'}")
+    keep, skipped = [], 0
+    for t in loaded:
+        d = pf.decide(t)
+        if d["keep"]:
+            keep.append(t)
+            continue
+        skipped += 1
+        why = f"score {d['score']}" + (f", p_useful {d['p_useful']}" if d["p_useful"] is not None else "")
+        print(f"  [{t['thread_id']}] skipped by {d['stage']} ({why})")
+        if not dry_run:
+            from pipeline import graph
+            graph.save_source(t, threads.thread_to_prompt_text(t))
+            graph.mark_source_prefiltered(t["thread_id"], d["stage"], d["score"], d["p_useful"])
+    print(f"Pre-filter: {skipped} skipped, {len(keep)} sent to Gemini")
+    return keep
+
+
 def main():
     global INVENTORY_CSV
     parser = argparse.ArgumentParser()
@@ -190,6 +214,8 @@ def main():
     parser.add_argument("--inventory", default=str(INVENTORY_CSV), help="nodes.csv used for --dry-run")
     parser.add_argument("--force", action="store_true", help="re-process threads already in Neo4j")
     parser.add_argument("--refresh", action="store_true", help="ignore the Gemini cache and call the API again")
+    parser.add_argument("--prefilter", action="store_true",
+                        help="run the local pre-filter first; skipped conversations are never sent to Gemini")
     args = parser.parse_args()
     INVENTORY_CSV = Path(args.inventory)
     if args.refresh:
@@ -215,6 +241,9 @@ def main():
         loaded = [t for t in loaded if t["thread_id"] not in done]
         if skipped:
             print(f"Skipping {len(skipped)} threads already in Neo4j (use --force to redo): {', '.join(skipped)}")
+
+    if args.prefilter:
+        loaded = run_prefilter(loaded, args.dry_run)
 
     vocab = Vocabulary(use_graph=not args.dry_run).load()
     print(f"Processing {len(loaded)} threads")

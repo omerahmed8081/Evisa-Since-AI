@@ -1,0 +1,16 @@
+{
+ "judgements": [
+  {
+   "existing_id": "T003-1",
+   "relation": "conflicts",
+   "firmware_below": null,
+   "reason": "The new tip attributes winter link drops to PSU failure instead of ice on the radome for the same device."
+  },
+  {
+   "existing_id": "E003-1",
+   "relation": "unrelated",
+   "firmware_below": null,
+   "reason": "The new tip is about extreme cold weather power supply failures, while the existing tip is about ATPC settings after firmware upgrades."
+  }
+ ]
+}

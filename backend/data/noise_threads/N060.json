@@ -1,0 +1,39 @@
+{
+  "thread_id": "N060",
+  "channel": "teams",
+  "date": "2024-09-09",
+  "language": "en",
+  "note": "Synthetic NOISE (thanks) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "13:00",
+      "timestamp": "2024-09-09T13:00:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "Thanks for the help at BTS-272 yesterday!"
+    },
+    {
+      "seq": 2,
+      "time": "13:06",
+      "timestamp": "2024-09-09T13:06:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "no problem 👍"
+    }
+  ]
+}

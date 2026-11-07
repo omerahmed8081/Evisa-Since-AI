@@ -1,0 +1,47 @@
+{
+  "thread_id": "N023",
+  "channel": "teams",
+  "date": "2026-01-22",
+  "language": "en",
+  "note": "Synthetic NOISE (alarm_no_answer) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "09:10",
+      "timestamp": "2026-01-22T09:10:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Anyone else seeing alarms on TRN-118?"
+    },
+    {
+      "seq": 2,
+      "time": "09:15",
+      "timestamp": "2026-01-22T09:15:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "not me"
+    },
+    {
+      "seq": 3,
+      "time": "09:19",
+      "timestamp": "2026-01-22T09:19:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "I'll check tomorrow then"
+    }
+  ]
+}

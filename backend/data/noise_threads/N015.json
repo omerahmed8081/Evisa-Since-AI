@@ -1,0 +1,47 @@
+{
+  "thread_id": "N015",
+  "channel": "teams",
+  "date": "2026-03-24",
+  "language": "en",
+  "note": "Synthetic NOISE (question) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Mikko Mäkelä",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Veikko Vikkelä",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:39",
+      "timestamp": "2026-03-24T08:39:00+02:00",
+      "author": "Mikko Mäkelä",
+      "role": "Field Engineer",
+      "text": "Does anyone know when the new laptops arrive?"
+    },
+    {
+      "seq": 2,
+      "time": "08:44",
+      "timestamp": "2026-03-24T08:44:00+02:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "no idea, ask IT"
+    },
+    {
+      "seq": 3,
+      "time": "08:47",
+      "timestamp": "2026-03-24T08:47:00+02:00",
+      "author": "Veikko Vikkelä",
+      "role": "Field Engineer",
+      "text": "ok"
+    }
+  ]
+}

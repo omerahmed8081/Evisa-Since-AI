@@ -1,0 +1,3 @@
+{
+ "text": "Todennäköisin syy on liikenteenohjauksen jumiutuminen SFP-moduulin vaihdon jälkeen vanhemmassa siirtolaitteessa.\n\n1. Tarkista kasvavatko liikennelaskurit.\n2. Ota rajapinta pois käytöstä (disable) ja kytke se uudelleen päälle (enable).\n\nÄlä käynnistä koko laitetta uudelleen äläkä vaihda SFP-moduulia uudestaan. Laitteen uudelleenkäynnistys ei ratkaissut ongelmaa laitteella TRN-015, eikä SFP:n vaihtaminen palauttanut liikennettä laitteella TRN-031.\n\nFirmware 3.4 -versiossa esiintyvä automaattinen korjaus ei valitettavasti vielä koske laitetta TRN-042, koska siinä on ohjelmistoversio 3.2.4. \n\nRatkaisu on vahvistettu kolmella laitteella (lähde: Erkki Expert, Teams/sähköposti 2025–2026)."
+}

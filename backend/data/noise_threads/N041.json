@@ -1,0 +1,47 @@
+{
+  "thread_id": "N041",
+  "channel": "teams",
+  "date": "2024-05-28",
+  "language": "en",
+  "note": "Synthetic NOISE (logistics) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:55",
+      "timestamp": "2024-05-28T15:55:00+03:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "Do we have SFPs in stock in the Oulu warehouse?"
+    },
+    {
+      "seq": 2,
+      "time": "15:57",
+      "timestamp": "2024-05-28T15:57:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "I think 4 left"
+    },
+    {
+      "seq": 3,
+      "time": "16:02",
+      "timestamp": "2024-05-28T16:02:00+03:00",
+      "author": "Erkki Expert",
+      "role": "Network Expert",
+      "text": "ok I'll order more"
+    }
+  ]
+}

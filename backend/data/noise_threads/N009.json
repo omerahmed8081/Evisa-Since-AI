@@ -1,0 +1,39 @@
+{
+  "thread_id": "N009",
+  "channel": "teams",
+  "date": "2025-10-17",
+  "language": "en",
+  "note": "Synthetic NOISE (smalltalk) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Erkki Expert",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "15:16",
+      "timestamp": "2025-10-17T15:16:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Congrats on the new car!"
+    },
+    {
+      "seq": 2,
+      "time": "15:21",
+      "timestamp": "2025-10-17T15:21:00+03:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "thanks! finally something with seat heating 😄"
+    }
+  ]
+}

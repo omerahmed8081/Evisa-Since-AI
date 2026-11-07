@@ -1,0 +1,47 @@
+{
+  "thread_id": "N052",
+  "channel": "teams",
+  "date": "2025-02-10",
+  "language": "fi",
+  "note": "Synthetic NOISE (dispatch) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Pekka Pylväs",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "14:58",
+      "timestamp": "2025-02-10T14:58:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "Kuka ehtii AGG-012:lle huomenna?"
+    },
+    {
+      "seq": 2,
+      "time": "15:00",
+      "timestamp": "2025-02-10T15:00:00+02:00",
+      "author": "Pekka Pylväs",
+      "role": "Field Engineer",
+      "text": "Mä voin mennä iltapäivällä"
+    },
+    {
+      "seq": 3,
+      "time": "15:03",
+      "timestamp": "2025-02-10T15:03:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "ok, laitan sulle"
+    }
+  ]
+}

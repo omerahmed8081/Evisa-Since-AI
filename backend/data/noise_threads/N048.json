@@ -1,0 +1,39 @@
+{
+  "thread_id": "N048",
+  "channel": "teams",
+  "date": "2025-01-09",
+  "language": "mixed",
+  "note": "Synthetic NOISE (status) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "11:10",
+      "timestamp": "2025-01-09T11:10:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "BTS-250 done, ajan nyt Tamperesta Rovaniemelle"
+    },
+    {
+      "seq": 2,
+      "time": "11:12",
+      "timestamp": "2025-01-09T11:12:00+02:00",
+      "author": "Sanna Siirto",
+      "role": "Network Expert",
+      "text": "ok 👍"
+    }
+  ]
+}

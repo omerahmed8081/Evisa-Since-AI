@@ -1,0 +1,39 @@
+{
+  "thread_id": "N025",
+  "channel": "teams",
+  "date": "2025-08-27",
+  "language": "en",
+  "note": "Synthetic NOISE (report) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Antti Aalto",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    },
+    {
+      "name": "Sanna Siirto",
+      "role": "Network Expert"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "08:33",
+      "timestamp": "2025-08-27T08:33:00+03:00",
+      "author": "Antti Aalto",
+      "role": "Network Expert",
+      "text": "Can you send me the report for the BTS-210 visit?"
+    },
+    {
+      "seq": 2,
+      "time": "08:35",
+      "timestamp": "2025-08-27T08:35:00+03:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "sure, after lunch"
+    }
+  ]
+}

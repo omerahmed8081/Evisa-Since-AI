@@ -1,0 +1,47 @@
+{
+  "thread_id": "N016",
+  "channel": "teams",
+  "date": "2024-01-11",
+  "language": "en",
+  "note": "Synthetic NOISE (status) for pre-filter testing; contains no reusable knowledge.",
+  "participants": [
+    {
+      "name": "Jari Jänne",
+      "role": "Network Expert"
+    },
+    {
+      "name": "Laura Lahti",
+      "role": "Field Engineer"
+    },
+    {
+      "name": "Tiina Tuominen",
+      "role": "NOC Operator"
+    }
+  ],
+  "messages": [
+    {
+      "seq": 1,
+      "time": "07:20",
+      "timestamp": "2024-01-11T07:20:00+02:00",
+      "author": "Jari Jänne",
+      "role": "Network Expert",
+      "text": "All done at MW-418, heading back"
+    },
+    {
+      "seq": 2,
+      "time": "07:24",
+      "timestamp": "2024-01-11T07:24:00+02:00",
+      "author": "Laura Lahti",
+      "role": "Field Engineer",
+      "text": "ok thanks"
+    },
+    {
+      "seq": 3,
+      "time": "07:29",
+      "timestamp": "2024-01-11T07:29:00+02:00",
+      "author": "Tiina Tuominen",
+      "role": "NOC Operator",
+      "text": "drive safe"
+    }
+  ]
+}
