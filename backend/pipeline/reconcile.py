@@ -13,10 +13,10 @@ For each new tip:
        supersedes     -> old.valid_to = new.valid_from            (old is no longer true)
        conflicts      -> both marked status = 'disputed'
 """
-import extract
-import graph
-from prompts import build_relation_prompt
-from retrieve import same_knowledge
+from pipeline import extract
+from pipeline import graph
+from pipeline.prompts import build_relation_prompt
+from pipeline.retrieve import same_knowledge
 
 
 def reconcile(new_id: str):

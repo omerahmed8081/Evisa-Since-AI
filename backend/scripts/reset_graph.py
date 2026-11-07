@@ -1,13 +1,15 @@
 """
-Delete everything in the Neo4j database (e.g. to remove the sample data before loading the full dataset).
+Delete everything in the Neo4j database.
 
-  python reset_graph.py
+  python scripts/reset_graph.py
 """
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
-import graph
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
 
-load_dotenv()
+from pipeline import graph
+
 answer = input("This deletes ALL nodes and relationships in the database. Type 'yes' to continue: ")
 if answer.strip().lower() == "yes":
     graph.run("MATCH (n) DETACH DELETE n")

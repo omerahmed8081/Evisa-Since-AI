@@ -1,6 +1,23 @@
+# Secrets
 .env
-.venv/
-__pycache__/
-.DS_Store
-# Neo4j credentials file downloaded from Aura (contains the database password)
+.env.local
+.env.*.local
 Neo4j-*.txt
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

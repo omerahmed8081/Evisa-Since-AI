@@ -1,25 +1,29 @@
 """
 Evaluate the graph against data/ground_truth.json. Uses NO Gemini calls.
 
-  python evaluate.py                 # full report
-  python evaluate.py --details       # also list every mismatch per thread
+  python scripts/evaluate.py                 # full report
+  python scripts/evaluate.py --details       # also list every mismatch per thread
 
 Sections:
   1. Capture   - per conversation: useful/noise decision, devices linked, scope, outcome, actions
   2. Change    - did later messages update earlier knowledge as expected (merge, narrow, supersede, conflict)
   3. Retrieval - demo questions: does the right knowledge come back for the right device (PASS/FAIL)
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # make "pipeline" importable
 import argparse
 import json
 from pathlib import Path
 
-from dotenv import load_dotenv
 
-import graph
-import retrieve
+from pipeline import graph
+from pipeline import retrieve
 
-load_dotenv()
-GT_PATH = Path("data/ground_truth.json")
+from pipeline import DATA_DIR
+
+GT_PATH = DATA_DIR / "ground_truth.json"
 
 
 def jaccard(a, b) -> float:

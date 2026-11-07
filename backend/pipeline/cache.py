@@ -15,7 +15,9 @@ import json
 import os
 from pathlib import Path
 
-CACHE_DIR = Path(os.environ.get("CACHE_DIR", "cache"))
+from pipeline import BACKEND_DIR
+
+CACHE_DIR = Path(os.environ.get("CACHE_DIR", BACKEND_DIR / "cache"))
 ENABLED = True  # ingest.py --refresh sets this to False
 
 

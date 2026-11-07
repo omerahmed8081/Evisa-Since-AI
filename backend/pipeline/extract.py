@@ -1,5 +1,6 @@
 """
-All Gemini text calls, with a disk cache (cache.py) so the same question is never paid for twice.
+Gemini calls for the capture pipeline, with a disk cache (cache.py) so nothing is paid for twice.
+(The chat API's own Gemini helpers are in api/llm.py and reuse client() and _model() from here.)
 
   extract()            conversation -> structured knowledge (filter + extraction)
   classify_relations() new tip + older similar tips -> how they relate (same / narrows / supersedes / conflicts)
@@ -10,9 +11,9 @@ import time
 from google import genai
 from google.genai import types
 
-import cache
-from prompts import FEW_SHOT_EXAMPLES, RELATION_INSTRUCTION, SYSTEM_INSTRUCTION, build_prompt
-from schema import ExtractionResult, RelationResult
+from pipeline import cache
+from pipeline.prompts import FEW_SHOT_EXAMPLES, RELATION_INSTRUCTION, SYSTEM_INSTRUCTION, build_prompt
+from pipeline.schema import ExtractionResult, RelationResult
 
 _client = None
 

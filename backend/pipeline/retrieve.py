@@ -10,19 +10,12 @@ This is the function the chatbot agent will call as a tool. It:
      result with all its sources and devices, and a confidence that grows with confirmations,
   4. optionally ranks by how well the stored symptoms match the symptoms in the question.
 
-Usage:
-  python retrieve.py TRN-077
-  python retrieve.py TRN-077 --symptoms TRAFFIC_COUNTERS_ZERO INTERFACE_UP
-  python retrieve.py TRN-077 --json          # machine-readable, what the agent receives
+Command line: python scripts/retrieve.py TRN-077 [--symptoms ...] [--json]
 """
-import argparse
-import json
 
-from dotenv import load_dotenv
 
-import graph
+from pipeline import graph
 
-load_dotenv()
 
 QUERY = """
 MATCH (d:Device {node_id: $node_id})
@@ -213,16 +206,3 @@ def print_readable(res: dict):
         print(f"    sources: {srcs}  ·  by {', '.join(r['authors'])}")
     for e in res["excluded_by_firmware"]:
         print(f"\n  (not shown: {e['id']}: {e['reason']})")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("node_id")
-    parser.add_argument("--symptoms", nargs="*")
-    parser.add_argument("--json", action="store_true")
-    args = parser.parse_args()
-    out = find_knowledge(args.node_id, args.symptoms)
-    if args.json:
-        print(json.dumps(out, indent=2, ensure_ascii=False, default=list))
-    else:
-        print_readable(out)

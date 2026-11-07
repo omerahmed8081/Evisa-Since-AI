@@ -15,7 +15,7 @@ import math
 import os
 import re
 
-from schema import SEED_VOCABULARY
+from pipeline.schema import SEED_VOCABULARY
 
 EMBED_MODEL = os.environ.get("GEMINI_EMBED_MODEL", "gemini-embedding-001")
 
@@ -38,8 +38,8 @@ def _cosine(a: list[float], b: list[float]) -> float:
 
 def embed(texts: list[str]) -> list[list[float]]:
     """Embeddings with a disk cache: each text is only ever sent to Gemini once."""
-    import cache
-    from extract import client  # same Gemini client as extraction
+    from pipeline import cache
+    from pipeline.extract import client  # same Gemini client as extraction
     keys = [cache.make_key(EMBED_MODEL, t) for t in texts]
     vectors = [cache.get("embed", k) for k in keys]
     missing = [i for i, v in enumerate(vectors) if v is None]
@@ -64,7 +64,7 @@ class Vocabulary:
     # ---------- loading ----------
     def load(self):
         if self.use_graph:
-            import graph
+            from pipeline import graph
             self._seed_graph(graph)
             for r in graph.run("MATCH (t:Term) RETURN t.name AS name, t.category AS cat, t.embedding AS emb"):
                 self.terms.setdefault(r["cat"], {})[r["name"]] = r["emb"]
@@ -124,7 +124,7 @@ class Vocabulary:
         if best_name and best_score >= self.threshold:
             print(f"  vocab: {name} -> {best_name} (similarity {best_score:.2f})")
             if self.use_graph:
-                import graph
+                from pipeline import graph
                 graph.run(
                     "MATCH (t:Term {key: $key}) "
                     "SET t.aliases = CASE WHEN $alias IN t.aliases THEN t.aliases ELSE t.aliases + $alias END",
@@ -136,7 +136,7 @@ class Vocabulary:
         print(f"  vocab: + NEW {category} term {name}{closest}")
         known[name] = vector
         if self.use_graph:
-            import graph
+            from pipeline import graph
             graph.run(
                 """
                 MERGE (t:Term {key: $key})

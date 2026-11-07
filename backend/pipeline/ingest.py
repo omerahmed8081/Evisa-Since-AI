@@ -1,10 +1,14 @@
 """
-Run the pipeline on conversation files:  filter -> extract -> link -> store.
+Capture pipeline: conversation -> filter -> extract -> link -> store -> reconcile.
 
-  python ingest.py data/threads              # process all, oldest conversation first, write to Neo4j
-  python ingest.py data/threads --dry-run    # only print Gemini's output (no Neo4j needed)
-  python ingest.py data/threads --force      # re-process threads that are already in Neo4j
-  python ingest.py data/threads --refresh    # ignore the Gemini cache (costs API calls)
+Command line (from the repository root):
+  python scripts/ingest.py data/threads              # process all, oldest conversation first
+  python scripts/ingest.py data/threads --dry-run    # only print Gemini's output (no Neo4j needed)
+  python scripts/ingest.py data/threads --force      # re-process threads that are already in Neo4j
+  python scripts/ingest.py data/threads --refresh    # ignore the Gemini cache (costs API calls)
+
+From code: process(thread, dry_run=False, vocab=...) returns what was captured
+(used by api/feedback.py to turn an engineer's comment into new knowledge).
 
 Gemini answers are cached in cache/, so re-running after a reset costs no API calls
 unless a conversation or the prompt changed.
@@ -20,19 +24,13 @@ import csv
 import json
 import os
 from datetime import datetime
-from datetime import date
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-import extract
-import threads
-from vocabulary import Vocabulary
-
-load_dotenv()
+from pipeline import DATA_DIR, extract, threads
+from pipeline.vocabulary import Vocabulary
 
 BASE_CONFIDENCE = {"worked": 0.7, "unknown": 0.5, "failed": 0.3}
-INVENTORY_CSV = Path("data/inventory/nodes.csv")
+INVENTORY_CSV = DATA_DIR / "inventory" / "nodes.csv"
 
 
 def csv_inventory(path: Path) -> list[dict]:
@@ -85,7 +83,7 @@ def compute_scope(k, observed_devices: list[dict], node_type: str | None) -> dic
     # describes the WORKAROUND (only needed below the version); without actions it describes the FIX.
     below, at_least = scope["firmware_below"], scope["firmware_at_least"]
     if below and at_least:
-        from retrieve import compare_versions
+        from pipeline.retrieve import compare_versions
         if compare_versions(below, at_least) <= 0:
             if k.actions:
                 print(f"  scope: contradictory firmware limits; tip has actions -> workaround, keeping 'below {below}'")
@@ -102,10 +100,12 @@ def sort_key(thread: dict):
     return (0, datetime.fromisoformat(ts).timestamp()) if ts else (1, 0)
 
 
-def process(thread: dict, dry_run: bool, vocab: Vocabulary):
+def process(thread: dict, dry_run: bool, vocab: Vocabulary) -> dict:
+    """Run one conversation through the pipeline. Returns
+    {"thread_id", "useful", "reason", "tips": [{"id", "summary", "devices", "knowledge_type", "outcome"}]}"""
     if not dry_run:
-        import graph  # imported here so --dry-run works without Neo4j configured
-        import reconcile
+        from pipeline import graph  # imported here so --dry-run works without Neo4j configured
+        from pipeline import reconcile
 
     text = threads.thread_to_prompt_text(thread)
     mentioned_ids = threads.find_device_ids(thread)
@@ -129,14 +129,17 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary):
         k.actions = vocab.normalize_list(k.actions, "action", thread["thread_id"])
         k.avoid = vocab.normalize_list(k.avoid, "action", thread["thread_id"])
 
+    summary = {"thread_id": thread["thread_id"], "useful": result.useful, "reason": result.reason, "tips": []}
     if dry_run:
         print(json.dumps(result.model_dump(), indent=2, ensure_ascii=False))
-        return
+        summary["tips"] = [{"id": None, "summary": k.summary, "devices": k.device_mentions,
+                            "knowledge_type": k.knowledge_type, "outcome": k.outcome} for k in result.knowledge]
+        return summary
 
     graph.save_source(thread, text)  # keep the raw source even if not useful
     if not result.useful:
         graph.mark_source_done(thread["thread_id"])
-        return
+        return summary
 
     for i, k in enumerate(result.knowledge, start=1):
         # Link only to devices that really exist in the inventory. If Gemini named none, general
@@ -173,7 +176,10 @@ def process(thread: dict, dry_run: bool, vocab: Vocabulary):
         graph.link_terms(assertion)
         print(f"  saved {assertion['id']}: {k.summary[:80]}...")
         reconcile.reconcile(assertion["id"])
+        summary["tips"].append({"id": assertion["id"], "summary": k.summary, "devices": observed,
+                                "knowledge_type": k.knowledge_type, "outcome": k.outcome})
     graph.mark_source_done(thread["thread_id"])
+    return summary
 
 
 def main():
@@ -187,7 +193,7 @@ def main():
     args = parser.parse_args()
     INVENTORY_CSV = Path(args.inventory)
     if args.refresh:
-        import cache
+        from pipeline import cache
         cache.ENABLED = False
 
     p = Path(args.path)
@@ -203,7 +209,7 @@ def main():
     loaded.sort(key=sort_key)
 
     if not args.dry_run and not args.force:
-        import graph
+        from pipeline import graph
         done = graph.existing_source_ids()
         skipped = [t["thread_id"] for t in loaded if t["thread_id"] in done]
         loaded = [t for t in loaded if t["thread_id"] not in done]
